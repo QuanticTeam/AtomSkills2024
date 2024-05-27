@@ -1,0 +1,11 @@
+C:\Users\Пользователь\RiderProjects\backend\backend.Core\bin\Debug\net8.0\backend.Core.deps.json
+C:\Users\Пользователь\RiderProjects\backend\backend.Core\bin\Debug\net8.0\backend.Core.dll
+C:\Users\Пользователь\RiderProjects\backend\backend.Core\bin\Debug\net8.0\backend.Core.pdb
+C:\Users\Пользователь\RiderProjects\backend\backend.Core\obj\Debug\net8.0\backend.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Пользователь\RiderProjects\backend\backend.Core\obj\Debug\net8.0\backend.Core.AssemblyInfoInputs.cache
+C:\Users\Пользователь\RiderProjects\backend\backend.Core\obj\Debug\net8.0\backend.Core.AssemblyInfo.cs
+C:\Users\Пользователь\RiderProjects\backend\backend.Core\obj\Debug\net8.0\backend.Core.csproj.CoreCompileInputs.cache
+C:\Users\Пользователь\RiderProjects\backend\backend.Core\obj\Debug\net8.0\backend.Core.dll
+C:\Users\Пользователь\RiderProjects\backend\backend.Core\obj\Debug\net8.0\refint\backend.Core.dll
+C:\Users\Пользователь\RiderProjects\backend\backend.Core\obj\Debug\net8.0\backend.Core.pdb
+C:\Users\Пользователь\RiderProjects\backend\backend.Core\obj\Debug\net8.0\ref\backend.Core.dll
