@@ -1,6 +1,6 @@
-using backend.Core.models;
+using backend.Core.Models;
 
-namespace backend.DataAccess.Repositories;
+namespace backend.Core.Abstractions;
 
 public interface ISomeFilesRepository
 {

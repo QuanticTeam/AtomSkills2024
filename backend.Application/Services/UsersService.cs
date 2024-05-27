@@ -1,6 +1,5 @@
 using backend.Core.Abstractions;
-using backend.Core.models;
-using backend.DataAccess.Repositories;
+using backend.Core.Models;
 
 namespace backend.Application.Services;
 

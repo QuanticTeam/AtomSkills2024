@@ -1,6 +1,6 @@
 using backend.Contracts;
 using backend.Core.Abstractions;
-using backend.Core.models;
+using backend.Core.Models;
 using backend.Notifications;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;

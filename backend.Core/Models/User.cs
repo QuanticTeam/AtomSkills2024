@@ -1,4 +1,4 @@
-namespace backend.Core.models;
+namespace backend.Core.Models;
 
 public class User
 {

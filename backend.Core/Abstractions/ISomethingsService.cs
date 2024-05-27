@@ -1,4 +1,4 @@
-using backend.Core.models;
+using backend.Core.Models;
 
 namespace backend.Core.Abstractions;
 

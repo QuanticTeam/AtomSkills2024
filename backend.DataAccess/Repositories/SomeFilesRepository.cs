@@ -1,4 +1,5 @@
-using backend.Core.models;
+using backend.Core.Abstractions;
+using backend.Core.Models;
 using backend.DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
 
