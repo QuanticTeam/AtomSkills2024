@@ -9,7 +9,102 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ebe8f8fe-ae8d-4f99-a4fa-5ee43f80c7bc" name="Changes" comment="" />
+    <list default="true" id="ebe8f8fe-ae8d-4f99-a4fa-5ee43f80c7bc" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.backend/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.backend/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/config/applicationhost.config" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/config/applicationhost.config" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Application/bin/Debug/net8.0/backend.Application.dll" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Application/bin/Debug/net8.0/backend.Application.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Application/bin/Debug/net8.0/backend.Application.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Application/bin/Debug/net8.0/backend.Application.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Application/bin/Debug/net8.0/backend.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Application/bin/Debug/net8.0/backend.Core.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Application/bin/Debug/net8.0/backend.Core.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Application/bin/Debug/net8.0/backend.Core.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Application/obj/Debug/net8.0/backend.Application.AssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Application/obj/Debug/net8.0/backend.Application.AssemblyInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Application/obj/Debug/net8.0/backend.Application.AssemblyInfoInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Application/obj/Debug/net8.0/backend.Application.AssemblyInfoInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Application/obj/Debug/net8.0/backend.Application.GeneratedMSBuildEditorConfig.editorconfig" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Application/obj/Debug/net8.0/backend.Application.GeneratedMSBuildEditorConfig.editorconfig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Application/obj/Debug/net8.0/backend.Application.assets.cache" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Application/obj/Debug/net8.0/backend.Application.assets.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Application/obj/Debug/net8.0/backend.Application.csproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Application/obj/Debug/net8.0/backend.Application.csproj.AssemblyReference.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Application/obj/Debug/net8.0/backend.Application.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Application/obj/Debug/net8.0/backend.Application.csproj.CoreCompileInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Application/obj/Debug/net8.0/backend.Application.csproj.FileListAbsolute.txt" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Application/obj/Debug/net8.0/backend.Application.csproj.FileListAbsolute.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Application/obj/Debug/net8.0/backend.Application.dll" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Application/obj/Debug/net8.0/backend.Application.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Application/obj/Debug/net8.0/backend.Application.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Application/obj/Debug/net8.0/backend.Application.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Application/obj/Debug/net8.0/ref/backend.Application.dll" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Application/obj/Debug/net8.0/ref/backend.Application.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Application/obj/Debug/net8.0/refint/backend.Application.dll" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Application/obj/Debug/net8.0/refint/backend.Application.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Application/obj/backend.Application.csproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Application/obj/backend.Application.csproj.nuget.dgspec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Application/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Application/obj/project.assets.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Application/obj/project.nuget.cache" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Application/obj/project.nuget.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Application/obj/project.packagespec.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Application/obj/project.packagespec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Application/obj/rider.project.model.nuget.info" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Application/obj/rider.project.model.nuget.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Application/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Application/obj/rider.project.restore.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Core/bin/Debug/net8.0/backend.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Core/bin/Debug/net8.0/backend.Core.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Core/bin/Debug/net8.0/backend.Core.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Core/bin/Debug/net8.0/backend.Core.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Core/obj/Debug/net8.0/backend.Core.AssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Core/obj/Debug/net8.0/backend.Core.AssemblyInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Core/obj/Debug/net8.0/backend.Core.AssemblyInfoInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Core/obj/Debug/net8.0/backend.Core.AssemblyInfoInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Core/obj/Debug/net8.0/backend.Core.GeneratedMSBuildEditorConfig.editorconfig" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Core/obj/Debug/net8.0/backend.Core.GeneratedMSBuildEditorConfig.editorconfig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Core/obj/Debug/net8.0/backend.Core.assets.cache" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Core/obj/Debug/net8.0/backend.Core.assets.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Core/obj/Debug/net8.0/backend.Core.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Core/obj/Debug/net8.0/backend.Core.csproj.CoreCompileInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Core/obj/Debug/net8.0/backend.Core.csproj.FileListAbsolute.txt" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Core/obj/Debug/net8.0/backend.Core.csproj.FileListAbsolute.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Core/obj/Debug/net8.0/backend.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Core/obj/Debug/net8.0/backend.Core.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Core/obj/Debug/net8.0/backend.Core.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Core/obj/Debug/net8.0/backend.Core.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Core/obj/Debug/net8.0/ref/backend.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Core/obj/Debug/net8.0/ref/backend.Core.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Core/obj/Debug/net8.0/refint/backend.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Core/obj/Debug/net8.0/refint/backend.Core.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Core/obj/backend.Core.csproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Core/obj/backend.Core.csproj.nuget.dgspec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Core/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Core/obj/project.assets.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Core/obj/project.nuget.cache" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Core/obj/project.nuget.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Core/obj/project.packagespec.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Core/obj/project.packagespec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Core/obj/rider.project.model.nuget.info" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Core/obj/rider.project.model.nuget.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.Core/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/backend.Core/obj/rider.project.restore.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.DataAccess/bin/Debug/net8.0/backend.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/backend.DataAccess/bin/Debug/net8.0/backend.Core.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.DataAccess/bin/Debug/net8.0/backend.Core.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/backend.DataAccess/bin/Debug/net8.0/backend.Core.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.DataAccess/bin/Debug/net8.0/backend.DataAccess.dll" beforeDir="false" afterPath="$PROJECT_DIR$/backend.DataAccess/bin/Debug/net8.0/backend.DataAccess.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.DataAccess/bin/Debug/net8.0/backend.DataAccess.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/backend.DataAccess/bin/Debug/net8.0/backend.DataAccess.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.DataAccess/obj/Debug/net8.0/backend.DataAccess.AssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/backend.DataAccess/obj/Debug/net8.0/backend.DataAccess.AssemblyInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.DataAccess/obj/Debug/net8.0/backend.DataAccess.AssemblyInfoInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/backend.DataAccess/obj/Debug/net8.0/backend.DataAccess.AssemblyInfoInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.DataAccess/obj/Debug/net8.0/backend.DataAccess.GeneratedMSBuildEditorConfig.editorconfig" beforeDir="false" afterPath="$PROJECT_DIR$/backend.DataAccess/obj/Debug/net8.0/backend.DataAccess.GeneratedMSBuildEditorConfig.editorconfig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.DataAccess/obj/Debug/net8.0/backend.DataAccess.assets.cache" beforeDir="false" afterPath="$PROJECT_DIR$/backend.DataAccess/obj/Debug/net8.0/backend.DataAccess.assets.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.DataAccess/obj/Debug/net8.0/backend.DataAccess.csproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/backend.DataAccess/obj/Debug/net8.0/backend.DataAccess.csproj.AssemblyReference.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.DataAccess/obj/Debug/net8.0/backend.DataAccess.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/backend.DataAccess/obj/Debug/net8.0/backend.DataAccess.csproj.CoreCompileInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.DataAccess/obj/Debug/net8.0/backend.DataAccess.csproj.FileListAbsolute.txt" beforeDir="false" afterPath="$PROJECT_DIR$/backend.DataAccess/obj/Debug/net8.0/backend.DataAccess.csproj.FileListAbsolute.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.DataAccess/obj/Debug/net8.0/backend.DataAccess.dll" beforeDir="false" afterPath="$PROJECT_DIR$/backend.DataAccess/obj/Debug/net8.0/backend.DataAccess.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.DataAccess/obj/Debug/net8.0/backend.DataAccess.genruntimeconfig.cache" beforeDir="false" afterPath="$PROJECT_DIR$/backend.DataAccess/obj/Debug/net8.0/backend.DataAccess.genruntimeconfig.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.DataAccess/obj/Debug/net8.0/backend.DataAccess.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/backend.DataAccess/obj/Debug/net8.0/backend.DataAccess.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.DataAccess/obj/Debug/net8.0/ref/backend.DataAccess.dll" beforeDir="false" afterPath="$PROJECT_DIR$/backend.DataAccess/obj/Debug/net8.0/ref/backend.DataAccess.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.DataAccess/obj/Debug/net8.0/refint/backend.DataAccess.dll" beforeDir="false" afterPath="$PROJECT_DIR$/backend.DataAccess/obj/Debug/net8.0/refint/backend.DataAccess.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.DataAccess/obj/backend.DataAccess.csproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend.DataAccess/obj/backend.DataAccess.csproj.nuget.dgspec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.DataAccess/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend.DataAccess/obj/project.assets.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.DataAccess/obj/project.nuget.cache" beforeDir="false" afterPath="$PROJECT_DIR$/backend.DataAccess/obj/project.nuget.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.DataAccess/obj/project.packagespec.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend.DataAccess/obj/project.packagespec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.DataAccess/obj/rider.project.model.nuget.info" beforeDir="false" afterPath="$PROJECT_DIR$/backend.DataAccess/obj/rider.project.model.nuget.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend.DataAccess/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/backend.DataAccess/obj/rider.project.restore.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/Controllers/SomethingController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Controllers/SomethingController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/appsettings.Development.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend/appsettings.Development.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/bin/Debug/net8.0/appsettings.Development.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend/bin/Debug/net8.0/appsettings.Development.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/bin/Debug/net8.0/backend.Application.dll" beforeDir="false" afterPath="$PROJECT_DIR$/backend/bin/Debug/net8.0/backend.Application.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/bin/Debug/net8.0/backend.Application.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/backend/bin/Debug/net8.0/backend.Application.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/bin/Debug/net8.0/backend.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/backend/bin/Debug/net8.0/backend.Core.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/bin/Debug/net8.0/backend.Core.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/backend/bin/Debug/net8.0/backend.Core.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/bin/Debug/net8.0/backend.DataAccess.dll" beforeDir="false" afterPath="$PROJECT_DIR$/backend/bin/Debug/net8.0/backend.DataAccess.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/bin/Debug/net8.0/backend.DataAccess.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/backend/bin/Debug/net8.0/backend.DataAccess.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/bin/Debug/net8.0/backend.dll" beforeDir="false" afterPath="$PROJECT_DIR$/backend/bin/Debug/net8.0/backend.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/bin/Debug/net8.0/backend.exe" beforeDir="false" afterPath="$PROJECT_DIR$/backend/bin/Debug/net8.0/backend.exe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/bin/Debug/net8.0/backend.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/backend/bin/Debug/net8.0/backend.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/obj/Debug/net8.0/apphost.exe" beforeDir="false" afterPath="$PROJECT_DIR$/backend/obj/Debug/net8.0/apphost.exe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/obj/Debug/net8.0/backend.AssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/backend/obj/Debug/net8.0/backend.AssemblyInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/obj/Debug/net8.0/backend.AssemblyInfoInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/backend/obj/Debug/net8.0/backend.AssemblyInfoInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/obj/Debug/net8.0/backend.GeneratedMSBuildEditorConfig.editorconfig" beforeDir="false" afterPath="$PROJECT_DIR$/backend/obj/Debug/net8.0/backend.GeneratedMSBuildEditorConfig.editorconfig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/obj/Debug/net8.0/backend.assets.cache" beforeDir="false" afterPath="$PROJECT_DIR$/backend/obj/Debug/net8.0/backend.assets.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/obj/Debug/net8.0/backend.csproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/backend/obj/Debug/net8.0/backend.csproj.AssemblyReference.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/obj/Debug/net8.0/backend.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/backend/obj/Debug/net8.0/backend.csproj.CoreCompileInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/obj/Debug/net8.0/backend.csproj.FileListAbsolute.txt" beforeDir="false" afterPath="$PROJECT_DIR$/backend/obj/Debug/net8.0/backend.csproj.FileListAbsolute.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/obj/Debug/net8.0/backend.dll" beforeDir="false" afterPath="$PROJECT_DIR$/backend/obj/Debug/net8.0/backend.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/obj/Debug/net8.0/backend.genruntimeconfig.cache" beforeDir="false" afterPath="$PROJECT_DIR$/backend/obj/Debug/net8.0/backend.genruntimeconfig.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/obj/Debug/net8.0/backend.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/backend/obj/Debug/net8.0/backend.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/obj/Debug/net8.0/ref/backend.dll" beforeDir="false" afterPath="$PROJECT_DIR$/backend/obj/Debug/net8.0/ref/backend.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/obj/Debug/net8.0/refint/backend.dll" beforeDir="false" afterPath="$PROJECT_DIR$/backend/obj/Debug/net8.0/refint/backend.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/obj/backend.csproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend/obj/backend.csproj.nuget.dgspec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend/obj/project.assets.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/obj/project.nuget.cache" beforeDir="false" afterPath="$PROJECT_DIR$/backend/obj/project.nuget.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/obj/project.packagespec.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend/obj/project.packagespec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/obj/rider.project.model.nuget.info" beforeDir="false" afterPath="$PROJECT_DIR$/backend/obj/rider.project.model.nuget.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/backend/obj/rider.project.restore.info" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -21,39 +116,52 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "AlexGovor99"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/QuanticTeam/AtomSkills2024.git",
+    "accountId": "79cbc963-6d17-4f55-85d3-b6624657a7cb"
+  }
+}]]></component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$USER_HOME$/AppData/Local/Symbols/src/dotnet/efcore/f42a208554fed9bb37603c5ed4f02206b2b1b9fa/src/EFCore/Infrastructure/ModelValidator.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$USER_HOME$/AppData/Local/Symbols/src/dotnet/runtime/2d7eea252964e69be94cb9c847b371b23e4dd470/src/libraries/System.Private.CoreLib/src/System/Runtime/ExceptionServices/ExceptionDispatchInfo.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 7
-}]]></component>
+  <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 7
+}</component>
   <component name="ProjectId" id="2h2P8QnLtV9Z5opvwKWa5aZptjT" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    ".NET Launch Settings Profile.backend: IIS Express.executor": "Debug",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;.NET Launch Settings Profile.backend: IIS Express.executor&quot;: &quot;Debug&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "rider.external.source.directories": [
-      "C:\\Users\\Пользователь\\AppData\\Roaming\\JetBrains\\Rider2024.1\\resharper-host\\DecompilerCache",
-      "C:\\Users\\Пользователь\\AppData\\Roaming\\JetBrains\\Rider2024.1\\resharper-host\\SourcesCache",
-      "C:\\Users\\Пользователь\\AppData\\Local\\Symbols\\src"
+  &quot;keyToStringList&quot;: {
+    &quot;rider.external.source.directories&quot;: [
+      &quot;C:\\Users\\Пользователь\\AppData\\Roaming\\JetBrains\\Rider2024.1\\resharper-host\\DecompilerCache&quot;,
+      &quot;C:\\Users\\Пользователь\\AppData\\Roaming\\JetBrains\\Rider2024.1\\resharper-host\\SourcesCache&quot;,
+      &quot;C:\\Users\\Пользователь\\AppData\\Local\\Symbols\\src&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected=".NET Launch Settings Profile.backend: IIS Express">
     <configuration name="backend: IIS Express" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/backend/backend.csproj" />
@@ -101,11 +209,17 @@
       </method>
     </configuration>
     <configuration default="true" type="docker-deploy" factoryName="docker-compose.yml" temporary="true">
-      <deployment type="docker-compose.yml" />
+      <deployment type="docker-compose.yml">
+        <settings />
+      </deployment>
+      <EXTENSION ID="com.jetbrains.rider.docker.debug" isFastModeEnabled="true" isSslEnabled="false" />
       <method v="2" />
     </configuration>
     <configuration default="true" type="docker-deploy" factoryName="dockerfile" temporary="true">
-      <deployment type="dockerfile" />
+      <deployment type="dockerfile">
+        <settings />
+      </deployment>
+      <EXTENSION ID="com.jetbrains.rider.docker.debug" isFastModeEnabled="true" isSslEnabled="false" />
       <method v="2" />
     </configuration>
     <configuration name="backend/Dockerfile" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
@@ -148,13 +262,26 @@
       <option name="presentableId" value="Default" />
       <updated>1716789038354</updated>
       <workItem from="1716789039420" duration="15514000" />
+      <workItem from="1716810549311" duration="3429000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
   <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
   </component>

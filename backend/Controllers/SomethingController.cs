@@ -32,7 +32,7 @@ public class SomethingController : ControllerBase
         var result = await _somethingsService.Get(id);
         
         if (result == null) 
-            return BadRequest();
+            return BadRequest("Something not founded");
 
         return result;
     }
@@ -42,9 +42,17 @@ public class SomethingController : ControllerBase
     {
         return await _somethingsService.GetAll();
     }
+    
+    [HttpGet("Download/{id:guid}")]
+    public async Task<FileStreamResult> Download(Guid id)
+    {
+        var file = await _someFilesService.Get(id);
+        var stream = new MemoryStream(file!.Content);
+        return File(stream, file.ContentType, file.Name);
+    }
 
     [HttpPost("Create")]
-    public async Task<ActionResult<int>> Create([FromBody] CreateSomethingRequest request)
+    public async Task<ActionResult<int>> Create([FromForm] CreateSomethingRequest request)
     {
         var length = request.File.Length;
         if (length < 0)
@@ -65,7 +73,7 @@ public class SomethingController : ControllerBase
     }
 
     [HttpPost("Edit")]
-    public async Task<ActionResult<int>> Edit([FromBody] EditSomethingRequest request)
+    public async Task<ActionResult<int>> Edit([FromForm] EditSomethingRequest request)
     {
         var something = await _somethingsService.Get(request.Key);
 

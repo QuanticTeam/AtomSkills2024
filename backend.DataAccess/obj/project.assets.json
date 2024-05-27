@@ -2324,11 +2324,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Пользователь\\RiderProjects\\backend\\backend.DataAccess\\backend.DataAccess.csproj",
+      "projectUniqueName": "C:\\Users\\Пользователь\\RiderProjects\\AtomSkills2024\\backend.DataAccess\\backend.DataAccess.csproj",
       "projectName": "backend.DataAccess",
-      "projectPath": "C:\\Users\\Пользователь\\RiderProjects\\backend\\backend.DataAccess\\backend.DataAccess.csproj",
+      "projectPath": "C:\\Users\\Пользователь\\RiderProjects\\AtomSkills2024\\backend.DataAccess\\backend.DataAccess.csproj",
       "packagesPath": "C:\\Users\\Пользователь\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Пользователь\\RiderProjects\\backend\\backend.DataAccess\\obj\\",
+      "outputPath": "C:\\Users\\Пользователь\\RiderProjects\\AtomSkills2024\\backend.DataAccess\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Пользователь\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -2346,8 +2346,8 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "C:\\Users\\Пользователь\\RiderProjects\\backend\\backend.Core\\backend.Core.csproj": {
-              "projectPath": "C:\\Users\\Пользователь\\RiderProjects\\backend\\backend.Core\\backend.Core.csproj"
+            "C:\\Users\\Пользователь\\RiderProjects\\AtomSkills2024\\backend.Core\\backend.Core.csproj": {
+              "projectPath": "C:\\Users\\Пользователь\\RiderProjects\\AtomSkills2024\\backend.Core\\backend.Core.csproj"
             }
           }
         }
@@ -2356,11 +2356,6 @@
         "warnAsError": [
           "NU1605"
         ]
-      },
-      "restoreAuditProperties": {
-        "enableAudit": "true",
-        "auditLevel": "low",
-        "auditMode": "direct"
       }
     },
     "frameworks": {
@@ -2408,7 +2403,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.204/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files (x86)\\dotnet\\sdk\\8.0.300/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

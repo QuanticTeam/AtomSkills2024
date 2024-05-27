@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "j6bzijLMlDjxtk/9dKgYkFyf/BZ9yOUUFEBZDZmzF8dqmSs/lV2jPPl4MwPCAE6TeJWsf5vi9SiXPtyviinN7A==",
+  "dgSpecHash": "D1W1jnbA/XOaS4i0b0dHn0YtxghpqDjUju7LcoQwqFJRRDfYf1jtS+Psf0YxGGy/9fB8N0AmOXPGhby91N7SMg==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Пользователь\\RiderProjects\\backend\\backend\\backend.csproj",
+  "projectFilePath": "C:\\Users\\Пользователь\\RiderProjects\\AtomSkills2024\\backend\\backend.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Пользователь\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\Пользователь\\.nuget\\packages\\microsoft.aspnetcore.openapi\\8.0.4\\microsoft.aspnetcore.openapi.8.0.4.nupkg.sha512",
