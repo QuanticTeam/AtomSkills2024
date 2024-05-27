@@ -1,23 +1,29 @@
 using backend.Contracts;
 using backend.Core.Abstractions;
 using backend.Core.models;
+using backend.Notifications;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace backend.Controllers;
 
 public class UserController : ControllerBase
 {
     private readonly IUsersService _usersService;
+    private readonly IHubContext<ToastNotificationHub> _hubContext;
 
     public UserController(
-        IUsersService usersService)
+        IUsersService usersService,
+        IHubContext<ToastNotificationHub> hubContext)
     {
         _usersService = usersService;
+        _hubContext = hubContext;
     }
 
     [HttpPost("Test")]
     public async Task<ActionResult<string>> Test()
     {
+        await _hubContext.Clients.All.SendAsync("ToastNotification", "success test");
         return Ok("test");
     }
     

@@ -1,7 +1,9 @@
 using backend.Contracts;
 using backend.Core.Abstractions;
 using backend.Core.models;
+using backend.Notifications;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace backend.Controllers;
 
@@ -11,18 +13,22 @@ public class SomethingController : ControllerBase
 {
     private readonly ISomethingsService _somethingsService;
     private readonly ISomeFilesService _someFilesService;
+    private readonly IHubContext<ToastNotificationHub> _hubContext;
 
     public SomethingController(
         ISomethingsService somethingsService,
-        ISomeFilesService someFilesService)
+        ISomeFilesService someFilesService,
+        IHubContext<ToastNotificationHub> hubContext)
     {
         _somethingsService = somethingsService;
         _someFilesService = someFilesService;
+        _hubContext = hubContext;
     }
 
     [HttpPost("Test")]
     public async Task<ActionResult<string>> Test()
     {
+        await _hubContext.Clients.All.SendAsync("ToastNotification", "success test");
         return Ok("test");
     }
     

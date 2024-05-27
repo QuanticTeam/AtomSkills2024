@@ -2,6 +2,7 @@ using backend.Application.Services;
 using backend.Core.Abstractions;
 using backend.DataAccess;
 using backend.DataAccess.Repositories;
+using backend.Notifications;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +21,7 @@ builder.Services.AddScoped<IUsersRepository, UsersRepository>();
 builder.Services.AddScoped<ISomethingsService, SomethingsService>();
 builder.Services.AddScoped<ISomeFilesService, SomeFilesService>();
 builder.Services.AddScoped<IUsersService, UsersService>();
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -43,6 +45,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseRouting().UseEndpoints(endpoints =>
+{
+    endpoints.MapHub<ToastNotificationHub>("/toastNotificationHub");
+});
 
 app.UseHttpsRedirection();
 
