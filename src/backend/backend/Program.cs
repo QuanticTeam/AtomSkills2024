@@ -1,17 +1,19 @@
 using backend.Application.Services;
 using backend.Core.Abstractions;
+using backend.Core.Options;
 using backend.DataAccess;
 using backend.DataAccess.Repositories;
-using backend.FileUploads;
+using backend.Extensions;
 using backend.Notifications;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using Minio;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGenAuth();
 builder.Services.AddDbContext<BackendDbContext>(
     options =>
     {
@@ -24,12 +26,16 @@ builder.Services.AddScoped<ISomethingsService, SomethingsService>();
 builder.Services.AddScoped<ISomeFilesService, SomeFilesService>();
 builder.Services.AddScoped<IUsersService, UsersService>();
 builder.Services.AddSignalR();
+builder.Services.Configure<JwtTokenOptions>(builder.Configuration.GetSection("JwtOptions"));
+builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.Configure<MinIoOptions>(builder.Configuration.GetSection("MinIoOptions"));
 builder.Services.AddMinio(builder.Configuration["MinIoOptions:AccessKey"], builder.Configuration["MinIoOptions:SecretKey"]);
 builder.Services.AddMinio(configureClient => configureClient
     .WithEndpoint(builder.Configuration["MinIoOptions:Endpoint"])
     .WithCredentials(builder.Configuration["MinIoOptions:AccessKey"], builder.Configuration["MinIoOptions:SecretKey"])
     .Build());
+builder.Services.AddScoped<IMinIoFileService, MinIoFileService>();
+builder.Services.AddAuth(builder.Configuration);
 
 
 var app = builder.Build();
@@ -55,14 +61,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseRouting().UseEndpoints(endpoints =>
+app.UseAuthentication();
+
+app.UseRouting().UseAuthorization().UseEndpoints(endpoints =>
 {
     endpoints.MapHub<ToastNotificationHub>("/toastNotificationHub");
 });
 
 app.UseHttpsRedirection();
-
-app.UseAuthentication();
 
 app.MapControllers();
 

@@ -1,13 +1,10 @@
 using backend.Contracts;
 using backend.Core.Abstractions;
 using backend.Core.Models;
-using backend.FileUploads;
 using backend.Notifications;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Options;
-using Minio;
-using Minio.DataModel.Args;
 
 namespace backend.Controllers;
 
@@ -18,28 +15,27 @@ public class SomethingController : ControllerBase
     private readonly ISomethingsService _somethingsService;
     private readonly ISomeFilesService _someFilesService;
     private readonly IHubContext<ToastNotificationHub> _hubContext;
-    private readonly IMinioClient _minioClient;
-    private readonly IOptions<MinIoOptions> _options;
+    private readonly IMinIoFileService _service;
 
     public SomethingController(
         ISomethingsService somethingsService,
         ISomeFilesService someFilesService,
         IHubContext<ToastNotificationHub> hubContext,
-        IMinioClient minioClient,
-        IOptions<MinIoOptions> options)
+        IMinIoFileService service)
     {
         _somethingsService = somethingsService;
         _someFilesService = someFilesService;
         _hubContext = hubContext;
-        _minioClient = minioClient;
-        _options = options;
+        _service = service;
     }
 
+    [Authorize]
     [HttpPost("Test")]
     public async Task<ActionResult<string>> Test()
     {
         await _hubContext.Clients.All.SendAsync("ToastNotification", "success test");
-        return Ok("test");
+        var userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type.Equals("userId"))?.Value ?? string.Empty;
+        return Ok(userId);
     }
     
     [HttpGet("Get/{id:guid}")]
@@ -70,7 +66,7 @@ public class SomethingController : ControllerBase
     [HttpGet("GetUrl/{bucketId}")]
     public async Task<ActionResult<string>> GetUrl(string bucketId)
     {
-        return Ok(await _minioClient.PresignedGetObjectAsync(new PresignedGetObjectArgs().WithBucket(bucketId)).ConfigureAwait(false));
+        return Ok(await _service.GetUrl(bucketId));
     }
 
     [HttpPost("Create")]
@@ -97,12 +93,16 @@ public class SomethingController : ControllerBase
     [HttpPost("CreateWithMinIo")]
     public async Task<ActionResult<int>> CreateWithMinIo([FromForm] CreateSomethingRequest request)
     {
-        var file = new MinIoFileModel(Guid.NewGuid(), request.File);
+        var file = new MinIoFileModel(
+            Guid.NewGuid(), 
+            request.File.FileName, 
+            request.File.ContentType,
+            request.File.OpenReadStream());
         
         var something = new Something(Guid.NewGuid(), request.Name, request.Number, request.Integer, request.DateTime, file.BucketId);
 
         var successSomething = await _somethingsService.Create(something);
-        var successFile = await MinIoFileUpload.Upload(_options.Value, file);
+        var successFile = await _service.Upload(file);
         
         return Ok(successFile + successSomething);
     }

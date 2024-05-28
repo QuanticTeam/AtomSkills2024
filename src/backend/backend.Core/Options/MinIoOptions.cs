@@ -1,4 +1,4 @@
-namespace backend.FileUploads;
+namespace backend.Core.Options;
 
 public class MinIoOptions
 {
