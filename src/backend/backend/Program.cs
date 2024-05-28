@@ -2,8 +2,10 @@ using backend.Application.Services;
 using backend.Core.Abstractions;
 using backend.DataAccess;
 using backend.DataAccess.Repositories;
+using backend.FileUploads;
 using backend.Notifications;
 using Microsoft.EntityFrameworkCore;
+using Minio;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +24,13 @@ builder.Services.AddScoped<ISomethingsService, SomethingsService>();
 builder.Services.AddScoped<ISomeFilesService, SomeFilesService>();
 builder.Services.AddScoped<IUsersService, UsersService>();
 builder.Services.AddSignalR();
+builder.Services.Configure<MinIoOptions>(builder.Configuration.GetSection("MinIoOptions"));
+builder.Services.AddMinio(builder.Configuration["MinIoOptions:AccessKey"], builder.Configuration["MinIoOptions:SecretKey"]);
+builder.Services.AddMinio(configureClient => configureClient
+    .WithEndpoint(builder.Configuration["MinIoOptions:Endpoint"])
+    .WithCredentials(builder.Configuration["MinIoOptions:AccessKey"], builder.Configuration["MinIoOptions:SecretKey"])
+    .Build());
+
 
 var app = builder.Build();
 
