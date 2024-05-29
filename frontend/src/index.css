@@ -2,18 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
-}
-
 /* Firefox (uncomment to work in Firefox, although other properties will not work!)  */
 /** {
   scrollbar-width: thin;
@@ -23,7 +11,7 @@ code {
 /* Chrome, Edge and Safari */
 *::-webkit-scrollbar {
   height: 8px;
-  width: 8px;
+  width: 4px;
 }
 *::-webkit-scrollbar-track {
   border-radius: 5px;
@@ -49,4 +37,9 @@ code {
 
 *::-webkit-scrollbar-thumb:active {
   background-color: #878787;
+}
+
+/* Tmp fix for border < 1px bug */
+.ant-input {
+  min-height: 32px;
 }
