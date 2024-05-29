@@ -1,3 +1,5 @@
+using backend.Core.Models;
+
 namespace backend.Contracts;
 
 public class SingUpRequest
@@ -6,5 +8,5 @@ public class SingUpRequest
     
     public string Password { get; set; }
     
-    public string Role { get; set; }
+    public UserRole Role { get; set; }
 }

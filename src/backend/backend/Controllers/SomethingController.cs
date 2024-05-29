@@ -49,8 +49,8 @@ public class SomethingController : ControllerBase
         return result;
     }
     
-    [HttpGet("GetAll/{role}")]
-    public async Task<ActionResult<List<Something>>> GetAll(string role)
+    [HttpGet("GetAll")]
+    public async Task<ActionResult<List<Something>>> GetAll()
     {
         return await _somethingsService.GetAll();
     }

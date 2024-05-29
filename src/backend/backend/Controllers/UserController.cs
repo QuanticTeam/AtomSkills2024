@@ -58,7 +58,7 @@ public class UserController : ControllerBase
         if (await CheckUnique(request.Login, request.Password.Generate()))
             return BadRequest("User already exist");
         
-        var user = new User(Guid.NewGuid(), request.Login, request.Password.Generate(), request.Role);
+        var user = new User(Guid.NewGuid(), request.Login, request.Password.Generate(), request.Role.ToString());
         return Ok(await _usersService.Create(user));
     }
 
