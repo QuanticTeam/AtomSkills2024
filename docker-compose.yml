@@ -30,11 +30,30 @@
       postgres:
         condition: service_healthy
 
+  minio:
+    image: minio/minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_storage:/data
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server --console-address ":9001" /data
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+  
   backend:
     build: ./src/backend/
     container_name: backend
     depends_on:
       postgres:
+        condition: service_healthy
+      minio:
         condition: service_healthy
     ports:
       - '5002:8080'
@@ -44,10 +63,16 @@
       ASPNETCORE_URLS: 'https://+:443;http://+:8080' 
       ASPNETCORE_Kestrel__Certificates__Default__Password: 'Welcome01_' 
       ASPNETCORE_Kestrel__Certificates__Default__Path: '/https/certificate.pfx'
+      MinIoOptions__Endpoint: "http://127.0.0.1:9000"
+      MinIoOptions__AccessKey: "minioadmin"
+      MinIoOptions__SecretKey: "minioadmin"
+      JwtOptions__SecretKey: "secretkeysecretkeysecretkeysecretkeysecretkeysecretkeysecretkey"
+      JwtOptions__ExpiresHours: "12"
     volumes:
       - ./https:/https:ro
 
 volumes:
   postgres-data:
   pgadmin:
+  minio_storage: {}
 
