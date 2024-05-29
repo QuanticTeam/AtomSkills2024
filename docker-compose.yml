@@ -65,7 +65,7 @@
       ASPNETCORE_URLS: 'https://+:443;http://+:8080' 
       ASPNETCORE_Kestrel__Certificates__Default__Password: 'Welcome01_' 
       ASPNETCORE_Kestrel__Certificates__Default__Path: '/https/certificate.pfx'
-      MinIoOptions__Endpoint: "http://localhost:9000"
+      MinIoOptions__Endpoint: "minio:9000"
       MinIoOptions__AccessKey: "minioadmin"
       MinIoOptions__SecretKey: "minioadmin"
       JwtOptions__SecretKey: "secretkeysecretkeysecretkeysecretkeysecretkeysecretkeysecretkey"
