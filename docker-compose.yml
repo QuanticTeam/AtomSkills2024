@@ -18,6 +18,7 @@
 
   pgadmin:
     image: dpage/pgadmin4
+    container_name: pgadmin
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@pgadmin.com
       PGADMIN_DEFAULT_PASSWORD: password
@@ -32,6 +33,7 @@
 
   minio:
     image: minio/minio
+    container_name: minio
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -42,11 +44,11 @@
       MINIO_ROOT_PASSWORD: minioadmin
     command: server --console-address ":9001" /data
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
-      interval: 10s
-      timeout: 3s
-      retries: 3
-  
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   backend:
     build: ./src/backend/
     container_name: backend
@@ -63,7 +65,7 @@
       ASPNETCORE_URLS: 'https://+:443;http://+:8080' 
       ASPNETCORE_Kestrel__Certificates__Default__Password: 'Welcome01_' 
       ASPNETCORE_Kestrel__Certificates__Default__Path: '/https/certificate.pfx'
-      MinIoOptions__Endpoint: "http://127.0.0.1:9000"
+      MinIoOptions__Endpoint: "http://localhost:9000"
       MinIoOptions__AccessKey: "minioadmin"
       MinIoOptions__SecretKey: "minioadmin"
       JwtOptions__SecretKey: "secretkeysecretkeysecretkeysecretkeysecretkeysecretkeysecretkey"
