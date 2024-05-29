@@ -11,19 +11,55 @@ namespace backend.Application.Services;
 public class MinIoFileService : IMinIoFileService
 {
     private readonly MinIoOptions _options;
-    private readonly IMinioClient _minioClient;
+    private const string BucketName = "backet";
 
     public MinIoFileService(
-        IOptions<MinIoOptions> options,
-        IMinioClient minioClient)
+        IOptions<MinIoOptions> options)
     {
         _options = options.Value;
-        _minioClient = minioClient;
+        
+        var minio = new MinioClient()
+            .WithEndpoint(_options.Endpoint)
+            .WithCredentials(_options.AccessKey, _options.SecretKey)
+            .Build();
+        var found = minio.BucketExistsAsync(new BucketExistsArgs().WithBucket(BucketName)).GetAwaiter().GetResult();
+        if (!found)
+        {
+            minio.MakeBucketAsync(new MakeBucketArgs().WithBucket(BucketName));
+        }
     }
     
-    public async Task<string> GetUrl(string bucketId)
+    public async Task<(MemoryStream, string)> Download(string fileName)
     {
-        return await _minioClient.PresignedGetObjectAsync(new PresignedGetObjectArgs().WithBucket(bucketId)).ConfigureAwait(false);
+        try
+        {
+            var minio = new MinioClient()
+                .WithEndpoint(_options.Endpoint)
+                .WithCredentials(_options.AccessKey, _options.SecretKey)
+                .Build();
+            
+            var statArgs = new StatObjectArgs()
+                .WithObject(fileName)
+                .WithBucket(BucketName);
+            var stat = await minio.StatObjectAsync(statArgs);
+            
+            var downloadStream = new MemoryStream();
+            _ = new GetObjectArgs()
+                .WithBucket(BucketName)
+                .WithObject(stat.ObjectName)
+                .WithCallbackStream(x =>
+                {
+                    x.CopyTo(downloadStream);
+                    downloadStream.Seek(0, SeekOrigin.Begin);
+                });
+
+            return (downloadStream, stat.ContentType);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            throw;
+        }
     }
     
     public async Task<int> Upload(MinIoFileModel fileModel)
@@ -33,9 +69,8 @@ public class MinIoFileService : IMinIoFileService
             var minio = new MinioClient()
                 .WithEndpoint(_options.Endpoint)
                 .WithCredentials(_options.AccessKey, _options.SecretKey)
-                .WithSSL()
                 .Build();
-            var response = await Run(minio, fileModel.BucketId.ToString(), fileModel.FileName, fileModel.Stream, fileModel.ContentType);
+            var response = await Run(minio, BucketName, fileModel.FileName, fileModel.Stream, fileModel.ContentType);
             return response == null ? 0 : 1;
         }
         catch (Exception ex)
@@ -45,14 +80,14 @@ public class MinIoFileService : IMinIoFileService
         }
     }
 
-    private static async Task<PutObjectResponse?> Run(IMinioClient minio, string bucketId, string fileName, Stream fileStream, string contentType)
+    private static async Task<PutObjectResponse?> Run(IMinioClient minio, string bucket, string fileName, Stream fileStream, string contentType)
     {
         var putObjectArgs = new PutObjectArgs()
-            .WithBucket(bucketId)
+            .WithBucket(bucket)
             .WithObject(fileName)
             .WithStreamData(fileStream)
             .WithObjectSize(fileStream.Length)
             .WithContentType(contentType);
-        return await minio.PutObjectAsync(putObjectArgs).ConfigureAwait(false);
+        return await minio.PutObjectAsync(putObjectArgs);
     }
 }

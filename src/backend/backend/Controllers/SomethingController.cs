@@ -15,18 +15,18 @@ public class SomethingController : ControllerBase
     private readonly ISomethingsService _somethingsService;
     private readonly ISomeFilesService _someFilesService;
     private readonly IHubContext<ToastNotificationHub> _hubContext;
-    private readonly IMinIoFileService _service;
+    private readonly IMinIoFileService _minIoFileService;
 
     public SomethingController(
         ISomethingsService somethingsService,
         ISomeFilesService someFilesService,
         IHubContext<ToastNotificationHub> hubContext,
-        IMinIoFileService service)
+        IMinIoFileService minIoFileService)
     {
         _somethingsService = somethingsService;
         _someFilesService = someFilesService;
         _hubContext = hubContext;
-        _service = service;
+        _minIoFileService = minIoFileService;
     }
 
     [AllowAnonymous]
@@ -62,10 +62,11 @@ public class SomethingController : ControllerBase
         return File(stream, file.ContentType, file.Name);
     }
     
-    [HttpGet("GetUrl/{bucketId}")]
-    public async Task<ActionResult<string>> GetUrl(string bucketId)
+    [HttpGet("DownloadFromMinIo/{fileName}")]
+    public async Task<FileStreamResult> DownloadFromMinIo(string fileName)
     {
-        return Ok(await _service.GetUrl(bucketId));
+        (Stream stream, var contentType) = await _minIoFileService.Download(fileName);
+        return File(stream, contentType, fileName);
     }
 
     [HttpPost("Create")]
@@ -92,16 +93,12 @@ public class SomethingController : ControllerBase
     [HttpPost("CreateWithMinIo")]
     public async Task<ActionResult<int>> CreateWithMinIo([FromForm] CreateSomethingRequest request)
     {
-        var file = new MinIoFileModel(
-            Guid.NewGuid(), 
-            request.File.FileName, 
-            request.File.ContentType,
-            request.File.OpenReadStream());
+        var file = new MinIoFileModel(request.File.FileName, request.File.ContentType, request.File.OpenReadStream());
         
-        var something = new Something(Guid.NewGuid(), request.Name, request.Number, request.Integer, request.DateTime, file.BucketId);
+        var something = new Something(Guid.NewGuid(), request.Name, request.Number, request.Integer, request.DateTime, Guid.NewGuid());
 
         var successSomething = await _somethingsService.Create(something);
-        var successFile = await _service.Upload(file);
+        var successFile = await _minIoFileService.Upload(file);
         
         return Ok(successFile + successSomething);
     }
