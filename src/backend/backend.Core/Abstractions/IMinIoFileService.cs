@@ -4,6 +4,6 @@ namespace backend.Core.Abstractions;
 
 public interface IMinIoFileService
 {
-    Task<(MemoryStream, string)> Download(string fileName);
+    Task<MemoryStream> Download(string fileName);
     Task<int> Upload(MinIoFileModel fileModel);
 }

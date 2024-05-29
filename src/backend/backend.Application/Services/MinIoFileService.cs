@@ -29,7 +29,7 @@ public class MinIoFileService : IMinIoFileService
         }
     }
     
-    public async Task<(MemoryStream, string)> Download(string fileName)
+    public async Task<MemoryStream> Download(string fileName)
     {
         try
         {
@@ -38,13 +38,11 @@ public class MinIoFileService : IMinIoFileService
                 .WithCredentials(_options.AccessKey, _options.SecretKey)
                 .Build();
             
-            var statArgs = new StatObjectArgs()
-                .WithObject(fileName)
-                .WithBucket(BucketName);
-            var stat = await minio.StatObjectAsync(statArgs);
+            var stat = await minio.StatObjectAsync(new StatObjectArgs().WithObject(fileName).WithBucket(BucketName));
             
             var downloadStream = new MemoryStream();
-            _ = new GetObjectArgs()
+            
+            var getObjectArgs = new GetObjectArgs()
                 .WithBucket(BucketName)
                 .WithObject(stat.ObjectName)
                 .WithCallbackStream(x =>
@@ -52,8 +50,10 @@ public class MinIoFileService : IMinIoFileService
                     x.CopyTo(downloadStream);
                     downloadStream.Seek(0, SeekOrigin.Begin);
                 });
+            
+            _ = await minio.GetObjectAsync(getObjectArgs);
 
-            return (downloadStream, stat.ContentType);
+            return downloadStream;
         }
         catch (Exception ex)
         {

@@ -1,3 +1,4 @@
+using System.Net.Mime;
 using backend.Contracts;
 using backend.Core.Abstractions;
 using backend.Core.Models;
@@ -59,14 +60,14 @@ public class SomethingController : ControllerBase
     {
         var file = await _someFilesService.Get(id);
         var stream = new MemoryStream(file!.Content);
-        return File(stream, file.ContentType, file.Name);
+        return File(stream, MediaTypeNames.Application.Octet, file.Name);
     }
     
     [HttpGet("DownloadFromMinIo/{fileName}")]
     public async Task<FileStreamResult> DownloadFromMinIo(string fileName)
     {
-        (Stream stream, var contentType) = await _minIoFileService.Download(fileName);
-        return File(stream, contentType, fileName);
+        Stream stream = await _minIoFileService.Download(fileName);
+        return File(stream, MediaTypeNames.Application.Octet, fileName);
     }
 
     [HttpPost("Create")]
