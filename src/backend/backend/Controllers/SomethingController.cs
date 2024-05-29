@@ -29,13 +29,12 @@ public class SomethingController : ControllerBase
         _service = service;
     }
 
-    [Authorize]
+    [AllowAnonymous]
     [HttpPost("Test")]
     public async Task<ActionResult<string>> Test()
     {
         await _hubContext.Clients.All.SendAsync("ToastNotification", "success test");
-        var userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type.Equals("userId"))?.Value ?? string.Empty;
-        return Ok(userId);
+        return Ok("Test");
     }
     
     [HttpGet("Get/{id:guid}")]
