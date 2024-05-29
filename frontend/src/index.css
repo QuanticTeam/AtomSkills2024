@@ -28,7 +28,9 @@
 
 *::-webkit-scrollbar-thumb {
   border-radius: 5px;
-  background-color: #cdcdcd;
+
+  background-color: #ff8f17;
+  /* background-color: #cdcdcd; */
 }
 
 *::-webkit-scrollbar-thumb:hover {
@@ -37,9 +39,4 @@
 
 *::-webkit-scrollbar-thumb:active {
   background-color: #878787;
-}
-
-/* Tmp fix for border < 1px bug */
-.ant-input {
-  min-height: 32px;
 }

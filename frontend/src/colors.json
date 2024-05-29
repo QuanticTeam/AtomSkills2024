@@ -1,4 +1,7 @@
 {
-  "peach": "#FAF2DC",
-  "salmon": "#ee968e"
+  "link-1": "#146AE2",
+  "primary-1": "#1778FF",
+  "primary-2": "#FF8F17",
+  "secondary-1": "#4B6180",
+  "secondary-2": "#FAF2DC"
 }

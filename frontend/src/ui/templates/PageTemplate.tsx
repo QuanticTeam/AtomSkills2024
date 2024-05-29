@@ -35,18 +35,26 @@ function getItem(
 }
 
 const items: MenuItem[] = [
-  getItem('Option 1', '1', <PieChartOutlined className="!text-lg" />),
-  getItem('Option 2', '2', <DesktopOutlined className="!text-lg" />),
-  getItem('User', 'sub1', <UserOutlined className="!text-lg" />, [
-    getItem('Tom', '3'),
-    getItem('Bill', '4'),
-    getItem('Alex', '5'),
+  getItem(
+    <Typography.Link>Option 1</Typography.Link>,
+    '1',
+    <PieChartOutlined className="!text-lg" />,
+  ),
+  getItem(
+    <Typography.Link>Option 2</Typography.Link>,
+    '2',
+    <DesktopOutlined className="!text-lg" />,
+  ),
+  getItem(<Typography.Link>User</Typography.Link>, 'sub1', <UserOutlined className="!text-lg" />, [
+    getItem(<Typography.Link>Tom</Typography.Link>, '3'),
+    getItem(<Typography.Link>Bill</Typography.Link>, '4'),
+    getItem(<Typography.Link>Alex</Typography.Link>, '5'),
   ]),
-  getItem('Team', 'sub2', <TeamOutlined className="!text-lg" />, [
-    getItem('Team 1', '6'),
-    getItem('Team 2', '8'),
+  getItem(<Typography.Link>Team</Typography.Link>, 'sub2', <TeamOutlined className="!text-lg" />, [
+    getItem(<Typography.Link>Team 1</Typography.Link>, '6'),
+    getItem(<Typography.Link>Team 2</Typography.Link>, '8'),
   ]),
-  getItem('Files', '9', <FileOutlined className="!text-lg" />),
+  getItem(<Typography.Link>Files</Typography.Link>, '9', <FileOutlined className="!text-lg" />),
 ]
 
 export function PageTemplate({
@@ -60,7 +68,7 @@ export function PageTemplate({
 
   return (
     <Layout className="h-screen">
-      <Layout.Header className="sticky top-0 p-0 border-b-4 border-salmon h-20">
+      <Layout.Header className="sticky top-0 p-0 border-b-4 border-primary-2 h-20">
         <div className="flex items-center h-full">
           <div className="w-10 ml-5">
             <Logo />
@@ -74,12 +82,12 @@ export function PageTemplate({
 
       <Layout>
         <Layout.Sider
-          className="text-white !sticky w-24 border-r border-salmon"
+          className="!sticky w-24 border-r border-primary-2"
           collapsed={siderCollapsed}
           collapsible
           onCollapse={() => setSiderCollapsed(!siderCollapsed)}
           trigger={
-            <Typography.Text className="font-black text-lg text-peach">
+            <Typography.Text className="font-black text-lg text-secondary-2">
               {siderCollapsed ? '>' : '<'}
             </Typography.Text>
           }

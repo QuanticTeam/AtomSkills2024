@@ -39,10 +39,10 @@ export function MainPage() {
       }
       headerRight={
         <Badge
+          color={colors['primary-2']}
           count={12}
-          size="small"
-          color={colors.salmon}
           offset={[-10, 0]}
+          size="small"
         >
           <Avatar
             size={48}

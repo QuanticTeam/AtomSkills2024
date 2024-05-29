@@ -5,15 +5,26 @@ import colors from '../colors.json'
 export const theme: ThemeConfig = {
   components: {
     Layout: {
-      headerBg: '#6E4F4D',
+      headerBg: colors['secondary-1'],
       siderBg: '#fff',
-      triggerBg: colors.salmon,
+      triggerBg: colors['primary-2'],
     },
     Menu: {
-      itemColor: '#6E4F4D',
-      itemActiveBg: '#FAF2DC',
-      itemSelectedBg: '#FAF2DC',
-      itemSelectedColor: '#ee968e',
+      itemActiveBg: colors['secondary-2'],
+      itemColor: colors['link-1'],
+      itemHoverBg: colors['secondary-2'],
+      itemHoverColor: colors['link-1'],
+      itemSelectedBg: colors['secondary-2'],
+      itemSelectedColor: colors['primary-2'],
+    },
+    Input: {
+      controlHeight: 38,
+    },
+    Button: {
+      controlHeight: 38,
+    },
+    Typography: {
+      colorLink: colors['link-1'],
     },
   },
 }
