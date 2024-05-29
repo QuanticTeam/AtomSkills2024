@@ -3,7 +3,8 @@
 
 > docker compose up -d
 
-> http://localhost:5002
+> https://localhost:443
+>   * Allow self-signed certificate
 
 ### PGAdmin
 http://localhost:15432 
