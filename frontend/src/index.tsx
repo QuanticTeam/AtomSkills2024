@@ -8,6 +8,7 @@ import reportWebVitals from './reportWebVitals'
 import { defaultTheme } from './themes'
 import { MainPage } from './ui/pages/MainPage'
 import { LoginPage } from './ui/pages/LoginPage'
+import { RegisterPage } from './ui/pages/RegisterPage'
 
 const router = createBrowserRouter([
   {
@@ -17,6 +18,10 @@ const router = createBrowserRouter([
   {
     path: 'login',
     element: <LoginPage />,
+  },
+  {
+    path: 'register',
+    element: <RegisterPage />,
   },
 ])
 

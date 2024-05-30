@@ -20,11 +20,20 @@ export const theme: ThemeConfig = {
     Input: {
       controlHeight: 38,
     },
+    Select: {
+      controlHeight: 38,
+    },
     Button: {
       controlHeight: 38,
     },
     Typography: {
       colorLink: colors['link-1'],
+    },
+    Form: {
+      labelRequiredMarkColor: colors['primary-2'],
+    },
+    Alert: {
+      colorInfoBg: '#e5f0ff',
     },
   },
 }

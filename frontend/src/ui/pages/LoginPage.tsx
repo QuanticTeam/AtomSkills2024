@@ -1,105 +1,113 @@
-import {
-  Layout,
-  Typography,
-  Menu,
-  Breadcrumb,
-  Form,
-  InputNumber,
-  Input,
-  Button,
-  Checkbox,
-  Space,
-} from 'antd'
-import { Logo } from '../common/Logo'
+import { z } from 'zod'
 import { LockOutlined, UserOutlined } from '@ant-design/icons'
+import { Alert, Button, Checkbox, Form, Input, Space, Typography } from 'antd'
+import { isStrongPassword } from 'validator'
+import { Logo } from '../common/Logo'
+import { PublicTemplate } from '../templates/PublicTemplate'
+import { Link } from 'react-router-dom'
+
+function getIsPasswordStrong(value: string, returnScore = false): boolean | number {
+  return isStrongPassword(value, {
+    minLength: 8,
+    minLowercase: 1,
+    minUppercase: 1,
+    minNumbers: 1,
+    minSymbols: 1,
+    returnScore: returnScore as any,
+    pointsPerUnique: 1,
+    pointsPerRepeat: 0.5,
+    pointsForContainingLower: 10,
+    pointsForContainingUpper: 10,
+    pointsForContainingNumber: 10,
+    pointsForContainingSymbol: 10,
+  })
+}
+
+const LoginData = z.object({
+  password: z
+    .string()
+    .trim()
+    .min(1)
+    .min(8)
+    .max(32)
+    .regex(/^[A-Za-z0-9-_+!?=#$%&@^`~]+$/, 'Unacceptable symbols')
+    .refine(p => !getIsPasswordStrong(p), 'Password is too weak'),
+  remember: z.boolean(),
+  username: z.string().min(2).max(56),
+})
+
+// console.log(LoginData.parse({ username: 'Ludwig', password: '~а~~~~~~~', remember: false }))
+
+type LoginData = z.infer<typeof LoginData>
 
 export function LoginPage() {
   return (
-    <Layout className="h-screen">
-      <Layout.Content className="bg-gray-100 flex flex-col min-h-full justify-center">
-        <div className="w-72 flex mx-auto mb-16">
-          <Logo full />
-        </div>
+    <PublicTemplate>
+      <div className="w-72 flex mx-auto mb-16">
+        <Logo full />
+      </div>
 
-        <div className="flex">
-          <Form
-            initialValues={{ remember: true }}
-            onFinish={() => {}}
-            className="w-96 mx-auto"
+      <div className="flex">
+        <Form
+          initialValues={{ remember: true }}
+          onFinish={() => {}}
+          className="w-96 mx-auto"
+        >
+          <Form.Item
+            name="username"
+            rules={[{ required: true, message: 'Please input your Username!' }]}
           >
-            <Form.Item
-              name="username"
-              rules={[{ required: true, message: 'Please input your Username!' }]}
-            >
-              <Input
-                prefix={<UserOutlined className="site-form-item-icon" />}
-                placeholder="Username"
-              />
-            </Form.Item>
-            <Form.Item
-              name="password"
-              rules={[{ required: true, message: 'Please input your Password!' }]}
-            >
-              <Input
-                prefix={<LockOutlined className="site-form-item-icon" />}
-                type="password"
-                placeholder="Password"
-              />
-            </Form.Item>
-            <Form.Item>
-              <div className="flex justify-between items-center">
-                <Form.Item
-                  name="remember"
-                  valuePropName="checked"
-                  noStyle
-                >
-                  <Checkbox>Remember me</Checkbox>
-                </Form.Item>
-
-                <Typography.Text>
-                  <a href="/forgot">Forgot password</a>
-                </Typography.Text>
-              </div>
-            </Form.Item>
-
-            <Form.Item>
-              <Space
-                className="w-full"
-                direction="vertical"
-                classNames={{ item: 'flex justify-center' }}
+            <Input
+              prefix={<UserOutlined className="text-gray-400" />}
+              placeholder="Пользователь"
+            />
+          </Form.Item>
+          <Form.Item
+            name="password"
+            rules={[{ required: true, message: 'Please input your Password!' }]}
+          >
+            <Input
+              prefix={<LockOutlined className="text-gray-400" />}
+              type="password"
+              placeholder="Пароль"
+            />
+          </Form.Item>
+          <Form.Item>
+            <div className="flex justify-between items-center">
+              <Form.Item
+                name="remember"
+                valuePropName="checked"
+                noStyle
               >
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  className="w-full"
-                >
-                  Log in
-                </Button>
-                <Typography.Text>
-                  or <a href="/register">register now!</a>
-                </Typography.Text>
-              </Space>
-            </Form.Item>
-          </Form>
-        </div>
-      </Layout.Content>
+                <Checkbox>Запомнить меня</Checkbox>
+              </Form.Item>
 
-      <Layout.Footer className="py-4">
-        <div className="flex items-center justify-center">
-          <Typography.Text
-            className="text-slate-500"
-            code
-          >
-            Made with ❤️ by{' '}
-            <a
-              className="!text-blue-400 !font-bold"
-              href="https://github.com/QuanticTeam/AtomSkills2024"
+              <Typography.Text>
+                <Link to="/forgot">Не помню пароль</Link>
+              </Typography.Text>
+            </div>
+          </Form.Item>
+
+          <Form.Item>
+            <Space
+              className="w-full"
+              direction="vertical"
+              classNames={{ item: 'flex justify-center' }}
             >
-              QuanticTeam
-            </a>
-          </Typography.Text>
-        </div>
-      </Layout.Footer>
-    </Layout>
+              <Button
+                type="primary"
+                htmlType="submit"
+                className="w-full"
+              >
+                Войти
+              </Button>
+              <Typography.Text>
+                или <Link to="/register">зарегистрироваться</Link>
+              </Typography.Text>
+            </Space>
+          </Form.Item>
+        </Form>
+      </div>
+    </PublicTemplate>
   )
 }
