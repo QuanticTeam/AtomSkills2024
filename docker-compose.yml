@@ -74,7 +74,7 @@
       - ./https:/https:ro
 
   frontend:
-    build: ./frontend
+    build: ./src/frontend
     container_name: frontend
     depends_on:
       - backend

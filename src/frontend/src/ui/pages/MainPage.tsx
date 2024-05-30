@@ -10,7 +10,7 @@ export function MainPage() {
           <Button
             onClick={() =>
               fetch(
-                `${process.env.REACT_APP_BACKEND_ADDR}:${process.env.REACT_APP_BACKEND_PORT}/Something/Test`,
+                `${process.env.REACT_APP_BACKEND_PATH}/Something/Test`,
                 {
                   method: 'POST',
                 },
