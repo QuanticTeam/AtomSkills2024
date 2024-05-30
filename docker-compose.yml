@@ -73,6 +73,14 @@
     volumes:
       - ./https:/https:ro
 
+  # frontend:
+  #   build: ./frontend
+  #   container_name: frontend
+  #   depends_on:
+  #     - backend
+  #   ports:
+  #     - 5003:3000
+
 volumes:
   postgres-data:
   pgadmin:
