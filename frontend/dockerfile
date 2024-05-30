@@ -1,19 +1,21 @@
+
+# Stage build
 FROM node:20 AS build
-
 WORKDIR /react-app
-
 COPY package*.json .
-
+COPY check-node-version.js .
 RUN npm i
-
-COPY public/ public
-
-COPY src/ src
-
+COPY . .
 RUN npm run build
 
-FROM httpd:alpine
+# Stage release
+FROM ngnix:1.25.5
+WORKDIR /usr/share/ngnix/html
+RUN rm -rf ./*
+COPY --from=build /react-app/build .
+ENTRYPOINT ["ngnix", "-g", "daemon off"]
 
-WORKDIR /var/www/html
-
-COPY --from=build /build/build/ .
+# Stage release 2
+# FROM httpd:alpine
+# WORKDIR /var/www/html
+# COPY --from=build /react-app/build/ .
