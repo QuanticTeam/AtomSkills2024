@@ -58,8 +58,46 @@ public class UserController : ControllerBase
         if (await CheckUnique(request.Login, request.Password.Generate()))
             return BadRequest("User already exist");
         
-        var user = new User(Guid.NewGuid(), request.Login, request.Password.Generate(), request.Role.ToString());
+        var user = new User(
+            Guid.NewGuid(), 
+            request.Login, 
+            request.Password.Generate(), 
+            request.Role.ToString(),
+            request.FirstName,
+            request.MiddleName,
+            request.LastName,
+            request.Email,
+            request.Phone);
+        
         return Ok(await _usersService.Create(user));
+    }
+    
+    [HttpPost("Update")]
+    public async Task<ActionResult<int>> Update([FromBody] UpdateUserRequest request)
+    {
+        var user = await _usersService.Get(Guid.Parse(request.Key));
+        
+        if (user == null)
+            return BadRequest("User not founded");
+        
+        var updateUser = new User(
+            user.Key, 
+            request.Login, 
+            request.Password.Generate(), 
+            request.Role.ToString(),
+            request.FirstName,
+            request.MiddleName,
+            request.LastName,
+            request.Email,
+            request.Phone);
+        
+        return Ok(await _usersService.Update(updateUser));
+    }
+    
+    [HttpPost("Delete")]
+    public async Task<ActionResult<int>> Delete([FromBody] Guid userKey)
+    {
+        return Ok(await _usersService.Delete(userKey));
     }
 
     private async Task<bool> CheckUnique(string login, string password)

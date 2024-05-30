@@ -2,8 +2,10 @@ using backend.Core.Models;
 
 namespace backend.Contracts;
 
-public class SingUpRequest
+public class UpdateUserRequest
 {
+    public string Key { get; set; }
+    
     public string Login { get; set; }
     
     public string Password { get; set; }

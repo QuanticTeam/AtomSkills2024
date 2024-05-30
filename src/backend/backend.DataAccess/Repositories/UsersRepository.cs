@@ -21,7 +21,7 @@ public class UsersRepository : IUsersRepository
             .ToListAsync();
 
         var users = userRecords
-            .Select(x => new User(x.Key, x.Login, x.Password, x.Role))
+            .Select(x => new User(x.Key, x.Login, x.Password, x.Role, x.FirstName, x.MiddleName, x.LastName, x.Email, x.Phone))
             .ToList();
         
         return users;
@@ -29,12 +29,17 @@ public class UsersRepository : IUsersRepository
 
     public async Task<int> Create(User user)
     {
-        var userRecord = new UserRecord()
+        var userRecord = new UserRecord
         {
             Key = user.Key,
             Login = user.Login,
             Password = user.Password,
             Role = user.Role,
+            FirstName = user.FirstName,
+            MiddleName = user.MiddleName,
+            LastName = user.LastName,
+            Email = user.Email,
+            Phone = user.Phone
         };
 
         await _dbContext.Users.AddAsync(userRecord);
@@ -48,7 +53,12 @@ public class UsersRepository : IUsersRepository
             .ExecuteUpdateAsync(x => x
                 .SetProperty(b => b.Login, b => user.Login)
                 .SetProperty(b => b.Password, b => user.Password)
-                .SetProperty(b => b.Role, b => user.Role));
+                .SetProperty(b => b.Role, b => user.Role)
+                .SetProperty(b => b.FirstName, b => user.FirstName)
+                .SetProperty(b => b.MiddleName, b => user.MiddleName)
+                .SetProperty(b => b.LastName, b => user.LastName)
+                .SetProperty(b => b.Email, b => user.Email)
+                .SetProperty(b => b.Phone, b => user.Phone));
     }
 
     public async Task<int> Delete(Guid key)
