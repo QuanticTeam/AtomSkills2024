@@ -1,7 +1,7 @@
 ﻿services:
   postgres:
+    image: mirror.gcr.io/postgres:latest
     container_name: postgres
-    image: postgres:latest
     environment:
       POSTGRES_DB: "db"
       POSTGRES_USER: "postgres"
@@ -17,7 +17,7 @@
       retries: 3
 
   pgadmin:
-    image: dpage/pgadmin4
+    image: mirror.gcr.io/dpage/pgadmin4
     container_name: pgadmin
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@pgadmin.com
@@ -32,7 +32,7 @@
         condition: service_healthy
 
   minio:
-    image: minio/minio
+    image: mirror.gcr.io/minio/minio
     container_name: minio
     ports:
       - "9000:9000"
@@ -59,7 +59,7 @@
         condition: service_healthy
     ports:
       - '5002:8080'
-      - '443:443'
+      - '5003:443'
     environment:
       ConnectionString: 'Host=postgres;Port=5432;CommandTimeout=300;Database=db;User Id=postgres;Password=123;'
       ASPNETCORE_URLS: 'https://+:443;http://+:8080' 
@@ -73,13 +73,22 @@
     volumes:
       - ./https:/https:ro
 
-  # frontend:
-  #   build: ./frontend
-  #   container_name: frontend
-  #   depends_on:
-  #     - backend
-  #   ports:
-  #     - 5003:3000
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    depends_on:
+      - backend
+    ports:
+      - 5004:3000
+      - 5005:80
+
+  # nginx:
+  #   image: mirror.gcr.io/nginx:mainline
+  #   container_name: nginx
+  #   volumes:
+  #       - ./frontend/nginx.conf:/etc/nginx/nginx.conf
+  #   ports: 
+  #       - "80:80"
 
 volumes:
   postgres-data:
