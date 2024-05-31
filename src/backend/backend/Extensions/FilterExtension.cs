@@ -11,17 +11,19 @@ public static class FilterExtension
 
         foreach (var filter in filters)
         {
-            var type = typeof(TSource).GetProperty(filter.ColumnName);
+            var columnName = filter.ColumnName.ToFirstLetterUpper();
+            
+            var type = typeof(TSource).GetProperty(columnName);
             
             if (type == null)
                 continue;
             
             var typeExpression = type.PropertyType.Name switch
             {
-                "String" => StringFilter<TSource>(filter.ColumnName, filter.Value, filter.FilterType),
-                "Int" => IntFilter<TSource>(filter.ColumnName, int.Parse(filter.Value), filter.FilterType),
-                "Double" => DoubleFilter<TSource>(filter.ColumnName, double.Parse(filter.Value), filter.FilterType),
-                "DateTime" => DateTimeFilter<TSource>(filter.ColumnName, DateTime.Parse(filter.Value), filter.FilterType),
+                "String" => StringFilter<TSource>(columnName, filter.Value, filter.FilterType),
+                "Int" => IntFilter<TSource>(columnName, int.Parse(filter.Value), filter.FilterType),
+                "Double" => DoubleFilter<TSource>(columnName, double.Parse(filter.Value), filter.FilterType),
+                "DateTime" => DateTimeFilter<TSource>(columnName, DateTime.Parse(filter.Value).ToUniversalTime(), filter.FilterType),
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Filter does not exist")
             };
             
