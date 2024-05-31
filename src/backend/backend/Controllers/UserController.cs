@@ -36,6 +36,12 @@ public class UserController : ControllerBase
         return Ok(userId);
     }
     
+    [HttpGet("GetRoles")]
+    public async Task<ActionResult<List<EnumResponse>>> GetRoles()
+    {
+        return EnumExtension.GetEnumValues<UserRole>();
+    }
+    
     [HttpPost("Login")]
     public async Task<ActionResult<string>> Login([FromBody] LoginRequest request)
     {
