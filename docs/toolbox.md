@@ -14,13 +14,13 @@
 
 ## Используемые библиотеки
 
-* [Docker](https://www.docker.com) - виртуализация для запуска приложения
-* [DotNet](https://dotnet.microsoft.com/en-us/) - серверная часть приложения
-* [PostgreSQL](https://www.postgresql.org/) - база данных
-* [pgAdmin](https://www.pgadmin.org/) - администрирование базы данных
-* [MinIO](https://min.io/) - хранение файлов
-* [React](https://react.dev/) - фреймворк для интерфейса пользователя
-* [Ant](https://ant.design/) - библиотека визуальных компонентов
+* [`Docker`](https://www.docker.com) - [(Apache-2.0 License)](https://en.wikipedia.org/wiki/Apache_License#Apache_License_2.0) - виртуализация для запуска приложения
+* [`DotNet`](https://dotnet.microsoft.com/en-us/) - [MIT License](https://en.wikipedia.org/wiki/MIT_License) - серверная часть приложения
+* [`PostgreSQL`](https://www.postgresql.org/) - [PostgreSQL License](https://opensource.org/license/postgresql) - база данных
+* [`pgAdmin`](https://www.pgadmin.org/) - [PostgreSQL License](https://www.pgadmin.org/licence/#postgresql) администрирование базы данных
+* [`MinIO`](https://min.io/) - [GNU Affero GPL](https://en.wikipedia.org/wiki/GNU_Affero_General_Public_License) - хранение файлов
+* [`React`](https://react.dev/) - [MIT License](https://en.wikipedia.org/wiki/MIT_License) - фреймворк для интерфейса пользователя
+* [Ant](https://ant.design/) - [MIT License](https://en.wikipedia.org/wiki/MIT_License) - библиотека визуальных компонентов
 
 ## Домашние заготовки
 
