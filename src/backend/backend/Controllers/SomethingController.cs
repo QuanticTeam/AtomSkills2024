@@ -30,7 +30,7 @@ public class SomethingController : ControllerBase
         _minIoFileService = minIoFileService;
     }
 
-    [AllowAnonymous]
+    [Authorize]
     [HttpPost("Test")]
     public async Task<ActionResult<string>> Test()
     {
@@ -38,6 +38,7 @@ public class SomethingController : ControllerBase
         return Ok("Test");
     }
     
+    [Authorize]
     [HttpGet("Get/{id:guid}")]
     public async Task<ActionResult<Something>> Get(Guid id)
     {
@@ -49,12 +50,14 @@ public class SomethingController : ControllerBase
         return result;
     }
     
+    [Authorize]
     [HttpGet("GetAll")]
     public async Task<ActionResult<List<Something>>> GetAll()
     {
         return await _somethingsService.GetAll();
     }
     
+    [Authorize]
     [HttpGet("Download/{id:guid}")]
     public async Task<FileStreamResult> Download(Guid id)
     {
@@ -63,6 +66,7 @@ public class SomethingController : ControllerBase
         return File(stream, MediaTypeNames.Application.Octet, file.Name);
     }
     
+    [Authorize]
     [HttpGet("DownloadFromMinIo/{fileName}")]
     public async Task<FileStreamResult> DownloadFromMinIo(string fileName)
     {
@@ -70,6 +74,7 @@ public class SomethingController : ControllerBase
         return File(stream, MediaTypeNames.Application.Octet, fileName);
     }
 
+    [Authorize]
     [HttpPost("Create")]
     public async Task<ActionResult<int>> Create([FromForm] CreateSomethingRequest request)
     {
@@ -91,6 +96,7 @@ public class SomethingController : ControllerBase
         return Ok(successFile + successSomething);
     }
     
+    [Authorize]
     [HttpPost("CreateWithMinIo")]
     public async Task<ActionResult<int>> CreateWithMinIo([FromForm] CreateSomethingRequest request)
     {
@@ -104,6 +110,7 @@ public class SomethingController : ControllerBase
         return Ok(successFile + successSomething);
     }
 
+    [Authorize]
     [HttpPost("Edit")]
     public async Task<ActionResult<int>> Edit([FromForm] EditSomethingRequest request)
     {
@@ -130,6 +137,7 @@ public class SomethingController : ControllerBase
         return Ok(successFile + successSomething);
     }
     
+    [Authorize]
     [HttpPost("Delete")]
     public async Task<ActionResult<int>> Delete([FromBody] DeleteSomethingRequest request)
     {
