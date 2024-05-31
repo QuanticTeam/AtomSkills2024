@@ -5,30 +5,53 @@ import { RouterProvider, createBrowserRouter } from 'react-router-dom'
 import './index.css'
 import reportWebVitals from './reportWebVitals'
 
+import { AuthProvider, ProtectedRoute, PublicRoute } from './auth'
 import { defaultTheme } from './themes'
-import { MainPage } from './ui/pages/MainPage'
 import { LoginPage } from './ui/pages/LoginPage'
+import { MainPage } from './ui/pages/MainPage'
 import { RegisterPage } from './ui/pages/RegisterPage'
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <MainPage />,
+    element: (
+      <ProtectedRoute>
+        <MainPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: 'main',
+    element: (
+      <ProtectedRoute>
+        <MainPage />
+      </ProtectedRoute>
+    ),
   },
   {
     path: 'login',
-    element: <LoginPage />,
+    element: (
+      <PublicRoute>
+        <LoginPage />
+      </PublicRoute>
+    ),
   },
   {
     path: 'register',
-    element: <RegisterPage />,
+    element: (
+      <PublicRoute>
+        <RegisterPage />
+      </PublicRoute>
+    ),
   },
 ])
 
 createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <ConfigProvider theme={defaultTheme}>
-      <RouterProvider router={router} />
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
     </ConfigProvider>
   </React.StrictMode>,
 )
