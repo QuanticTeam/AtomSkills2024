@@ -79,8 +79,10 @@
     depends_on:
       - backend
     ports:
-      - 5004:3000
+      - 5004:443
       - 5005:80
+    volumes:
+      - ./https:/etc/nginx/certs/
 
 volumes:
   postgres-data:

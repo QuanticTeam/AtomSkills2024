@@ -30,7 +30,7 @@ public class SomethingController : ControllerBase
         _minIoFileService = minIoFileService;
     }
 
-    [Authorize]
+    [AllowAnonymous]
     [HttpPost("Test")]
     public async Task<ActionResult<string>> Test()
     {

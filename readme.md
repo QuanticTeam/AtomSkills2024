@@ -3,9 +3,7 @@
 
 > docker compose up -d
 
-> http://localhost:5005/
-
-> https://localhost:443
+> https://localhost:5004/
 >   * Allow self-signed certificate
 
 Check backend:
