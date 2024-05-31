@@ -2,6 +2,7 @@ using System.Net.Mime;
 using backend.Contracts;
 using backend.Core.Abstractions;
 using backend.Core.Models;
+using backend.Extensions;
 using backend.Notifications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -55,6 +56,27 @@ public class SomethingController : ControllerBase
     public async Task<ActionResult<List<Something>>> GetAll()
     {
         return await _somethingsService.GetAll();
+    }
+    
+    [Authorize]
+    [HttpPost("GetSortedData")]
+    public async Task<ActionResult<List<Something>>> GetSortedData(GetSortedDataRequest request)
+    {
+        var data = await _somethingsService.GetAll();
+
+        var result = data.AsQueryable();
+
+        if (request.Filter != null)
+        {
+            result = result.Where(FilterExtension.Filter<Something>(request.Filter));
+        }
+
+        if (!string.IsNullOrEmpty(request.OrderBy))
+        {
+            result = result.Order<Something>(request.OrderBy!, request.Descending);
+        }
+
+        return result.ToList();
     }
     
     [Authorize]
