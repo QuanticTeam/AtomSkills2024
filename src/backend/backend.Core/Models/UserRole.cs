@@ -4,5 +4,5 @@ public enum UserRole
 {
     User,
     Expert,
-    Admin
+    Admin,
 }
