@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace backend.Controllers;
 
+[ApiController]
+[Route("[controller]")]
 public class UserController : ControllerBase
 {
     private readonly IUsersService _usersService;
