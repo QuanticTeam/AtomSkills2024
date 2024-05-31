@@ -2,7 +2,7 @@ using backend.Core.Models;
 
 namespace backend.Contracts;
 
-public class SingUpRequest
+public class SignUpRequest
 {
     public string Login { get; set; }
     

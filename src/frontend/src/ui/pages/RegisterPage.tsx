@@ -1,51 +1,79 @@
-import { z } from 'zod'
 import { LockOutlined, UserOutlined } from '@ant-design/icons'
-import { Alert, Button, Checkbox, Form, Input, Select, Space, Typography } from 'antd'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Alert, Button, Form, Input, Popover, Select, Space, Typography } from 'antd'
+import { Controller, SubmitHandler, useForm } from 'react-hook-form'
+import { Link, useNavigate } from 'react-router-dom'
 import { isStrongPassword } from 'validator'
+import { z } from 'zod'
 import { Logo } from '../common/Logo'
 import { PublicTemplate } from '../templates/PublicTemplate'
-import { Link } from 'react-router-dom'
+import { http } from '../../http'
 
 function getIsPasswordStrong(value: string, returnScore = false): boolean | number {
   return isStrongPassword(value, {
+    // TODO configure
     minLength: 8,
     minLowercase: 1,
-    minUppercase: 0,
-    minNumbers: 0,
-    minSymbols: 0,
+    minUppercase: 1,
+    minNumbers: 1,
+    minSymbols: 1,
     returnScore: returnScore as any,
     pointsPerUnique: 1,
     pointsPerRepeat: 0.5,
-    pointsForContainingLower: 10,
-    pointsForContainingUpper: 10,
-    pointsForContainingNumber: 10,
-    pointsForContainingSymbol: 10,
+    pointsForContainingLower: 20,
+    pointsForContainingUpper: 20,
+    pointsForContainingNumber: 20,
+    pointsForContainingSymbol: 20,
   })
 }
 
-const RegisterData = z.object({
-  username: z
+enum UserRole {
+  User,
+  Expert,
+  Admin,
+}
+
+const schema = z.object({
+  login: z
     .string()
     .trim()
-    .min(1, 'Обязательно заполните это поле')
-    .min(2)
+    .min(1, ' ')
+    .min(1, 'Слишком короткое имя пользователя')
     .max(56, 'Слишком длинное имя пользователя'),
   password: z
     .string()
     .trim()
-    .min(1, 'Обязательно заполните это поле')
+    .min(1, ' ')
     .min(8, 'Слишком короткий пароль')
     .max(32, 'Слишком длинный пароль')
-    .regex(/^[A-Za-z0-9-_+!?=#$%&@^`~]+$/, 'Недопустимые символы')
-    .refine(p => !getIsPasswordStrong(p), 'Пароль слишком слабый'),
-  remember: z.boolean(),
+    .regex(/^[A-Za-z0-9-_+!?=#$%&@^`~]+$/, 'Недопустимые символы'),
+  // .refine(p => !getIsPasswordStrong(p), 'Пароль слишком слабый'),
+  role: z.nativeEnum(UserRole),
 })
 
-// console.log(RegisterData.parse({ username: 'Ludwig', password: '~а~~~~~~~', remember: false }))
-
-type RegisterData = z.infer<typeof RegisterData>
+type Data = z.infer<typeof schema>
 
 export function RegisterPage() {
+  const navigate = useNavigate()
+
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<Data>({
+    values: {
+      login: '',
+      password: '',
+      role: UserRole.User, // TODO empty by default
+    },
+    resolver: zodResolver(schema),
+  })
+
+  const onSubmit: SubmitHandler<Data> = async data => {
+    await http.post('/User/SignUp', data)
+    navigate('/login')
+  }
+
   return (
     <PublicTemplate>
       <div className="w-72 flex mx-auto mb-16">
@@ -54,103 +82,143 @@ export function RegisterPage() {
 
       <div className="flex">
         <Form
-          initialValues={{ remember: true }}
-          onFinish={() => {}}
           className="w-4/5 m-auto"
           labelCol={{ span: 3, offset: 5 }}
           wrapperCol={{ span: 8 }}
           layout="horizontal"
+          onFinish={handleSubmit(onSubmit)}
         >
-          <Form.Item
-            required
-            label="Ваша роль"
-          >
-            <Select
-              options={[
-                {
-                  value: 'participant',
-                  label: 'Участник',
-                },
-                {
-                  value: 'judge',
-                  label: 'Судья',
-                },
-              ]}
-              placeholder="Выбрать"
-            />
-          </Form.Item>
-          <Form.Item
-            name="username"
-            rules={[{ required: true, message: 'Please input your Username!' }]}
-            label="Пользователь"
-          >
-            <Space
-              direction="vertical"
-              className="w-full"
-            >
-              <Alert
-                showIcon
-                message={
-                  <Typography.Text className="text-xs text-slate-500">
-                    <Space direction="vertical">
-                      <div>Латинские буквы и цифры от 2 до 56 символов</div>
-                    </Space>
-                  </Typography.Text>
-                }
-              />
-              <Input
-                prefix={<UserOutlined className="text-slate-400" />}
-                placeholder="Придумайте логин"
-              />
-            </Space>
-          </Form.Item>
-          <Form.Item
+          <Controller
+            name="role"
+            control={control}
+            render={({ field }) => (
+              <Form.Item
+                required
+                label="Ваша роль"
+                help={errors.role?.message}
+                validateStatus={errors.role?.message && 'error'}
+              >
+                <Select
+                  options={[
+                    {
+                      value: UserRole.User,
+                      label: 'Участник',
+                    },
+                    {
+                      value: UserRole.Expert,
+                      label: 'Эксперт',
+                    },
+                    {
+                      value: UserRole.Admin,
+                      label: 'Администратор',
+                    },
+                  ]}
+                  placeholder="Выбрать"
+                  {...field}
+                />
+              </Form.Item>
+            )}
+          />
+          <Controller
+            name="login"
+            control={control}
+            render={({ field }) => (
+              <Form.Item
+                label="Пользователь"
+                required
+                help={errors.login?.message}
+                validateStatus={errors.login?.message && 'error'}
+              >
+                <Space
+                  direction="vertical"
+                  className="w-full"
+                >
+                  <Popover
+                    align={{
+                      offset: [30, 0],
+                    }}
+                    content={
+                      <Alert
+                        showIcon
+                        message={
+                          <Typography.Text className="text-xs text-slate-500">
+                            <Space direction="vertical">
+                              <div>Латинские буквы и цифры от 2 до 56 символов</div>
+                            </Space>
+                          </Typography.Text>
+                        }
+                      />
+                    }
+                    trigger="focus"
+                    placement="right"
+                  >
+                    <Input
+                      prefix={<UserOutlined className="text-slate-400" />}
+                      placeholder="Придумайте логин"
+                      {...field}
+                    />
+                  </Popover>
+                </Space>
+              </Form.Item>
+            )}
+          />
+          <Controller
             name="password"
-            rules={[{ required: true, message: 'Please input your Password!' }]}
-            required
-            label="Пароль"
-          >
-            <Space
-              direction="vertical"
-              className="w-full"
-            >
-              <Alert
-                showIcon
-                message={
-                  <Typography.Text className="text-xs text-slate-500">
-                    <Space direction="vertical">
-                      <div>
-                        Латинские буквы, цифры,{' '}
-                        <code
-                          className="font-bold text-slate-700"
-                          title="- _ + ! ? = # $ % & @ ^ ` ~"
-                        >
-                          - _ + ! ? = # $ % & @ ^ ` ~
-                        </code>{' '}
-                        от 8 до 32 символов
-                      </div>
-                    </Space>
-                  </Typography.Text>
-                }
-              />
-              <Input
-                prefix={<LockOutlined className="text-slate-400" />}
-                type="password"
-                placeholder="Придумайте пароль"
-                suffix={
-                  <Typography.Text className="text-xs text-slate-400">
-                    {(() => {
-                      return 'средний'
-                      // const score = getIsPasswordStrong('111111111!', true) as number
-                      // if (score < 25) return 'слабый' + score
-                      // if (score >= 25 && score < 35) return 'средний' + score
-                      // if (score >= 40) return 'надежный' + score
-                    })()}
-                  </Typography.Text>
-                }
-              />
-            </Space>
-          </Form.Item>
+            control={control}
+            render={({ field }) => (
+              <Form.Item
+                label="Пароль"
+                required
+                help={errors.password?.message}
+                validateStatus={errors.password?.message && 'error'}
+              >
+                <Space
+                  direction="vertical"
+                  className="w-full"
+                >
+                  <Popover
+                    align={{
+                      offset: [80, 0],
+                    }}
+                    content={
+                      <Alert
+                        showIcon
+                        message={
+                          <Typography.Text className="text-xs text-slate-500">
+                            <Space direction="vertical">
+                              <div>
+                                Латинские буквы, цифры,{' '}
+                                <code
+                                  className="font-bold text-slate-700"
+                                  title="- _ + ! ? = # $ % & @ ^ ` ~"
+                                >
+                                  - _ + ! ? = # $ % & @ ^ ` ~
+                                </code>{' '}
+                                от 8 до 32 символов
+                              </div>
+                            </Space>
+                          </Typography.Text>
+                        }
+                      />
+                    }
+                    trigger="focus"
+                    placement="right"
+                  >
+                    <Input.Password
+                      prefix={<LockOutlined className="text-slate-400" />}
+                      placeholder="Придумайте пароль"
+                      suffix={
+                        <Typography.Text className="text-xs text-slate-400">
+                          {getIsPasswordStrong(field.value) ? 'надежный' : 'слабый'}
+                        </Typography.Text>
+                      }
+                      {...field}
+                    />
+                  </Popover>
+                </Space>
+              </Form.Item>
+            )}
+          />
 
           <Form.Item
             label=" "

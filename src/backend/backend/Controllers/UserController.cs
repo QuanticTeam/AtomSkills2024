@@ -55,7 +55,7 @@ public class UserController : ControllerBase
     }
     
     [HttpPost("SingUp")]
-    public async Task<ActionResult<int>> SingUp([FromBody] SingUpRequest request)
+    public async Task<ActionResult<int>> SignUp([FromBody] SignUpRequest request)
     {
         if (await CheckUnique(request.Login, request.Password.Generate()))
             return BadRequest("User already exist");

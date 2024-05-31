@@ -7,7 +7,7 @@
 >   * Allow self-signed certificate
 
 Check backend:
-> curl -X 'POST' 'http://localhost:5003/Something/Test'
+> curl -X 'POST' 'https://localhost:5003/Something/Test'
 
 
 ### PGAdmin

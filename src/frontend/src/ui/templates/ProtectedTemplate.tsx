@@ -6,19 +6,33 @@ import {
   UserOutlined,
 } from '@ant-design/icons'
 import { faker } from '@faker-js/faker'
-import { Avatar, Badge, Breadcrumb, Input, Layout, Menu, MenuProps, Typography } from 'antd'
+import {
+  Avatar,
+  Badge,
+  Breadcrumb,
+  Button,
+  Dropdown,
+  Input,
+  Layout,
+  Menu,
+  MenuProps,
+  Typography,
+} from 'antd'
 import { capitalize } from 'lodash'
-import { ReactNode, useState } from 'react'
+import { ReactNode, useContext, useState } from 'react'
 import { Logo } from '../common/Logo'
 import { FooterLove } from './common/FooterLove'
 
 import colors from '../../colors.json'
+import { AuthContext } from '../../auth'
 
 interface PageTemplageProps extends HeaderProps, ContentProps {
   children: ReactNode
 }
 
-export function PageTemplate({ children, title }: PageTemplageProps) {
+export function ProtectedTemplate({ children, title }: PageTemplageProps) {
+  const { logout } = useContext(AuthContext)
+
   return (
     <Layout className="h-screen">
       <Layout.Header className="sticky top-0 p-0 h-20">
@@ -36,10 +50,29 @@ export function PageTemplate({ children, title }: PageTemplageProps) {
               offset={[-10, 0]}
               size="small"
             >
-              <Avatar
-                size={48}
-                icon={<UserOutlined />}
-              />
+              <Dropdown
+                menu={{
+                  items: [
+                    {
+                      label: (
+                        <Button
+                          type="link"
+                          onClick={logout}
+                        >
+                          Выйти
+                        </Button>
+                      ),
+                      key: '0',
+                    },
+                  ],
+                }}
+                trigger={['click']}
+              >
+                <Avatar
+                  size={48}
+                  icon={<UserOutlined />}
+                />
+              </Dropdown>
             </Badge>
           }
         />

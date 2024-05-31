@@ -1,46 +1,44 @@
-import { z } from 'zod'
 import { LockOutlined, UserOutlined } from '@ant-design/icons'
-import { Alert, Button, Checkbox, Form, Input, Space, Typography } from 'antd'
-import { isStrongPassword } from 'validator'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Button, Checkbox, Form, Input, Space, Typography } from 'antd'
+import { Controller, SubmitHandler, useForm } from 'react-hook-form'
+import { Link } from 'react-router-dom'
+import { z } from 'zod'
+import { http } from '../../http'
 import { Logo } from '../common/Logo'
 import { PublicTemplate } from '../templates/PublicTemplate'
-import { Link } from 'react-router-dom'
+import { useContext } from 'react'
+import { AuthContext } from '../../auth'
 
-function getIsPasswordStrong(value: string, returnScore = false): boolean | number {
-  return isStrongPassword(value, {
-    minLength: 8,
-    minLowercase: 1,
-    minUppercase: 1,
-    minNumbers: 1,
-    minSymbols: 1,
-    returnScore: returnScore as any,
-    pointsPerUnique: 1,
-    pointsPerRepeat: 0.5,
-    pointsForContainingLower: 10,
-    pointsForContainingUpper: 10,
-    pointsForContainingNumber: 10,
-    pointsForContainingSymbol: 10,
-  })
-}
-
-const LoginData = z.object({
-  password: z
-    .string()
-    .trim()
-    .min(1)
-    .min(8)
-    .max(32)
-    .regex(/^[A-Za-z0-9-_+!?=#$%&@^`~]+$/, 'Unacceptable symbols')
-    .refine(p => !getIsPasswordStrong(p), 'Password is too weak'),
+const loginSchema = z.object({
+  login: z.string().trim().min(1, ' '),
+  password: z.string().trim().min(1, ' '),
   remember: z.boolean(),
-  username: z.string().min(2).max(56),
 })
 
-// console.log(LoginData.parse({ username: 'Ludwig', password: '~а~~~~~~~', remember: false }))
-
-type LoginData = z.infer<typeof LoginData>
+type LoginData = z.infer<typeof loginSchema>
 
 export function LoginPage() {
+  const { login } = useContext(AuthContext)
+
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<LoginData>({
+    values: {
+      login: '',
+      password: '',
+      remember: true,
+    },
+    resolver: zodResolver(loginSchema),
+  })
+
+  const onSubmit: SubmitHandler<LoginData> = async data => {
+    const result = await http.post('/User/Login', data)
+    login(result.data)
+  }
+
   return (
     <PublicTemplate>
       <div className="w-72 flex mx-auto mb-16">
@@ -49,44 +47,64 @@ export function LoginPage() {
 
       <div className="flex">
         <Form
-          initialValues={{ remember: true }}
-          onFinish={() => {}}
+          onFinish={handleSubmit(onSubmit)}
           className="w-96 mx-auto"
         >
-          <Form.Item
-            name="username"
-            rules={[{ required: true, message: 'Please input your Username!' }]}
-          >
-            <Input
-              prefix={<UserOutlined className="text-gray-400" />}
-              placeholder="Пользователь"
-            />
-          </Form.Item>
-          <Form.Item
-            name="password"
-            rules={[{ required: true, message: 'Please input your Password!' }]}
-          >
-            <Input
-              prefix={<LockOutlined className="text-gray-400" />}
-              type="password"
-              placeholder="Пароль"
-            />
-          </Form.Item>
-          <Form.Item>
-            <div className="flex justify-between items-center">
+          <Controller
+            name="login"
+            control={control}
+            render={({ field }) => (
               <Form.Item
-                name="remember"
-                valuePropName="checked"
-                noStyle
+                help={errors.login?.message}
+                validateStatus={errors.login?.message && 'error'}
               >
-                <Checkbox>Запомнить меня</Checkbox>
+                <Input
+                  prefix={<UserOutlined className="text-gray-400" />}
+                  placeholder="Пользователь"
+                  {...field}
+                />
               </Form.Item>
+            )}
+          />
+          <Controller
+            name="password"
+            control={control}
+            render={({ field }) => (
+              <Form.Item
+                help={errors.password?.message}
+                validateStatus={errors.password?.message && 'error'}
+              >
+                <Input
+                  prefix={<LockOutlined className="text-gray-400" />}
+                  type="password"
+                  placeholder="Пароль"
+                  {...field}
+                />
+              </Form.Item>
+            )}
+          />
 
-              <Typography.Text>
-                <Link to="/forgot">Не помню пароль</Link>
-              </Typography.Text>
-            </div>
-          </Form.Item>
+          <Controller
+            name="remember"
+            control={control}
+            render={({ field }) => (
+              <Form.Item>
+                <div className="flex justify-between items-center">
+                  <Form.Item
+                    name="remember"
+                    noStyle
+                    valuePropName="checked"
+                  >
+                    <Checkbox {...field}>Запомнить меня</Checkbox>
+                  </Form.Item>
+
+                  <Typography.Text>
+                    <Link to="/forgot">Не помню пароль</Link>
+                  </Typography.Text>
+                </div>
+              </Form.Item>
+            )}
+          />
 
           <Form.Item>
             <Space
