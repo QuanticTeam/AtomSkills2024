@@ -9,7 +9,7 @@ public static class OrderExtension
     {
         var command = descending ? "OrderByDescending" : "OrderBy";
         
-        var property = typeof(TSource).GetProperty(columnName);
+        var property = typeof(TSource).GetProperty(columnName.ToFirstLetterUpper());
         
         var parameter = Expression.Parameter(typeof(TSource), "p");
         
