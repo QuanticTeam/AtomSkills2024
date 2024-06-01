@@ -1,6 +1,6 @@
 import { LockOutlined, UserOutlined } from '@ant-design/icons'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Alert, Button, Form, Input, Popover, Select, Space, Typography } from 'antd'
+import { Alert, Button, Form, Input, Popover, Select, Space, Typography, message } from 'antd'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
 import { isStrongPassword } from 'validator'
@@ -55,6 +55,7 @@ type Data = z.infer<typeof schema>
 
 export function RegisterPage() {
   const navigate = useNavigate()
+  const [messageApi, contextHolder] = message.useMessage()
 
   const {
     handleSubmit,
@@ -71,11 +72,14 @@ export function RegisterPage() {
 
   const onSubmit: SubmitHandler<Data> = async data => {
     await http.post('/User/SignUp', data)
+    messageApi.success('Вы успешно зарегистрированы')
     navigate('/login')
   }
 
   return (
     <PublicTemplate>
+      {contextHolder}
+
       <div className="w-72 flex mx-auto mb-16">
         <Logo full />
       </div>

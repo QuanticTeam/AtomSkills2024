@@ -1,3 +1,4 @@
+import { message } from 'antd'
 import { ReactNode, createContext, useContext, useState } from 'react'
 import { Navigate, redirect } from 'react-router-dom'
 
@@ -23,6 +24,7 @@ interface AuthContextProps {
 
 export function AuthProvider({ children }: AuthContextProps) {
   const [authToken, setAuthToken] = useState(restoreAuthToken())
+  const [messageApi, contextHolder] = message.useMessage()
 
   return (
     <AuthContext.Provider
@@ -31,6 +33,7 @@ export function AuthProvider({ children }: AuthContextProps) {
         login(t: typeof authToken) {
           storeAuthToken(t)
           setAuthToken(t)
+          messageApi.success('Добро пожаловать!')
         },
         logout() {
           setAuthToken('')
@@ -39,6 +42,7 @@ export function AuthProvider({ children }: AuthContextProps) {
         },
       }}
     >
+      {contextHolder}
       {children}
     </AuthContext.Provider>
   )
