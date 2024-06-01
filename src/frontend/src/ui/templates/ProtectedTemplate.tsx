@@ -69,8 +69,9 @@ export function ProtectedTemplate({ children, title }: PageTemplageProps) {
                 trigger={['click']}
               >
                 <Avatar
-                  size={48}
+                  className="cursor-pointer"
                   icon={<UserOutlined />}
+                  size={48}
                 />
               </Dropdown>
             </Badge>
