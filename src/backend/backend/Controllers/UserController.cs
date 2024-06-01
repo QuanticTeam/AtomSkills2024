@@ -60,7 +60,7 @@ public class UserController : ControllerBase
         return Ok(token);
     }
     
-    [HttpPost("SingUp")]
+    [HttpPost("SignUp")]
     public async Task<ActionResult<int>> SignUp([FromBody] SignUpRequest request)
     {
         if (await CheckUnique(request.Login, request.Password.Generate()))
