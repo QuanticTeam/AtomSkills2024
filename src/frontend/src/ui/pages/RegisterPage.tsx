@@ -133,36 +133,31 @@ export function RegisterPage() {
                 help={errors.login?.message}
                 validateStatus={errors.login?.message && 'error'}
               >
-                <Space
-                  direction="vertical"
-                  className="w-full"
+                <Popover
+                  overlayClassName="max-w-prose"
+                  content={
+                    <Alert
+                      showIcon
+                      message={
+                        <Typography.Text className="text-xs text-slate-500">
+                          <Space direction="vertical">
+                            <div>Латинские буквы и цифры от 2 до 56 символов</div>
+                          </Space>
+                        </Typography.Text>
+                      }
+                    />
+                  }
+                  trigger="focus"
+                  placement="right"
                 >
-                  <Popover
-                    align={{
-                      offset: [30, 0],
-                    }}
-                    content={
-                      <Alert
-                        showIcon
-                        message={
-                          <Typography.Text className="text-xs text-slate-500">
-                            <Space direction="vertical">
-                              <div>Латинские буквы и цифры от 2 до 56 символов</div>
-                            </Space>
-                          </Typography.Text>
-                        }
-                      />
-                    }
-                    trigger="focus"
-                    placement="right"
-                  >
+                  <div>
                     <Input
                       prefix={<UserOutlined className="text-slate-400" />}
                       placeholder="Придумайте логин"
                       {...field}
                     />
-                  </Popover>
-                </Space>
+                  </div>
+                </Popover>
               </Form.Item>
             )}
           />
@@ -176,38 +171,29 @@ export function RegisterPage() {
                 help={errors.password?.message}
                 validateStatus={errors.password?.message && 'error'}
               >
-                <Space
-                  direction="vertical"
-                  className="w-full"
+                <Popover
+                  overlayClassName="max-w-prose"
+                  content={
+                    <Alert
+                      showIcon
+                      message={
+                        <Typography.Text className="text-xs text-slate-500">
+                          Латинские буквы, цифры,{' '}
+                          <code
+                            className="font-bold text-slate-700"
+                            title="- _ + ! ? = # $ % & @ ^ ` ~"
+                          >
+                            - _ + ! ? = # $ % & @ ^ ` ~
+                          </code>{' '}
+                          от 8 до 32 символов
+                        </Typography.Text>
+                      }
+                    />
+                  }
+                  trigger="focus"
+                  placement="right"
                 >
-                  <Popover
-                    align={{
-                      offset: [80, 0],
-                    }}
-                    content={
-                      <Alert
-                        showIcon
-                        message={
-                          <Typography.Text className="text-xs text-slate-500">
-                            <Space direction="vertical">
-                              <div>
-                                Латинские буквы, цифры,{' '}
-                                <code
-                                  className="font-bold text-slate-700"
-                                  title="- _ + ! ? = # $ % & @ ^ ` ~"
-                                >
-                                  - _ + ! ? = # $ % & @ ^ ` ~
-                                </code>{' '}
-                                от 8 до 32 символов
-                              </div>
-                            </Space>
-                          </Typography.Text>
-                        }
-                      />
-                    }
-                    trigger="focus"
-                    placement="right"
-                  >
+                  <div>
                     <Input.Password
                       prefix={<LockOutlined className="text-slate-400" />}
                       placeholder="Придумайте пароль"
@@ -218,8 +204,8 @@ export function RegisterPage() {
                       }
                       {...field}
                     />
-                  </Popover>
-                </Space>
+                  </div>
+                </Popover>
               </Form.Item>
             )}
           />
