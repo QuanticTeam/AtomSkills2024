@@ -67,7 +67,7 @@ export function PublicRoute({ children }: { children: ReactNode }) {
 
   return (
     <Navigate
-      to="/main"
+      to="/something"
       replace={true}
     />
   )

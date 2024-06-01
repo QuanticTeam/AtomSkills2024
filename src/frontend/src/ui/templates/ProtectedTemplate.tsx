@@ -23,8 +23,9 @@ import { ReactNode, useContext, useState } from 'react'
 import { Logo } from '../common/Logo'
 import { FooterLove } from './common/FooterLove'
 
-import colors from '../../colors.json'
+import { Link, useNavigate } from 'react-router-dom'
 import { AuthContext } from '../../auth'
+import colors from '../../colors.json'
 
 interface PageTemplageProps extends HeaderProps, ContentProps {
   children: ReactNode
@@ -105,7 +106,9 @@ function Header({ headerLeft, headerRight }: HeaderProps) {
   return (
     <div className="flex items-center h-full border-b-4 border-primary-2">
       <div className="w-10 ml-5">
-        <Logo />
+        <Link to="/">
+          <Logo />
+        </Link>
       </div>
       <div className="flex h-full grow justify-between items-center px-10">
         {headerLeft}
@@ -116,7 +119,6 @@ function Header({ headerLeft, headerRight }: HeaderProps) {
 }
 
 interface ContentProps {
-  // breadcrumbs?: BreadcrumbProps['items']
   children: ReactNode
   title: ReactNode
 }
@@ -146,6 +148,8 @@ function Content({ children, title }: ContentProps) {
 
 function Sider() {
   const [siderCollapsed, setSiderCollapsed] = useState(true)
+
+  const navigate = useNavigate()
 
   type MenuItem = Required<MenuProps>['items'][number]
 
@@ -193,7 +197,11 @@ function Sider() {
         getItem(<Typography.Link>Team 2</Typography.Link>, '8'),
       ],
     ),
-    getItem(<Typography.Link>Files</Typography.Link>, '9', <FileOutlined className="!text-lg" />),
+    getItem(
+      <Typography.Link onClick={() => navigate('/lorem')}>Something</Typography.Link>,
+      '9',
+      <FileOutlined className="!text-lg" />,
+    ),
   ]
   return (
     <Layout.Sider

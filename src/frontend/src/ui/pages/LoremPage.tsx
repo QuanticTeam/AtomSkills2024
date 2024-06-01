@@ -4,7 +4,7 @@ import { ProtectedTemplate } from '../templates/ProtectedTemplate'
 import { http } from '../../http'
 import { AxiosError } from 'axios'
 
-export function MainPage() {
+export function LoremPage() {
   const [notificationApi, contextHolder] = notification.useNotification()
 
   return (

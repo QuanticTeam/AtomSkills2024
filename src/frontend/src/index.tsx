@@ -8,23 +8,24 @@ import reportWebVitals from './reportWebVitals'
 import { AuthProvider, ProtectedRoute, PublicRoute } from './auth'
 import { defaultTheme } from './themes'
 import { LoginPage } from './ui/pages/LoginPage'
-import { MainPage } from './ui/pages/MainPage'
+import { LoremPage } from './ui/pages/LoremPage'
 import { RegisterPage } from './ui/pages/RegisterPage'
+import { SomethingPage } from './ui/pages/SomethingPage'
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: (
       <ProtectedRoute>
-        <MainPage />
+        <SomethingPage />
       </ProtectedRoute>
     ),
   },
   {
-    path: 'main',
+    path: 'lorem',
     element: (
       <ProtectedRoute>
-        <MainPage />
+        <LoremPage />
       </ProtectedRoute>
     ),
   },
@@ -42,6 +43,14 @@ const router = createBrowserRouter([
       <PublicRoute>
         <RegisterPage />
       </PublicRoute>
+    ),
+  },
+  {
+    path: 'something',
+    element: (
+      <ProtectedRoute>
+        <SomethingPage />
+      </ProtectedRoute>
     ),
   },
 ])
