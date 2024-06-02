@@ -23,3 +23,7 @@ http://localhost:9001/login
 ## Rebuild docker containers
 
 > docker compose up -d --build
+
+## Test through the [hurl](hurl.dev)
+
+> hurl --test ./src/test/healthy.hurl
