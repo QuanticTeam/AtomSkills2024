@@ -35,41 +35,42 @@ public class UserController : ControllerBase
         var userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type.Equals("userId"))?.Value ?? string.Empty;
         return Ok(userId);
     }
-    
+
     [HttpGet("GetRoles")]
-    public async Task<ActionResult<List<EnumResponse>>> GetRoles()
+    public ActionResult<List<EnumResponse>> GetRoles()
     {
         return EnumExtension.GetEnumValues<UserRole>();
     }
-    
+
     [HttpPost("Login")]
     public async Task<ActionResult<string>> Login([FromBody] LoginRequest request)
     {
         var users = await _usersService.GetAll();
-        var user = users.FirstOrDefault(x => x.Login.Equals(request.Login) && x.Password.Verify(request.Password));
+        var user = users.FirstOrDefault(x => x.Login.Equals(request.Login, StringComparison.InvariantCultureIgnoreCase)
+            && x.Password.Verify(request.Password)); // TODO: Timing attack
 
         if (user == null)
         {
-            return BadRequest("User is not founded");
+            return BadRequest("Incorrect username or password");
         }
 
         var token = _jwtTokenService.GenerateToken(user);
-        
+
         HttpContext.Response.Cookies.Append("token", token);
 
         return Ok(token);
     }
-    
+
     [HttpPost("SignUp")]
     public async Task<ActionResult<int>> SignUp([FromBody] SignUpRequest request)
     {
-        if (await CheckUnique(request.Login, request.Password.Generate()))
+        if (await CheckUnique(request.Login))
             return BadRequest("User already exist");
         
         var user = new User(
             Guid.NewGuid(), 
             request.Login, 
-            request.Password.Generate(), 
+            request.Password.Obfuscate(), 
             request.Role.ToString(),
             request.FirstName,
             request.MiddleName,
@@ -79,19 +80,19 @@ public class UserController : ControllerBase
         
         return Ok(await _usersService.Create(user));
     }
-    
+
     [HttpPost("Update")]
     public async Task<ActionResult<int>> Update([FromBody] UpdateUserRequest request)
     {
         var user = await _usersService.Get(Guid.Parse(request.Key));
         
         if (user == null)
-            return BadRequest("User not founded");
+            return BadRequest("User not found");
         
         var updateUser = new User(
             user.Key, 
             request.Login, 
-            request.Password.Generate(), 
+            request.Password.Obfuscate(), 
             request.Role.ToString(),
             request.FirstName,
             request.MiddleName,
@@ -101,16 +102,16 @@ public class UserController : ControllerBase
         
         return Ok(await _usersService.Update(updateUser));
     }
-    
+
     [HttpPost("Delete")]
     public async Task<ActionResult<int>> Delete([FromBody] Guid userKey)
     {
         return Ok(await _usersService.Delete(userKey));
     }
 
-    private async Task<bool> CheckUnique(string login, string password)
+    private async Task<bool> CheckUnique(string login)
     {
         var users = await _usersService.GetAll();
-        return users.Any(x => x.Login.Equals(login) && x.Password.Verify(password));
+        return users.Any(x => x.Login.Equals(login, StringComparison.InvariantCultureIgnoreCase));
     }
 }
