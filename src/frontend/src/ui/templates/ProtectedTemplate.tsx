@@ -169,12 +169,12 @@ function Sider() {
 
   const items: MenuItem[] = [
     getItem(
-      <Typography.Link>Option 1</Typography.Link>,
+      <Typography.Link onClick={() => navigate('/something')}>Something</Typography.Link>,
       '1',
       <PieChartOutlined className="!text-lg" />,
     ),
     getItem(
-      <Typography.Link>Option 2</Typography.Link>,
+      <Typography.Link onClick={() => navigate('/lorem')}>Lorem</Typography.Link>,
       '2',
       <DesktopOutlined className="!text-lg" />,
     ),
@@ -198,7 +198,7 @@ function Sider() {
       ],
     ),
     getItem(
-      <Typography.Link onClick={() => navigate('/lorem')}>Something</Typography.Link>,
+      <Typography.Link onClick={() => navigate('/lorem')}>Lorem</Typography.Link>,
       '9',
       <FileOutlined className="!text-lg" />,
     ),

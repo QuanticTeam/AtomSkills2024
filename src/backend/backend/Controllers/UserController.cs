@@ -47,7 +47,7 @@ public class UserController : ControllerBase
     {
         var users = await _usersService.GetAll();
         var user = users.FirstOrDefault(x => x.Login.Equals(request.Login, StringComparison.InvariantCultureIgnoreCase)
-            && x.Password.Verify(request.Password)); // TODO: Timing attack
+            && x.Password.Verify(request.Password));
 
         if (user == null)
         {
