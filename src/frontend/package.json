@@ -40,7 +40,7 @@
     "preinstall": "npm run check-node-version",
     "prestart": "npm run check-node-version",
     "pretest": "npm run check-node-version",
-    "start": "react-scripts start",
+    "start": "craco start --verbose",
     "test": "react-scripts test"
   },
   "eslintConfig": {
@@ -62,6 +62,8 @@
     ]
   },
   "devDependencies": {
+    "@craco/craco": "^7.1.0",
+    "@craco/types": "^7.1.0",
     "@faker-js/faker": "^8.4.1",
     "@types/lodash": "^4.17.4",
     "@types/validator": "^13.11.10",

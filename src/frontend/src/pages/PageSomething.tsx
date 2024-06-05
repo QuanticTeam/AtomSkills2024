@@ -1,5 +1,6 @@
-import { Space, Table, TableProps, Tag, notification } from 'antd'
-import { ProtectedTemplate } from '../templates/ProtectedTemplate'
+import { BreadcrumbProps, Button, Space, Table, TableProps, Tag } from 'antd'
+import { Link, NavLink } from 'react-router-dom'
+import { PageAuthorized } from '~/layouts/PageAuthorized'
 
 interface DataType {
   key: string
@@ -85,17 +86,40 @@ const data: DataType[] = [
   },
 ]
 
-export function SomethingPage() {
-  const [notificationApi, contextHolder] = notification.useNotification()
+const route = '/something'
+const title = 'Все сущности'
 
+export const breadcrumbs: BreadcrumbProps['items'] = [
+  {
+    title: (
+      <NavLink
+        to={route}
+        className={({ isActive }) => (!isActive ? '!text-link-1' : '')}
+        end
+      >
+        {title}
+      </NavLink>
+    ),
+  },
+]
+
+export default function PageSomething() {
   return (
-    <ProtectedTemplate title="Something">
-      {contextHolder}
-
+    <PageAuthorized
+      breadcrumbs={breadcrumbs}
+      title={title}
+      actions={
+        <Space>
+          <Link to="/something/new">
+            <Button type="primary">Создать</Button>
+          </Link>
+        </Space>
+      }
+    >
       <Table
         columns={columns}
         dataSource={data}
       />
-    </ProtectedTemplate>
+    </PageAuthorized>
   )
 }

@@ -1,6 +1,6 @@
 import { Typography } from 'antd'
 
-export function FooterLove() {
+export function Footer() {
   return (
     <div className="flex items-center justify-center">
       <Typography.Text

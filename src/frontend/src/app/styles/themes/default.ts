@@ -1,6 +1,6 @@
 import { ThemeConfig } from 'antd'
 
-import colors from '../colors.json'
+import { colors } from '~/shared/styles'
 
 export const theme: ThemeConfig = {
   components: {

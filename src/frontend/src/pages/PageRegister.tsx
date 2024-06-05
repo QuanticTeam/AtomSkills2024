@@ -5,9 +5,9 @@ import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
 import { isStrongPassword } from 'validator'
 import { z } from 'zod'
-import { Logo } from '../common/Logo'
-import { PublicTemplate } from '../templates/PublicTemplate'
-import { http } from '../../http'
+import { PageUnauthorized } from '~/layouts/PageUnauthorized'
+import { httpClient } from '~/shared/httpClient'
+import { Logo } from '~/shared/ui'
 
 function getIsPasswordStrong(value: string, returnScore = false): boolean | number {
   return isStrongPassword(value, {
@@ -53,7 +53,7 @@ const schema = z.object({
 
 type Data = z.infer<typeof schema>
 
-export function RegisterPage() {
+export default function PageRegister() {
   const navigate = useNavigate()
   const [messageApi, contextHolder] = message.useMessage()
 
@@ -71,13 +71,13 @@ export function RegisterPage() {
   })
 
   const onSubmit: SubmitHandler<Data> = async data => {
-    await http.post('/User/SignUp', data)
+    await httpClient.post('/User/SignUp', data)
     messageApi.success('Вы успешно зарегистрированы')
     navigate('/login')
   }
 
   return (
-    <PublicTemplate>
+    <PageUnauthorized>
       {contextHolder}
 
       <div className="w-72 flex mx-auto mb-16">
@@ -140,9 +140,7 @@ export function RegisterPage() {
                       showIcon
                       message={
                         <Typography.Text className="text-xs text-slate-500">
-                          <Space direction="vertical">
-                            <div>Латинские буквы и цифры от 2 до 56 символов</div>
-                          </Space>
+                          Латинские буквы и цифры от 2 до 56 символов
                         </Typography.Text>
                       }
                     />
@@ -233,6 +231,6 @@ export function RegisterPage() {
           </Form.Item>
         </Form>
       </div>
-    </PublicTemplate>
+    </PageUnauthorized>
   )
 }

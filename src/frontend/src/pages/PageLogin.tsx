@@ -1,14 +1,14 @@
 import { LockOutlined, UserOutlined } from '@ant-design/icons'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, Checkbox, Form, Input, Space, Typography } from 'antd'
+import { useContext } from 'react'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
 import { z } from 'zod'
-import { http } from '../../http'
-import { Logo } from '../common/Logo'
-import { PublicTemplate } from '../templates/PublicTemplate'
-import { useContext } from 'react'
-import { AuthContext } from '../../auth'
+import { PageUnauthorized } from '~/layouts/PageUnauthorized'
+import { AuthContext } from '~/shared/auth'
+import { httpClient } from '~/shared/httpClient'
+import { Logo } from '~/shared/ui'
 
 const loginSchema = z.object({
   login: z.string().trim().min(1, ' '),
@@ -18,7 +18,7 @@ const loginSchema = z.object({
 
 type LoginData = z.infer<typeof loginSchema>
 
-export function LoginPage() {
+export default function PageLogin() {
   const { login } = useContext(AuthContext)
 
   const {
@@ -35,12 +35,12 @@ export function LoginPage() {
   })
 
   const onSubmit: SubmitHandler<LoginData> = async data => {
-    const result = await http.post('/User/Login', data)
+    const result = await httpClient.post('/User/Login', data)
     login(result.data)
   }
 
   return (
-    <PublicTemplate>
+    <PageUnauthorized>
       <div className="w-72 flex mx-auto mb-16">
         <Logo full />
       </div>
@@ -74,7 +74,7 @@ export function LoginPage() {
                 help={errors.password?.message}
                 validateStatus={errors.password?.message && 'error'}
               >
-                <Input
+                <Input.Password
                   prefix={<LockOutlined className="text-gray-400" />}
                   type="password"
                   placeholder="Пароль"
@@ -126,6 +126,6 @@ export function LoginPage() {
           </Form.Item>
         </Form>
       </div>
-    </PublicTemplate>
+    </PageUnauthorized>
   )
 }

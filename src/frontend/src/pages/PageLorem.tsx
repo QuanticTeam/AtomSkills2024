@@ -1,14 +1,22 @@
 import { faker } from '@faker-js/faker'
 import { Button, notification } from 'antd'
-import { ProtectedTemplate } from '../templates/ProtectedTemplate'
-import { http } from '../../http'
 import { AxiosError } from 'axios'
+import { capitalize } from 'lodash'
+import { PageAuthorized } from '~/layouts/PageAuthorized'
+import { httpClient } from '~/shared/httpClient'
 
-export function LoremPage() {
+const breadcrumbs = [
+  { title: 'Header left' },
+  ...Array.from({ length: 2 }, () => ({ title: capitalize(faker.hacker.noun()) })),
+]
+export default function PageLorem() {
   const [notificationApi, contextHolder] = notification.useNotification()
 
   return (
-    <ProtectedTemplate title="Page title">
+    <PageAuthorized
+      title="Page title"
+      breadcrumbs={breadcrumbs}
+    >
       {contextHolder}
 
       <div>
@@ -17,7 +25,7 @@ export function LoremPage() {
             type="primary"
             onClick={async () => {
               try {
-                const result = await http.post(`/Something/Test`)
+                const result = await httpClient.post(`/Something/Test`)
 
                 notificationApi.success({
                   message: 'Request OK',
@@ -39,6 +47,6 @@ export function LoremPage() {
         <br />
         <p>{faker.lorem.sentence(1000)}</p>
       </div>
-    </ProtectedTemplate>
+    </PageAuthorized>
   )
 }
