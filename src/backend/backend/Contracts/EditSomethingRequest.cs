@@ -12,5 +12,5 @@ public record EditSomethingRequest
     
     public DateTime DateTime { get; set; }
     
-    public IFormFile File { get; set; }
+    public List<string> FileKeys { get; set; }
 }

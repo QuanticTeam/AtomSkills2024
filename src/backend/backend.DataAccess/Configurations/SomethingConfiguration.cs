@@ -24,8 +24,8 @@ public class SomethingConfiguration : IEntityTypeConfiguration<SomethingRecord>
         
         builder.Property(x => x.DateTime)
             .IsRequired();
-        
-        builder.Property(x => x.FileKey)
+
+        builder.Property(x => x.FileKeys)
             .IsRequired();
     }
 }

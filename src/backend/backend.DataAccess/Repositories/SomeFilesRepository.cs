@@ -21,7 +21,13 @@ public class SomeFilesRepository : ISomeFilesRepository
             .ToListAsync();
 
         var someFiles = someFileRecords
-            .Select(x => new SomeFile(x.Key, x.Name, x.ContentType, x.Content))
+            .Select(x => new SomeFile
+            {
+                Key = x.Key,
+                Name = x.Name,
+                ContentType = x.ContentType,
+                Content = x.Content,
+            })
             .ToList();
         
         return someFiles;
@@ -29,7 +35,7 @@ public class SomeFilesRepository : ISomeFilesRepository
 
     public async Task<int> Create(SomeFile someFile)
     {
-        var someFileRecord = new SomeFileRecord()
+        var someFileRecord = new SomeFileRecord
         {
             Key = someFile.Key,
             Name = someFile.Name,

@@ -70,7 +70,7 @@ public class MinIoFileService : IMinIoFileService
                 .WithEndpoint(_options.Endpoint)
                 .WithCredentials(_options.AccessKey, _options.SecretKey)
                 .Build();
-            var response = await Run(minio, BucketName, fileModel.FileName, fileModel.Stream, fileModel.ContentType);
+            var response = await Run(minio, BucketName, fileModel.FileName, fileModel.Stream, fileModel.ContentType, fileModel.MetaData);
             return response == null ? 0 : 1;
         }
         catch (Exception ex)
@@ -80,14 +80,21 @@ public class MinIoFileService : IMinIoFileService
         }
     }
 
-    private static async Task<PutObjectResponse?> Run(IMinioClient minio, string bucket, string fileName, Stream fileStream, string contentType)
+    private static async Task<PutObjectResponse?> Run(
+        IMinioClient minio, 
+        string bucket, 
+        string fileName, 
+        Stream fileStream, 
+        string contentType, 
+        IDictionary<string, string> metaData)
     {
         var putObjectArgs = new PutObjectArgs()
             .WithBucket(bucket)
             .WithObject(fileName)
             .WithStreamData(fileStream)
             .WithObjectSize(fileStream.Length)
-            .WithContentType(contentType);
+            .WithContentType(contentType)
+            .WithHeaders(metaData);
         return await minio.PutObjectAsync(putObjectArgs);
     }
 }

@@ -1,4 +1,3 @@
-using System.Net.Mime;
 using backend.Contracts;
 using backend.Core.Abstractions;
 using backend.Core.Models;
@@ -15,20 +14,13 @@ namespace backend.Controllers;
 public class SomethingController : ControllerBase
 {
     private readonly ISomethingsService _somethingsService;
-    private readonly ISomeFilesService _someFilesService;
     private readonly IHubContext<ToastNotificationHub> _hubContext;
-    private readonly IMinIoFileService _minIoFileService;
-
     public SomethingController(
         ISomethingsService somethingsService,
-        ISomeFilesService someFilesService,
-        IHubContext<ToastNotificationHub> hubContext,
-        IMinIoFileService minIoFileService)
+        IHubContext<ToastNotificationHub> hubContext)
     {
         _somethingsService = somethingsService;
-        _someFilesService = someFilesService;
         _hubContext = hubContext;
-        _minIoFileService = minIoFileService;
     }
 
     [AllowAnonymous]
@@ -79,62 +71,29 @@ public class SomethingController : ControllerBase
         return result.ToList();
     }
     
-    [Authorize]
-    [HttpGet("Download/{id:guid}")]
-    public async Task<FileStreamResult> Download(Guid id)
-    {
-        var file = await _someFilesService.Get(id);
-        var stream = new MemoryStream(file!.Content);
-        return File(stream, MediaTypeNames.Application.Octet, file.Name);
-    }
-    
-    [Authorize]
-    [HttpGet("DownloadFromMinIo/{fileName}")]
-    public async Task<FileStreamResult> DownloadFromMinIo(string fileName)
-    {
-        Stream stream = await _minIoFileService.Download(fileName);
-        return File(stream, MediaTypeNames.Application.Octet, fileName);
-    }
 
     [Authorize]
     [HttpPost("Create")]
-    public async Task<ActionResult<int>> Create([FromForm] CreateSomethingRequest request)
+    public async Task<ActionResult<int>> Create([FromBody] CreateSomethingRequest request)
     {
-        var length = request.File.Length;
-        if (length < 0)
-            return BadRequest();
-
-        await using var fileStream = request.File.OpenReadStream();
-        var bytes = new byte[length];
-        _ = await fileStream.ReadAsync(bytes.AsMemory(0, (int)length));
-
-        var file = new SomeFile(Guid.NewGuid(), request.File.FileName, request.File.ContentType, bytes);
-        
-        var something = new Something(Guid.NewGuid(), request.Name, request.Number, request.Integer, request.DateTime, file.Key);
+        var something = new Something
+        {
+            Key = Guid.NewGuid(),
+            Name = request.Name,
+            Integer = request.Integer,
+            Number = request.Number,
+            DateTime = request.DateTime,
+            FileKeys = request.FileKeys.ToArray(),
+        };
 
         var successSomething = await _somethingsService.Create(something);
-        var successFile = await _someFilesService.Create(file);
         
-        return Ok(successFile + successSomething);
-    }
-    
-    [Authorize]
-    [HttpPost("CreateWithMinIo")]
-    public async Task<ActionResult<int>> CreateWithMinIo([FromForm] CreateSomethingRequest request)
-    {
-        var file = new MinIoFileModel(request.File.FileName, request.File.ContentType, request.File.OpenReadStream());
-        
-        var something = new Something(Guid.NewGuid(), request.Name, request.Number, request.Integer, request.DateTime, Guid.NewGuid());
-
-        var successSomething = await _somethingsService.Create(something);
-        var successFile = await _minIoFileService.Upload(file);
-        
-        return Ok(successFile + successSomething);
+        return Ok(successSomething);
     }
 
     [Authorize]
     [HttpPost("Edit")]
-    public async Task<ActionResult<int>> Edit([FromForm] EditSomethingRequest request)
+    public async Task<ActionResult<int>> Edit([FromBody] EditSomethingRequest request)
     {
         var something = await _somethingsService.Get(request.Key);
 
@@ -142,21 +101,18 @@ public class SomethingController : ControllerBase
         {
             return BadRequest("No something");
         }
-        
-        var length = request.File.Length;
-        if (length < 0)
-            return BadRequest();
 
-        await using var fileStream = request.File.OpenReadStream();
-        var bytes = new byte[length];
-        _ = await fileStream.ReadAsync(bytes.AsMemory(0, (int)length));
+        var successSomething = await _somethingsService.Update(new Something
+        {
+            Key = something.Key,
+            Name = request.Name,
+            Number = request.Number,
+            Integer = request.Integer,
+            DateTime = request.DateTime,
+            FileKeys = request.FileKeys.ToArray()
+        });
 
-        var file = new SomeFile(Guid.NewGuid(), request.File.FileName, request.File.ContentType, bytes);
-
-        var successFile = await _someFilesService.Create(file);
-        var successSomething = await _somethingsService.Update(new Something(something.Key, request.Name, request.Number, request.Integer, request.DateTime, file.Key));
-
-        return Ok(successFile + successSomething);
+        return Ok(successSomething);
     }
     
     [Authorize]

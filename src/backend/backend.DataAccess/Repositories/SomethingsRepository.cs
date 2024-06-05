@@ -21,22 +21,29 @@ public class SomethingsRepository : ISomethingsRepository
             .ToListAsync();
 
         var somethings = somethingRecords
-            .Select(x => new Something(x.Key, x.Name, x.Number, x.Integer, x.DateTime, x.FileKey))
-            .ToList();
+            .Select(x => new Something
+            {
+                Key = x.Key,
+                Name = x.Name,
+                Integer = x.Integer,
+                Number = x.Number,
+                DateTime = x.DateTime,
+                FileKeys = x.FileKeys
+            }).ToList();
         
         return somethings;
     }
 
     public async Task<int> Create(Something something)
     {
-        var somethingRecord = new SomethingRecord()
+        var somethingRecord = new SomethingRecord
         {
             Key = something.Key,
             Name = something.Name,
             Number = something.Number,
             Integer = something.Integer,
             DateTime = something.DateTime,
-            FileKey = something.FileKey,
+            FileKeys = something.FileKeys,
         };
 
         await _dbContext.Somethings.AddAsync(somethingRecord);
@@ -52,7 +59,7 @@ public class SomethingsRepository : ISomethingsRepository
                 .SetProperty(b => b.Number, b => something.Number)
                 .SetProperty(b => b.Integer, b => something.Integer)
                 .SetProperty(b => b.DateTime, b => something.DateTime)
-                .SetProperty(b => b.FileKey, b => something.FileKey));
+                .SetProperty(b => b.FileKeys, b => something.FileKeys));
     }
 
     public async Task<int> Delete(Guid key)

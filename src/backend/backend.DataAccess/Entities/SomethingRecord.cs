@@ -14,5 +14,5 @@ public record SomethingRecord
     
     public DateTime DateTime { get; set; }
     
-    public Guid FileKey { get; set; }
+    public string[] FileKeys { get; set; }
 }
