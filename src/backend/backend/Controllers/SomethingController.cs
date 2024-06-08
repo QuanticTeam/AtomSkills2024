@@ -23,12 +23,18 @@ public class SomethingController : ControllerBase
         _hubContext = hubContext;
     }
 
-    [AllowAnonymous]
+    [Authorize]
+    // [AllowAnonymous]
     [HttpPost("Test")]
     public async Task<ActionResult<string>> Test()
     {
         await _hubContext.Clients.All.SendAsync("ToastNotification", "success test");
-        return Ok("Test");
+        var userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type.Equals("userId"))?.Value ?? string.Empty;
+        if (HttpContext.User.IsInRole("Admin"))
+        {
+            return Ok("Admin");
+        }
+        return Ok("Not admin");
     }
     
     [Authorize]
