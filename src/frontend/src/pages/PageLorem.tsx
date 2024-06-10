@@ -42,7 +42,9 @@ export default function PageLorem() {
             Backend test request
           </Button>
         </p>
+
         <br />
+
         <p>{faker.lorem.sentence(1000)}</p>
       </div>
     </PageAuthorized>
