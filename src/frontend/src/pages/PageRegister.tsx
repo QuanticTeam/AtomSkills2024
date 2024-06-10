@@ -1,12 +1,13 @@
 import { LockOutlined, UserOutlined } from '@ant-design/icons'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Alert, Button, Form, Input, Popover, Select, Space, Typography, message } from 'antd'
+import { Alert, App, Button, Form, Input, Popover, Select, Space, Typography } from 'antd'
+import { useState } from 'react'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
 import { isStrongPassword } from 'validator'
 import { z } from 'zod'
 import { PageUnauthorized } from '~/layouts/PageUnauthorized'
-import { httpClient } from '~/shared/httpClient'
+import { apiClient, getIsDetailedApiError } from '~/shared/apiClient'
 import { Logo } from '~/shared/ui'
 
 function getIsPasswordStrong(value: string, returnScore = false): boolean | number {
@@ -39,7 +40,11 @@ const schema = z.object({
     .trim()
     .min(1, ' ')
     .min(1, 'Слишком короткое имя пользователя')
-    .max(56, 'Слишком длинное имя пользователя'),
+    .max(56, 'Слишком длинное имя пользователя')
+    // TODO validate latins
+    .refine(async login => {
+      return !(await apiClient.post('/User/CheckLogin', { login })).data.taken
+    }, 'Логин уже занят'),
   password: z
     .string()
     .trim()
@@ -47,7 +52,7 @@ const schema = z.object({
     .min(8, 'Слишком короткий пароль')
     .max(32, 'Слишком длинный пароль')
     .regex(/^[A-Za-z0-9-_+!?=#$%&@^`~]+$/, 'Недопустимые символы'),
-  // .refine(p => !getIsPasswordStrong(p), 'Пароль слишком слабый'),
+  // .refine(p => !getIsPasswordStrong(p), 'Пароль слишком слабый'), // TODO
   role: z.nativeEnum(UserRole),
 })
 
@@ -55,31 +60,50 @@ type Data = z.infer<typeof schema>
 
 export default function PageRegister() {
   const navigate = useNavigate()
-  const [messageApi, contextHolder] = message.useMessage()
+  const { notification } = App.useApp()
+  const [submissionError, setSubmissionError] = useState('')
 
   const {
     handleSubmit,
     control,
     formState: { errors },
+    setError,
   } = useForm<Data>({
+    mode: 'onBlur',
     values: {
       login: '',
       password: '',
       role: UserRole.User, // TODO empty by default
     },
-    resolver: zodResolver(schema),
+    resolver: zodResolver(schema, { async: true }),
   })
 
   const onSubmit: SubmitHandler<Data> = async data => {
-    await httpClient.post('/User/SignUp', data)
-    messageApi.success('Вы успешно зарегистрированы')
-    navigate('/login')
+    try {
+      await apiClient.post('/User/Register', data)
+      notification.info({
+        message: 'Вы успешно зарегистрированы',
+        description: 'Используйте учетные данные для входа в систему',
+        duration: 10,
+      })
+      navigate('/login')
+    } catch (error) {
+      if (getIsDetailedApiError(error)) {
+        if (error.code === 'REGISTER_USERNAME_TAKEN') {
+          setError('login', { message: 'Логин уже занят' }, { shouldFocus: true })
+          return
+        }
+
+        setSubmissionError(error.code)
+        return
+      }
+
+      throw error
+    }
   }
 
   return (
     <PageUnauthorized>
-      {contextHolder}
-
       <div className="w-72 flex mx-auto mb-16">
         <Logo full />
       </div>
@@ -224,6 +248,11 @@ export default function PageRegister() {
               >
                 Зарегистрироваться
               </Button>
+
+              {!submissionError ? null : (
+                <Typography.Text type="danger">{submissionError}</Typography.Text>
+              )}
+
               <Typography.Text>
                 или <Link to="/login">войти</Link>
               </Typography.Text>

@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom'
 import { z } from 'zod'
 import { PageUnauthorized } from '~/layouts/PageUnauthorized'
 import { AuthContext } from '~/shared/auth'
-import { httpClient } from '~/shared/httpClient'
+import { DetailedApiError, apiClient } from '~/shared/apiClient'
 import { Logo } from '~/shared/ui'
 
 const loginSchema = z.object({
@@ -35,8 +35,12 @@ export default function PageLogin() {
   })
 
   const onSubmit: SubmitHandler<LoginData> = async data => {
-    const result = await httpClient.post('/User/Login', data)
-    login(result.data)
+    try {
+      login((await apiClient.post('/User/Login', data)).data)
+    } catch (error: unknown) {
+      console.log(error)
+      // TODO handle wrong creds
+    }
   }
 
   return (

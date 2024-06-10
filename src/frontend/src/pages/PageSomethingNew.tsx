@@ -4,7 +4,7 @@ import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { z } from 'zod'
 import { PageAuthorized } from '~/layouts/PageAuthorized'
-import { httpClient } from '~/shared/httpClient'
+import { apiClient } from '~/shared/apiClient'
 
 const breadcrumbs: BreadcrumbProps['items'] = [
   {
@@ -45,7 +45,6 @@ type Data = z.infer<typeof schema>
 
 export default function PageSomethingNew() {
   const navigate = useNavigate()
-  const [messageApi, contextHolder] = message.useMessage()
 
   const {
     handleSubmit,
@@ -63,8 +62,7 @@ export default function PageSomethingNew() {
   })
 
   const onSubmit: SubmitHandler<Data> = async data => {
-    await httpClient.post('/User/SignUp', data)
-    messageApi.success('Вы успешно зарегистрированы')
+    await apiClient.post('/User/Register', data)
     navigate('/login')
   }
 
@@ -73,8 +71,6 @@ export default function PageSomethingNew() {
       breadcrumbs={breadcrumbs}
       title={title}
     >
-      {contextHolder}
-
       <div className="w-4/5 m-auto flex items-center h-full">
         <Form
           className="grow"

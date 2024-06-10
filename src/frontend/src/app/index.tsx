@@ -1,4 +1,4 @@
-import { ConfigProvider } from 'antd'
+import { App as AntApp, ConfigProvider } from 'antd'
 import React from 'react'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
 import { defaultTheme } from './styles/themes'
@@ -11,9 +11,11 @@ export function App() {
   return (
     <React.StrictMode>
       <ConfigProvider theme={defaultTheme}>
-        <AuthProvider>
-          <RouterProvider router={router} />
-        </AuthProvider>
+        <AntApp>
+          <AuthProvider>
+            <RouterProvider router={router} />
+          </AuthProvider>
+        </AntApp>
       </ConfigProvider>
     </React.StrictMode>
   )

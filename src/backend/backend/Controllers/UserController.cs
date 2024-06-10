@@ -42,6 +42,20 @@ public class UserController : ControllerBase
         return EnumExtension.GetEnumValues<UserRole>();
     }
 
+    [HttpPost("CheckLogin")]
+    public async Task<ActionResult<string>> CheckLogin([FromBody] CheckLoginRequest request)
+    {
+        var users = await _usersService.GetAll();
+        var user = users.FirstOrDefault(x => x.Login.Equals(request.Login, StringComparison.InvariantCultureIgnoreCase));
+
+        if (user == null) {
+            return StatusCode(StatusCodes.Status200OK, new { Taken = false });
+        }
+
+        return StatusCode(StatusCodes.Status200OK, new { Taken = true });
+    }
+
+
     [HttpPost("Login")]
     public async Task<ActionResult<string>> Login([FromBody] LoginRequest request)
     {
@@ -51,7 +65,10 @@ public class UserController : ControllerBase
 
         if (user == null)
         {
-            return BadRequest("Incorrect username or password");
+            return StatusCode(StatusCodes.Status403Forbidden, new {
+                Code = "LOGIN_WRONG_CREDENTIALS",
+                Message = "Incorrect username or password",
+            });
         }
 
         var token = _jwtTokenService.GenerateToken(user);
@@ -61,11 +78,14 @@ public class UserController : ControllerBase
         return Ok(token);
     }
 
-    [HttpPost("SignUp")]
+    [HttpPost("Register")]
     public async Task<ActionResult<int>> SignUp([FromBody] SignUpRequest request)
     {
         if (await CheckUnique(request.Login))
-            return BadRequest("User already exist");
+            return StatusCode(StatusCodes.Status409Conflict, new {
+                Code = "REGISTER_USERNAME_TAKEN",
+                Message = "Username is taken",
+            });
         
         var user = new User(
             Guid.NewGuid(), 
@@ -87,7 +107,10 @@ public class UserController : ControllerBase
         var user = await _usersService.Get(Guid.Parse(request.Key));
         
         if (user == null)
-            return BadRequest("User not found");
+            return StatusCode(StatusCodes.Status404NotFound, new {
+                Code = "USER_UPDATE_NOT_FOUND",
+                Message = "User not found",
+            });
         
         var updateUser = new User(
             user.Key, 
