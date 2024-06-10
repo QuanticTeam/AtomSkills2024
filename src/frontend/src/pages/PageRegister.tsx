@@ -1,7 +1,7 @@
 import { LockOutlined, UserOutlined } from '@ant-design/icons'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Alert, App, Button, Form, Input, Popover, Select, Space, Typography } from 'antd'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
 import { isStrongPassword } from 'validator'
@@ -28,12 +28,6 @@ function getIsPasswordStrong(value: string, returnScore = false): boolean | numb
   })
 }
 
-enum UserRole {
-  User,
-  Expert,
-  Admin,
-}
-
 const schema = z.object({
   login: z
     .string()
@@ -53,8 +47,13 @@ const schema = z.object({
     .max(32, 'Слишком длинный пароль')
     .regex(/^[A-Za-z0-9-_+!?=#$%&@^`~]+$/, 'Недопустимые символы'),
   // .refine(p => !getIsPasswordStrong(p), 'Пароль слишком слабый'), // TODO
-  role: z.nativeEnum(UserRole),
+  role: z.number(),
 })
+
+interface UserRole {
+  id: number
+  role: string
+}
 
 type Data = z.infer<typeof schema>
 
@@ -62,6 +61,15 @@ export default function PageRegister() {
   const navigate = useNavigate()
   const { notification } = App.useApp()
   const [submissionError, setSubmissionError] = useState('')
+  const [roles, setRoles] = useState<UserRole[]>([])
+
+  useEffect(() => {
+    async function fetchRoles() {
+      setRoles((await apiClient.get('/User/GetRoles')).data)
+    }
+
+    fetchRoles()
+  }, [])
 
   const {
     handleSubmit,
@@ -73,7 +81,7 @@ export default function PageRegister() {
     values: {
       login: '',
       password: '',
-      role: UserRole.User, // TODO empty by default
+      role: 0, // TODO empty by default
     },
     resolver: zodResolver(schema, { async: true }),
   })
@@ -127,20 +135,7 @@ export default function PageRegister() {
                 validateStatus={errors.role?.message && 'error'}
               >
                 <Select
-                  options={[
-                    {
-                      value: UserRole.User,
-                      label: 'Участник',
-                    },
-                    {
-                      value: UserRole.Expert,
-                      label: 'Эксперт',
-                    },
-                    {
-                      value: UserRole.Admin,
-                      label: 'Администратор',
-                    },
-                  ]}
+                  options={roles.map(({ id, role }) => ({ value: id, label: role }))}
                   placeholder="Выбрать"
                   {...field}
                 />

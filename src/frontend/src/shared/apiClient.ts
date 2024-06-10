@@ -28,6 +28,8 @@ apiClient.interceptors.response.use(
       }
     }
 
+    // TODO handle 5xx globally
+
     throw error
   },
 )

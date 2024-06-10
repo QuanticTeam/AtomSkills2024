@@ -1,13 +1,13 @@
 import { LockOutlined, UserOutlined } from '@ant-design/icons'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, Checkbox, Form, Input, Space, Typography } from 'antd'
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
 import { z } from 'zod'
 import { PageUnauthorized } from '~/layouts/PageUnauthorized'
 import { AuthContext } from '~/shared/auth'
-import { DetailedApiError, apiClient } from '~/shared/apiClient'
+import { apiClient, getIsDetailedApiError } from '~/shared/apiClient'
 import { Logo } from '~/shared/ui'
 
 const loginSchema = z.object({
@@ -20,6 +20,7 @@ type LoginData = z.infer<typeof loginSchema>
 
 export default function PageLogin() {
   const { login } = useContext(AuthContext)
+  const [submissionError, setSubmissionError] = useState('')
 
   const {
     handleSubmit,
@@ -38,8 +39,17 @@ export default function PageLogin() {
     try {
       login((await apiClient.post('/User/Login', data)).data)
     } catch (error: unknown) {
-      console.log(error)
-      // TODO handle wrong creds
+      if (getIsDetailedApiError(error)) {
+        if (error.code === 'LOGIN_WRONG_CREDENTIALS') {
+          setSubmissionError('Неправильный логин или пароль')
+          return
+        }
+
+        setSubmissionError(error.code)
+        return
+      }
+
+      throw error
     }
   }
 
@@ -123,6 +133,9 @@ export default function PageLogin() {
               >
                 Войти
               </Button>
+              {!submissionError ? null : (
+                <Typography.Text type="danger">{submissionError}</Typography.Text>
+              )}
               <Typography.Text>
                 или <Link to="/register">зарегистрироваться</Link>
               </Typography.Text>
