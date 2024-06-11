@@ -3,31 +3,34 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Alert, Button, Form, Input, Popover, Select, Space, Typography } from 'antd'
 import { ReactNode, useState } from 'react'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { getIsPasswordStrong } from '~/entities/Password'
-import { UserRegisterDto, userRegisterSchema } from '~/entities/User'
+import { UserSignUpDto, userSignUpSchema } from '~/entities/User'
 import { UserRole } from '~/entities/UserRole'
 import { getIsDetailedApiError } from '~/shared/apiClient'
 
-interface FormRegisterProps {
+interface FormSignUpProps {
   children: ReactNode
-  onSubmit: SubmitHandler<UserRegisterDto>
+  onSubmit: SubmitHandler<UserSignUpDto>
   roles: UserRole[]
 }
 
-export function FormRegister({ children, onSubmit, roles }: FormRegisterProps) {
+export function FormSignUp({ children, onSubmit, roles }: FormSignUpProps) {
+  const { t } = useTranslation()
+
   const {
     handleSubmit,
     control,
     formState: { errors },
     setError,
-  } = useForm<UserRegisterDto>({
+  } = useForm<UserSignUpDto>({
     mode: 'onBlur',
     values: {
       login: '',
       password: '',
       role: 0, // TODO empty by default
     },
-    resolver: zodResolver(userRegisterSchema, { async: true }),
+    resolver: zodResolver(userSignUpSchema, { async: true }),
   })
 
   const [submissionError, setSubmissionError] = useState('')
@@ -45,8 +48,8 @@ export function FormRegister({ children, onSubmit, roles }: FormRegisterProps) {
           if (!getIsDetailedApiError(error)) throw error
 
           switch (error.code) {
-            case 'REGISTER_USERNAME_TAKEN': {
-              setError('login', { message: 'Логин уже занят' }, { shouldFocus: true }) // TODO t
+            case 'SIGN_UP_LOGIN_TAKEN': {
+              setError('login', { message: t('Login is taken') }, { shouldFocus: true })
               return
             }
             default: {
@@ -62,13 +65,13 @@ export function FormRegister({ children, onSubmit, roles }: FormRegisterProps) {
         render={({ field }) => (
           <Form.Item
             required
-            label="Ваша роль" // TODO t
+            label={t('Role')}
             help={errors.role?.message}
             validateStatus={errors.role?.message && 'error'}
           >
             <Select
               options={roles.map(({ id, role }) => ({ value: id, label: role }))}
-              placeholder="Выбрать" // TODO t
+              placeholder={t('Select')}
               {...field}
             />
           </Form.Item>
@@ -79,7 +82,7 @@ export function FormRegister({ children, onSubmit, roles }: FormRegisterProps) {
         control={control}
         render={({ field }) => (
           <Form.Item
-            label="Пользователь" // TODO t
+            label={t('Login')}
             required
             help={errors.login?.message}
             validateStatus={errors.login?.message && 'error'}
@@ -91,8 +94,8 @@ export function FormRegister({ children, onSubmit, roles }: FormRegisterProps) {
                   showIcon
                   message={
                     <Typography.Text className="text-xs text-slate-500">
-                      {/* // TODO t */}
-                      Латинские буквы и цифры от 2 до 56 символов
+                      {/* TODO interpolate */}
+                      {t('Latin letters and digits from 2 to 56 symbols')}
                     </Typography.Text>
                   }
                 />
@@ -103,7 +106,7 @@ export function FormRegister({ children, onSubmit, roles }: FormRegisterProps) {
               <div>
                 <Input
                   prefix={<UserOutlined className="text-slate-400" />}
-                  placeholder="Придумайте логин" // TODO t
+                  placeholder={t('Come up with login')}
                   {...field}
                 />
               </div>
@@ -116,7 +119,7 @@ export function FormRegister({ children, onSubmit, roles }: FormRegisterProps) {
         control={control}
         render={({ field }) => (
           <Form.Item
-            label="Пароль" // TODO t
+            label={t('Password')}
             required
             help={errors.password?.message}
             validateStatus={errors.password?.message && 'error'}
@@ -128,15 +131,15 @@ export function FormRegister({ children, onSubmit, roles }: FormRegisterProps) {
                   showIcon
                   message={
                     <Typography.Text className="text-xs text-slate-500">
-                      {/* TODO t */}
-                      Латинские буквы, цифры,{' '}
+                      {t('Latin letters, digits')},{' '}
                       <code
                         className="font-bold text-slate-700"
                         title="- _ + ! ? = # $ % & @ ^ ` ~"
                       >
                         - _ + ! ? = # $ % & @ ^ ` ~
                       </code>{' '}
-                      от 8 до 32 символов
+                      {/* TODO interpolate */}
+                      {t('from 8 to 32 symbold')}
                     </Typography.Text>
                   }
                 />
@@ -147,11 +150,10 @@ export function FormRegister({ children, onSubmit, roles }: FormRegisterProps) {
               <div>
                 <Input.Password
                   prefix={<LockOutlined className="text-slate-400" />}
-                  placeholder="Придумайте пароль" // TODO t
+                  placeholder={t('Come up with password')}
                   suffix={
                     <Typography.Text className="text-xs text-slate-400">
-                      {/* TODO t */}
-                      {getIsPasswordStrong(field.value) ? 'надежный' : 'слабый'}
+                      {getIsPasswordStrong(field.value) ? t('Reliable') : t('Weak')}
                     </Typography.Text>
                   }
                   {...field}
@@ -176,8 +178,7 @@ export function FormRegister({ children, onSubmit, roles }: FormRegisterProps) {
             htmlType="submit"
             className="w-full"
           >
-            {/* TODO t */}
-            Зарегистрироваться
+            {t('Sign up')}
           </Button>
 
           {!submissionError ? null : (

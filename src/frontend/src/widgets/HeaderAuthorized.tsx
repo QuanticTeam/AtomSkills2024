@@ -4,6 +4,7 @@ import { Avatar, Badge, Button, Dropdown, Input, Layout } from 'antd'
 import { useContext } from 'react'
 import { Link } from 'react-router-dom'
 import { AuthContext } from '~/shared/auth'
+import { ROUTE_PATH_INDEX } from '~/shared/routng/constants'
 import { colors } from '~/shared/styles'
 import { Logo } from '~/shared/ui'
 
@@ -14,7 +15,7 @@ export function HeaderAuthorized() {
     <Layout.Header className="sticky top-0 p-0 h-20">
       <div className="flex items-center h-full border-b-4 border-primary-2">
         <div className="w-10 ml-5">
-          <Link to="/">
+          <Link to={ROUTE_PATH_INDEX}>
             <Logo />
           </Link>
         </div>

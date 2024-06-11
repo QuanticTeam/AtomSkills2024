@@ -3,27 +3,31 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, Checkbox, Form, Input, Space, Typography } from 'antd'
 import { ReactNode, useState } from 'react'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import { UserLoginDto, userLoginSchema } from '~/entities/User'
+import { UserSignInDto, userSignInSchema } from '~/entities/User'
 import { getIsDetailedApiError } from '~/shared/apiClient'
+import { ROUTE_PATH_FORGOT_PASSWORD } from '~/shared/routng/constants'
 
-interface FormLoginProps {
+interface FormSignInProps {
   children: ReactNode
-  onSubmit: SubmitHandler<UserLoginDto>
+  onSubmit: SubmitHandler<UserSignInDto>
 }
 
-export function FormLogin({ children, onSubmit }: FormLoginProps) {
+export function FormSignIn({ children, onSubmit }: FormSignInProps) {
+  const { t } = useTranslation()
+
   const {
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<UserLoginDto>({
+  } = useForm<UserSignInDto>({
     values: {
       login: '',
       password: '',
       remember: true,
     },
-    resolver: zodResolver(userLoginSchema),
+    resolver: zodResolver(userSignInSchema),
   })
 
   const [submissionError, setSubmissionError] = useState('')
@@ -37,8 +41,8 @@ export function FormLogin({ children, onSubmit }: FormLoginProps) {
           if (!getIsDetailedApiError(error)) throw error
 
           switch (error.code) {
-            case 'LOGIN_WRONG_CREDENTIALS': {
-              setSubmissionError('Неправильный логин или пароль') // TODO t
+            case 'SIGN_IN_WRONG_CREDENTIALS': {
+              setSubmissionError(t('Wrong login or password'))
               return
             }
             default: {
@@ -59,7 +63,7 @@ export function FormLogin({ children, onSubmit }: FormLoginProps) {
           >
             <Input
               prefix={<UserOutlined className="text-gray-400" />}
-              placeholder="Пользователь" // TODO t
+              placeholder={t('Login')}
               {...field}
             />
           </Form.Item>
@@ -76,7 +80,7 @@ export function FormLogin({ children, onSubmit }: FormLoginProps) {
             <Input.Password
               prefix={<LockOutlined className="text-gray-400" />}
               type="password"
-              placeholder="Пароль" // TODO t
+              placeholder={t('Password')}
               {...field}
             />
           </Form.Item>
@@ -94,13 +98,11 @@ export function FormLogin({ children, onSubmit }: FormLoginProps) {
                 noStyle
                 valuePropName="checked"
               >
-                {/* TODO t */}
-                <Checkbox {...field}>Запомнить меня</Checkbox>
+                <Checkbox {...field}>{t('Remember me')}</Checkbox>
               </Form.Item>
 
               <Typography.Text>
-                {/* TODO t */}
-                <Link to="/forgot">Не помню пароль</Link>
+                <Link to={ROUTE_PATH_FORGOT_PASSWORD}>{t('Forgot password')}</Link>
               </Typography.Text>
             </div>
           </Form.Item>
@@ -118,12 +120,10 @@ export function FormLogin({ children, onSubmit }: FormLoginProps) {
             htmlType="submit"
             className="w-full"
           >
-            {/* TODO t */}
-            Войти
+            {t('Sign in')}
           </Button>
 
           {!submissionError ? null : (
-            // TODO t
             <Typography.Text type="danger">{submissionError}</Typography.Text>
           )}
 

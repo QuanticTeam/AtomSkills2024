@@ -1,7 +1,7 @@
 import { AuthContext } from '../../shared/auth/ui/AuthContext'
 import { authToken } from '../../shared/auth/models/authToken'
 import { ReactNode, useState } from 'react'
-import { redirectToLogin } from '~/shared/routng'
+import { redirectToSignIn } from '~/shared/routng'
 
 interface AuthContextProps {
   children: ReactNode
@@ -21,7 +21,7 @@ export function AuthProvider({ children }: AuthContextProps) {
         logout() {
           authToken.remove()
           setAuthTokenValue(null)
-          redirectToLogin()
+          redirectToSignIn()
         },
       }}
     >

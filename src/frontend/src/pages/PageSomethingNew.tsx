@@ -1,50 +1,50 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Alert, BreadcrumbProps, Button, Form, Input, Popover, Typography, message } from 'antd'
+import { Alert, BreadcrumbProps, Button, Form, Input, Popover, Typography } from 'antd'
+import { t } from 'i18next'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import { NavLink } from 'react-router-dom'
 import { z } from 'zod'
 import { PageAuthorized } from '~/layouts/PageAuthorized'
-import { apiClient } from '~/shared/apiClient'
+import { ROUTE_PATH_SOMETHING, ROUTE_PATH_SOMETHING_NEW } from '~/shared/routng/constants'
 
 const breadcrumbs: BreadcrumbProps['items'] = [
   {
     title: (
       <NavLink
-        to="/something"
+        to={ROUTE_PATH_SOMETHING}
         className={({ isActive }) => (!isActive ? '!text-link-1' : '')}
         end
       >
-        Все сущности
+        {t('All entities')}
       </NavLink>
     ),
   },
   {
     title: (
       <NavLink
-        to="/something/new"
+        to={ROUTE_PATH_SOMETHING_NEW}
         className={({ isActive }) => (!isActive ? '!text-link-1' : '')}
         end
       >
-        Новая сущность
+        {t('New entity')}
       </NavLink>
     ),
   },
 ]
 
-const title = 'Новая сущность'
-
 const schema = z.object({
   name: z.string(),
-  number: z.string(), // parsefloat
-  integer: z.string(), // parseint
-  dateTime: z.string(), // ISO string validation
-  file: z.string(), // ??
+  number: z.string(), // TODO parsefloat
+  integer: z.string(), // TODO parseint
+  dateTime: z.string(), // TODO ISO string validation
+  file: z.string(), // TODO ??
 })
 
 type Data = z.infer<typeof schema>
 
 export default function PageSomethingNew() {
-  const navigate = useNavigate()
+  const { t } = useTranslation()
 
   const {
     handleSubmit,
@@ -61,15 +61,12 @@ export default function PageSomethingNew() {
     resolver: zodResolver(schema),
   })
 
-  const onSubmit: SubmitHandler<Data> = async data => {
-    await apiClient.post('/User/Register', data)
-    navigate('/login')
-  }
+  const onSubmit: SubmitHandler<Data> = async data => {}
 
   return (
     <PageAuthorized
       breadcrumbs={breadcrumbs}
-      title={title}
+      title={t('Something new')}
     >
       <div className="w-4/5 m-auto flex items-center h-full">
         <Form
@@ -85,7 +82,7 @@ export default function PageSomethingNew() {
             render={({ field }) => (
               <Form.Item
                 required
-                label="Имя"
+                label={t('Name')}
                 help={errors.name?.message}
                 validateStatus={errors.name?.message && 'error'}
               >
@@ -109,7 +106,7 @@ export default function PageSomethingNew() {
                 >
                   <div>
                     <Input
-                      placeholder="Введите имя"
+                      placeholder={t('Enter name')}
                       {...field}
                     />
                   </div>
@@ -123,7 +120,7 @@ export default function PageSomethingNew() {
             render={({ field }) => (
               <Form.Item
                 required
-                label="Десятичная дробь"
+                label={t('Decimal')}
                 help={errors.number?.message}
                 validateStatus={errors.number?.message && 'error'}
               >
@@ -147,7 +144,7 @@ export default function PageSomethingNew() {
                 >
                   <div>
                     <Input
-                      placeholder="Введите значение"
+                      placeholder={t('Enter value')}
                       {...field}
                     />
                   </div>
@@ -161,7 +158,7 @@ export default function PageSomethingNew() {
             render={({ field }) => (
               <Form.Item
                 required
-                label="Целое число"
+                label={t('Integer')}
                 help={errors.integer?.message}
                 validateStatus={errors.integer?.message && 'error'}
               >
@@ -185,7 +182,7 @@ export default function PageSomethingNew() {
                 >
                   <div>
                     <Input
-                      placeholder="Введите значение"
+                      placeholder={t('Enter value')}
                       {...field}
                     />
                   </div>
@@ -203,8 +200,7 @@ export default function PageSomethingNew() {
               htmlType="submit"
               block
             >
-              {/* TODO t */}
-              Создать
+              {t('Create')}
             </Button>
           </Form.Item>
         </Form>

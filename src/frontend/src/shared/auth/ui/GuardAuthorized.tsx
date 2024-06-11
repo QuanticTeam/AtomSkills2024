@@ -1,7 +1,7 @@
 import { ReactNode, useContext } from 'react'
 import { Navigate } from 'react-router-dom'
 import { AuthContext } from './AuthContext'
-import { ROUTE_PATH_LOGIN } from '~/shared/routng/constants'
+import { ROUTE_PATH_SIGN_IN } from '~/shared/routng/constants'
 
 interface GuardAuthorizedProps {
   children: ReactNode
@@ -14,7 +14,7 @@ export function GuardAuthorized({ children }: GuardAuthorizedProps) {
 
   return (
     <Navigate
-      to={ROUTE_PATH_LOGIN}
+      to={ROUTE_PATH_SIGN_IN}
       replace={true}
     />
   )

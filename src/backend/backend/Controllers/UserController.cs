@@ -56,8 +56,8 @@ public class UserController : ControllerBase
     }
 
 
-    [HttpPost("Login")]
-    public async Task<ActionResult<string>> Login([FromBody] LoginRequest request)
+    [HttpPost("SignIn")]
+    public async Task<ActionResult<string>> SignIn([FromBody] SignInRequest request)
     {
         var users = await _usersService.GetAll();
         var user = users.FirstOrDefault(x => x.Login.Equals(request.Login, StringComparison.InvariantCultureIgnoreCase)
@@ -66,8 +66,8 @@ public class UserController : ControllerBase
         if (user == null)
         {
             return StatusCode(StatusCodes.Status403Forbidden, new {
-                Code = "LOGIN_WRONG_CREDENTIALS",
-                Message = "Incorrect username or password",
+                Code = "SIGN_IN_WRONG_CREDENTIALS",
+                Message = "Incorrect login or password",
             });
         }
 
@@ -78,13 +78,13 @@ public class UserController : ControllerBase
         return Ok(token);
     }
 
-    [HttpPost("Register")]
+    [HttpPost("SignUp")]
     public async Task<ActionResult<int>> SignUp([FromBody] SignUpRequest request)
     {
         if (await CheckUnique(request.Login))
             return StatusCode(StatusCodes.Status409Conflict, new {
-                Code = "REGISTER_USERNAME_TAKEN",
-                Message = "Username is taken",
+                Code = "SIGN_UP_LOGIN_TAKEN",
+                Message = "Login is taken",
             });
         
         var user = new User(

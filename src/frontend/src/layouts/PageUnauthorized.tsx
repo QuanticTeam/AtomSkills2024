@@ -13,11 +13,11 @@ export function PageUnauthorized({ children }: PageUnauthorizedProps) {
     <GuardUnauthorized>
       <Layout className="h-screen">
         <Layout.Content>
-          <div className="w-72 flex mx-auto mb-16">
-            <Logo full />
-          </div>
-
           <div className="bg-gray-100 flex flex-col min-h-full justify-center">
+            <div className="w-72 flex mx-auto mb-16">
+              <Logo full />
+            </div>
+
             <div className="flex">{children}</div>
           </div>
         </Layout.Content>

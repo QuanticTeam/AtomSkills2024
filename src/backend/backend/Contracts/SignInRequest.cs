@@ -1,6 +1,6 @@
 namespace backend.Contracts;
 
-public record LoginRequest
+public record SignInRequest
 {
     public string Login { get; set; }
     

@@ -3,8 +3,8 @@ import { Suspense, lazy } from 'react'
 import { Outlet, RouteObject } from 'react-router-dom'
 import {
   ROUTE_PATH_INDEX,
-  ROUTE_PATH_LOGIN,
-  ROUTE_PATH_REGISTER,
+  ROUTE_PATH_SIGN_IN,
+  ROUTE_PATH_SIGN_UP,
   ROUTE_PATH_SOMETHING,
   ROUTE_PATH_LOREM,
   ROUTE_PATH_SOMETHING_NEW,
@@ -23,12 +23,12 @@ export const routesConfig: RouteObject[] = [
         Component: lazy(() => import('./PageSomething')),
       },
       {
-        path: ROUTE_PATH_LOGIN,
-        Component: lazy(() => import('./PageLogin')),
+        path: ROUTE_PATH_SIGN_IN,
+        Component: lazy(() => import('./PageSignIn')),
       },
       {
-        path: ROUTE_PATH_REGISTER,
-        Component: lazy(() => import('./PageRegister')),
+        path: ROUTE_PATH_SIGN_UP,
+        Component: lazy(() => import('./PageSignUp')),
       },
       {
         path: ROUTE_PATH_SOMETHING,

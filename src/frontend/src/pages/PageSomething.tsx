@@ -1,6 +1,9 @@
 import { BreadcrumbProps, Button, Space, Table, TableProps, Tag } from 'antd'
+import { t } from 'i18next'
+import { useTranslation } from 'react-i18next'
 import { Link, NavLink } from 'react-router-dom'
 import { PageAuthorized } from '~/layouts/PageAuthorized'
+import { ROUTE_PATH_SOMETHING, ROUTE_PATH_SOMETHING_NEW } from '~/shared/routng/constants'
 
 interface DataType {
   key: string
@@ -86,32 +89,31 @@ const data: DataType[] = [
   },
 ]
 
-const route = '/something'
-const title = 'Все сущности'
-
 export const breadcrumbs: BreadcrumbProps['items'] = [
   {
     title: (
       <NavLink
-        to={route}
+        to={ROUTE_PATH_SOMETHING}
         className={({ isActive }) => (!isActive ? '!text-link-1' : '')}
         end
       >
-        {title}
+        {t('AllEntities')}
       </NavLink>
     ),
   },
 ]
 
 export default function PageSomething() {
+  const { t } = useTranslation()
+
   return (
     <PageAuthorized
       breadcrumbs={breadcrumbs}
-      title={title}
+      title={t('All entities')}
       actions={
         <Space>
-          <Link to="/something/new">
-            <Button type="primary">Создать</Button>
+          <Link to={ROUTE_PATH_SOMETHING_NEW}>
+            <Button type="primary">{t('Create')}</Button>
           </Link>
         </Space>
       }

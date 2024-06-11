@@ -1,13 +1,16 @@
 import { App, Typography } from 'antd'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router-dom'
 import { UserApi } from '~/entities/User'
 import { UserRole, UserRoleApi } from '~/entities/UserRole'
 import { PageUnauthorized } from '~/layouts/PageUnauthorized'
-import { FormRegister } from '~/widgets/FormRegister'
+import { ROUTE_PATH_SIGN_IN } from '~/shared/routng/constants'
+import { FormSignUp } from '~/widgets/FormSignUp'
 
-export default function PageRegister() {
+export default function PageSignUp() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const { message } = App.useApp()
   const [roles, setRoles] = useState<UserRole[]>([])
 
@@ -21,21 +24,20 @@ export default function PageRegister() {
 
   return (
     <PageUnauthorized>
-      <FormRegister
+      <FormSignUp
         onSubmit={async dto => {
-          await UserApi.register(dto)
+          await UserApi.signUp(dto)
 
-          message.info('Вы успешно зарегистрированы', 10) // TODO t
+          message.info(t('Successfuly signed up'), 10)
 
-          navigate('/login')
+          navigate(ROUTE_PATH_SIGN_IN)
         }}
         roles={roles}
       >
         <Typography.Text>
-          {/* TODO t */}
-          или <Link to="/login">войти</Link>
+          {t('or')} <Link to={ROUTE_PATH_SIGN_IN}>{t('Sign in')}</Link>
         </Typography.Text>
-      </FormRegister>
+      </FormSignUp>
     </PageUnauthorized>
   )
 }

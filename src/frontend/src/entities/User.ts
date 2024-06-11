@@ -1,43 +1,44 @@
+import { t } from 'i18next'
 import { z } from 'zod'
 import { apiClient } from '~/shared/apiClient'
 
 export const UserApi = {
-  async register(dto: UserRegisterDto) {
-    return await apiClient.post('/User/Register', dto)
+  async signUp(dto: UserSignUpDto) {
+    return await apiClient.post('/User/SignUp', dto)
   },
-  async login(dto: UserLoginDto) {
-    return (await apiClient.post('/User/Login', dto)).data
+  async signIn(dto: UserSignInDto) {
+    return (await apiClient.post('/User/SignIn', dto)).data
   },
 }
 
-export const userRegisterSchema = z.object({
+export const userSignUpSchema = z.object({
   login: z
     .string()
     .trim()
     .min(1, ' ')
-    .min(1, 'Слишком короткое имя пользователя') // TODO t
-    .max(56, 'Слишком длинное имя пользователя') // TODO t
+    .min(1, t('Login is too short'))
+    .max(56, t('Login is too long'))
     // TODO validate latins
     .refine(async login => {
       return !(await apiClient.post('/User/CheckLogin', { login })).data.taken
-    }, 'Логин уже занят'), // TODO t
+    }, t('Login is taken')),
   password: z
     .string()
     .trim()
     .min(1, ' ')
-    .min(8, 'Слишком короткий пароль') // TODO t
-    .max(32, 'Слишком длинный пароль') // TODO t
-    .regex(/^[A-Za-z0-9-_+!?=#$%&@^`~]+$/, 'Недопустимые символы'),
-  // .refine(p => !getIsPasswordStrong(p), 'Пароль слишком слабый'), // TODO && TODO t
+    .min(8, t('Password is too short'))
+    .max(32, t('Password is too long'))
+    .regex(/^[A-Za-z0-9-_+!?=#$%&@^`~]+$/, t('Unacceptable symbols')),
+  // .refine(p => !getIsPasswordStrong(p), t('Password is too weak'))), // TODO
   role: z.number(),
 })
 
-export type UserRegisterDto = z.infer<typeof userRegisterSchema>
+export type UserSignUpDto = z.infer<typeof userSignUpSchema>
 
-export const userLoginSchema = z.object({
+export const userSignInSchema = z.object({
   login: z.string().trim().min(1, ' '), // TODO investigate
   password: z.string().trim().min(1, ' '),
   remember: z.boolean(),
 })
 
-export type UserLoginDto = z.infer<typeof userLoginSchema>
+export type UserSignInDto = z.infer<typeof userSignInSchema>

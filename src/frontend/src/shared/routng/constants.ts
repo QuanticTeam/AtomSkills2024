@@ -1,8 +1,8 @@
 export const ROUTE_PATH_INDEX = '/'
 
-export const ROUTE_PATH_LOGIN = '/login'
-export const ROUTE_PATH_REGISTER = '/register'
-export const ROUTE_PATH_FORGOT = '/forgot'
+export const ROUTE_PATH_SIGN_IN = '/sign-in'
+export const ROUTE_PATH_SIGN_UP = '/sign-up'
+export const ROUTE_PATH_FORGOT_PASSWORD = '/forgot-password'
 
 export const ROUTE_PATH_SOMETHING = '/something'
 export const ROUTE_PATH_SOMETHING_NEW = '/something/new'
