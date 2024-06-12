@@ -1,0 +1,17 @@
+{
+  "login": "Login",
+  "loginFieldPlaceholder": "Come up with login",
+  "loginFieldTip": "Latin letters and digits from 2 to 56 symbols",
+  "loginTaken": "Login is taken",
+  "password": "Password",
+  "passwordFieldPlaceholder": "Come up with password",
+  "passwordFieldTipAplhabet": "Latin letters, digits",
+  "passwordFieldTipLength": "Latin letters and digits from 2 to 56 symbols",
+  "passwordReliable": "Reliable",
+  "passwordWeak": "Weak",
+  "role": "Role",
+  "roleAdmin": "Admin",
+  "roleExpert": "Expert",
+  "roleUser": "User",
+  "submit": "Sign up"
+}

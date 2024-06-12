@@ -27,3 +27,7 @@ http://localhost:9001/login
 ## Test through the [hurl](hurl.dev)
 
 > hurl --test ./src/test/healthy.hurl
+
+## Wipe everything
+
+docker system prune -a

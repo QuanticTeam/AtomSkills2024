@@ -1,7 +1,7 @@
 import { AuthContext } from '../../shared/auth/ui/AuthContext'
 import { authToken } from '../../shared/auth/models/authToken'
 import { ReactNode, useState } from 'react'
-import { redirectToSignIn } from '~/shared/routng'
+import { redirectToSignIn } from '~/shared/routing'
 
 interface AuthContextProps {
   children: ReactNode

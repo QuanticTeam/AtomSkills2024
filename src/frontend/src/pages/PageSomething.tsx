@@ -3,7 +3,7 @@ import { t } from 'i18next'
 import { useTranslation } from 'react-i18next'
 import { Link, NavLink } from 'react-router-dom'
 import { PageAuthorized } from '~/layouts/PageAuthorized'
-import { ROUTE_PATH_SOMETHING, ROUTE_PATH_SOMETHING_NEW } from '~/shared/routng/constants'
+import { ROUTE_PATH_SOMETHING, ROUTE_PATH_SOMETHING_NEW } from '~/shared/routing'
 
 interface DataType {
   key: string

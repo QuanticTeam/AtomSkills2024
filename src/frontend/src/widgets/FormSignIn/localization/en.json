@@ -1,0 +1,8 @@
+{
+  "forgot": "Forgot password",
+  "login": "Login",
+  "password": "Password",
+  "remember": "Remember me",
+  "submit": "Sign in",
+  "wrongCredentials": "Wrong login or password"
+}

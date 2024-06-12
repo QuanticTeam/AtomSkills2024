@@ -1,2 +1,2 @@
-export * as routeConstants from './constants'
+export * from './constants'
 export { redirectToSignIn } from './redirectToSignIn'

@@ -5,12 +5,12 @@ import { Link } from 'react-router-dom'
 import { UserApi } from '~/entities/User'
 import { PageUnauthorized } from '~/layouts/PageUnauthorized'
 import { AuthContext } from '~/shared/auth'
-import { ROUTE_PATH_SIGN_UP } from '~/shared/routng/constants'
-import { FormSignIn } from '~/widgets/FormSignIn'
+import { ROUTE_PATH_SIGN_UP } from '~/shared/routing'
+import { FormSignIn } from '~/widgets'
 
-export default function PageSignIn() {
+export function PageSignIn() {
   const { login } = useContext(AuthContext)
-  const { t } = useTranslation()
+  const { t } = useTranslation(PageSignIn.name)
 
   return (
     <PageUnauthorized>
@@ -20,7 +20,7 @@ export default function PageSignIn() {
         }}
       >
         <Typography.Text>
-          {t('or')} <Link to={ROUTE_PATH_SIGN_UP}>{t('Sign up')}</Link>
+          {t('or')} <Link to={ROUTE_PATH_SIGN_UP}>{t('signUp')}</Link>
         </Typography.Text>
       </FormSignIn>
     </PageUnauthorized>

@@ -2,13 +2,15 @@ import { UserOutlined } from '@ant-design/icons'
 import { faker } from '@faker-js/faker'
 import { Avatar, Badge, Button, Dropdown, Input, Layout } from 'antd'
 import { useContext } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { AuthContext } from '~/shared/auth'
-import { ROUTE_PATH_INDEX } from '~/shared/routng/constants'
+import { ROUTE_PATH_INDEX } from '~/shared/routing'
 import { colors } from '~/shared/styles'
 import { Logo } from '~/shared/ui'
 
 export function HeaderAuthorized() {
+  const { t } = useTranslation(HeaderAuthorized.name)
   const { logout } = useContext(AuthContext)
 
   return (
@@ -41,7 +43,7 @@ export function HeaderAuthorized() {
                         type="link"
                         onClick={logout}
                       >
-                        Выйти
+                        {t('logout')}
                       </Button>
                     ),
                     key: '0',

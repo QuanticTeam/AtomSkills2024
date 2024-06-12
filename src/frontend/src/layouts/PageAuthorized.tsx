@@ -1,18 +1,10 @@
-import {
-  AlignLeftOutlined,
-  DesktopOutlined,
-  FileOutlined,
-  PieChartOutlined,
-  TableOutlined,
-  TeamOutlined,
-  UserOutlined,
-} from '@ant-design/icons'
-import { Layout, Menu, MenuProps, Typography } from 'antd'
+import { AlignLeftOutlined, TableOutlined } from '@ant-design/icons'
+import { Layout, MenuProps, Typography } from 'antd'
 import { ReactNode, useEffect, useState } from 'react'
 
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { GuardAuthorized } from '~/shared/auth'
-import { Footer, HeaderAuthorized, Breadcrumbs, BreadcrumbsProps, Sidebar } from '~/widgets'
+import { Breadcrumbs, BreadcrumbsProps, Footer, HeaderAuthorized, Sidebar } from '~/widgets'
 
 type MenuItem = Required<MenuProps>['items'][number]
 

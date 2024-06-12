@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { NavLink } from 'react-router-dom'
 import { z } from 'zod'
 import { PageAuthorized } from '~/layouts/PageAuthorized'
-import { ROUTE_PATH_SOMETHING, ROUTE_PATH_SOMETHING_NEW } from '~/shared/routng/constants'
+import { ROUTE_PATH_SOMETHING, ROUTE_PATH_SOMETHING_NEW } from '~/shared/routing'
 
 const breadcrumbs: BreadcrumbProps['items'] = [
   {

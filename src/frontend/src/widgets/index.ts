@@ -1,4 +1,6 @@
 export * from './Breadcrumbs'
 export * from './Footer'
+export * from './FormSignIn'
+export * from './FormSignUp'
 export * from './HeaderAuthorized'
 export * from './Sidebar'

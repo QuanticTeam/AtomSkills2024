@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { UserSignInDto, userSignInSchema } from '~/entities/User'
 import { getIsDetailedApiError } from '~/shared/apiClient'
-import { ROUTE_PATH_FORGOT_PASSWORD } from '~/shared/routng/constants'
+import { ROUTE_PATH_FORGOT_PASSWORD } from '~/shared/routing'
 
 interface FormSignInProps {
   children: ReactNode
@@ -15,7 +15,7 @@ interface FormSignInProps {
 }
 
 export function FormSignIn({ children, onSubmit }: FormSignInProps) {
-  const { t } = useTranslation()
+  const { t } = useTranslation(FormSignIn.name)
 
   const {
     handleSubmit,
@@ -42,7 +42,7 @@ export function FormSignIn({ children, onSubmit }: FormSignInProps) {
 
           switch (error.code) {
             case 'SIGN_IN_WRONG_CREDENTIALS': {
-              setSubmissionError(t('Wrong login or password'))
+              setSubmissionError(t('wrongCredentials'))
               return
             }
             default: {
@@ -63,7 +63,7 @@ export function FormSignIn({ children, onSubmit }: FormSignInProps) {
           >
             <Input
               prefix={<UserOutlined className="text-gray-400" />}
-              placeholder={t('Login')}
+              placeholder={t('login')}
               {...field}
             />
           </Form.Item>
@@ -80,7 +80,7 @@ export function FormSignIn({ children, onSubmit }: FormSignInProps) {
             <Input.Password
               prefix={<LockOutlined className="text-gray-400" />}
               type="password"
-              placeholder={t('Password')}
+              placeholder={t('password')}
               {...field}
             />
           </Form.Item>
@@ -98,11 +98,11 @@ export function FormSignIn({ children, onSubmit }: FormSignInProps) {
                 noStyle
                 valuePropName="checked"
               >
-                <Checkbox {...field}>{t('Remember me')}</Checkbox>
+                <Checkbox {...field}>{t('remember')}</Checkbox>
               </Form.Item>
 
               <Typography.Text>
-                <Link to={ROUTE_PATH_FORGOT_PASSWORD}>{t('Forgot password')}</Link>
+                <Link to={ROUTE_PATH_FORGOT_PASSWORD}>{t('forgot')}</Link>
               </Typography.Text>
             </div>
           </Form.Item>
@@ -120,7 +120,7 @@ export function FormSignIn({ children, onSubmit }: FormSignInProps) {
             htmlType="submit"
             className="w-full"
           >
-            {t('Sign in')}
+            {t('submit')}
           </Button>
 
           {!submissionError ? null : (

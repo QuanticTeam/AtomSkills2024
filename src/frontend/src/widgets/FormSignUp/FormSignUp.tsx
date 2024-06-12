@@ -16,7 +16,7 @@ interface FormSignUpProps {
 }
 
 export function FormSignUp({ children, onSubmit, roles }: FormSignUpProps) {
-  const { t } = useTranslation()
+  const { t } = useTranslation(FormSignUp.name)
 
   const {
     handleSubmit,
@@ -49,7 +49,7 @@ export function FormSignUp({ children, onSubmit, roles }: FormSignUpProps) {
 
           switch (error.code) {
             case 'SIGN_UP_LOGIN_TAKEN': {
-              setError('login', { message: t('Login is taken') }, { shouldFocus: true })
+              setError('login', { message: t('loginTaken') }, { shouldFocus: true })
               return
             }
             default: {
@@ -65,13 +65,13 @@ export function FormSignUp({ children, onSubmit, roles }: FormSignUpProps) {
         render={({ field }) => (
           <Form.Item
             required
-            label={t('Role')}
+            label={t('role')}
             help={errors.role?.message}
             validateStatus={errors.role?.message && 'error'}
           >
             <Select
-              options={roles.map(({ id, role }) => ({ value: id, label: role }))}
-              placeholder={t('Select')}
+              options={roles.map(({ id, role }) => ({ value: id, label: t(`role${role}`) }))}
+              placeholder={t('select')}
               {...field}
             />
           </Form.Item>
@@ -82,7 +82,7 @@ export function FormSignUp({ children, onSubmit, roles }: FormSignUpProps) {
         control={control}
         render={({ field }) => (
           <Form.Item
-            label={t('Login')}
+            label={t('login')}
             required
             help={errors.login?.message}
             validateStatus={errors.login?.message && 'error'}
@@ -94,8 +94,7 @@ export function FormSignUp({ children, onSubmit, roles }: FormSignUpProps) {
                   showIcon
                   message={
                     <Typography.Text className="text-xs text-slate-500">
-                      {/* TODO interpolate */}
-                      {t('Latin letters and digits from 2 to 56 symbols')}
+                      {t('loginFieldTip')}
                     </Typography.Text>
                   }
                 />
@@ -106,7 +105,7 @@ export function FormSignUp({ children, onSubmit, roles }: FormSignUpProps) {
               <div>
                 <Input
                   prefix={<UserOutlined className="text-slate-400" />}
-                  placeholder={t('Come up with login')}
+                  placeholder={t('loginFieldPlaceholder')}
                   {...field}
                 />
               </div>
@@ -119,7 +118,7 @@ export function FormSignUp({ children, onSubmit, roles }: FormSignUpProps) {
         control={control}
         render={({ field }) => (
           <Form.Item
-            label={t('Password')}
+            label={t('password')}
             required
             help={errors.password?.message}
             validateStatus={errors.password?.message && 'error'}
@@ -131,15 +130,14 @@ export function FormSignUp({ children, onSubmit, roles }: FormSignUpProps) {
                   showIcon
                   message={
                     <Typography.Text className="text-xs text-slate-500">
-                      {t('Latin letters, digits')},{' '}
+                      {t('passwordFieldTipAplhabet')},{' '}
                       <code
                         className="font-bold text-slate-700"
                         title="- _ + ! ? = # $ % & @ ^ ` ~"
                       >
                         - _ + ! ? = # $ % & @ ^ ` ~
                       </code>{' '}
-                      {/* TODO interpolate */}
-                      {t('from 8 to 32 symbold')}
+                      {t('passwordFieldTipLength')}
                     </Typography.Text>
                   }
                 />
@@ -150,7 +148,7 @@ export function FormSignUp({ children, onSubmit, roles }: FormSignUpProps) {
               <div>
                 <Input.Password
                   prefix={<LockOutlined className="text-slate-400" />}
-                  placeholder={t('Come up with password')}
+                  placeholder={t('passwordFieldPlaceholder')}
                   suffix={
                     <Typography.Text className="text-xs text-slate-400">
                       {getIsPasswordStrong(field.value) ? t('Reliable') : t('Weak')}
@@ -178,7 +176,7 @@ export function FormSignUp({ children, onSubmit, roles }: FormSignUpProps) {
             htmlType="submit"
             className="w-full"
           >
-            {t('Sign up')}
+            {t('submit')}
           </Button>
 
           {!submissionError ? null : (

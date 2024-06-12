@@ -8,9 +8,9 @@ import {
   ROUTE_PATH_SOMETHING,
   ROUTE_PATH_LOREM,
   ROUTE_PATH_SOMETHING_NEW,
-} from '~/shared/routng/constants'
+} from '~/shared/routing'
 
-export const routesConfig: RouteObject[] = [
+export const routes: RouteObject[] = [
   {
     element: (
       <Suspense fallback={<Spin fullscreen />}>

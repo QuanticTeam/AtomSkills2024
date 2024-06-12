@@ -1,0 +1,17 @@
+{
+  "login": "Логин",
+  "loginFieldPlaceholder": "Придумайте логин",
+  "loginFieldTip": "Латинские буквы и цифры от 2 до 56 символов",
+  "loginTaken": "Логин занят",
+  "password": "Пароль",
+  "passwordFieldPlaceholder": "Придумайте пароль",
+  "passwordFieldTipAplhabet": "Латинские буквы, цифры",
+  "passwordFieldTipLength": "Латинские буквы и цифры от 2 до 32 символов",
+  "passwordReliable": "Надежный",
+  "passwordWeak": "Слабый",
+  "role": "Роль",
+  "roleAdmin": "Админ",
+  "roleExpert": "Эксперт",
+  "roleUser": "Пользователь",
+  "submit": "Зарегистрироваться"
+}
