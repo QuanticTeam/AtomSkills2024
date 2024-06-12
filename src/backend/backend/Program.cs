@@ -20,10 +20,8 @@ builder.Services.AddDbContext<BackendDbContext>(
         options.UseNpgsql(builder.Configuration["ConnectionString"]);
     });
 builder.Services.AddScoped<ISomethingsRepository, SomethingsRepository>();
-builder.Services.AddScoped<ISomeFilesRepository, SomeFilesRepository>();
 builder.Services.AddScoped<IUsersRepository, UsersRepository>();
 builder.Services.AddScoped<ISomethingsService, SomethingsService>();
-builder.Services.AddScoped<ISomeFilesService, SomeFilesService>();
 builder.Services.AddScoped<IUsersService, UsersService>();
 builder.Services.AddSignalR();
 builder.Services.Configure<JwtTokenOptions>(builder.Configuration.GetSection("JwtOptions"));

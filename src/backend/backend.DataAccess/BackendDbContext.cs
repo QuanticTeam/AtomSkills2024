@@ -11,7 +11,5 @@ public class BackendDbContext : DbContext
     
     public DbSet<SomethingRecord> Somethings { get; set; }
     
-    public DbSet<SomeFileRecord> SomeFiles { get; set; }
-    
     public DbSet<UserRecord> Users { get; set; }
 }
