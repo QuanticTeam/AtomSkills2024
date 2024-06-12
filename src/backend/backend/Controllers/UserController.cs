@@ -33,13 +33,13 @@ public class UserController : ControllerBase
     {
         await _hubContext.Clients.All.SendAsync("ToastNotification", "success test");
         var userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type.Equals("userId"))?.Value ?? string.Empty;
-        return Ok(userId);
+        return StatusCode(StatusCodes.Status200OK, userId);
     }
 
     [HttpGet("GetRoles")]
     public ActionResult<List<EnumResponse>> GetRoles()
     {
-        return EnumExtension.GetEnumValues<UserRole>();
+        return StatusCode(StatusCodes.Status200OK, EnumExtension.GetEnumValues<UserRole>());
     }
 
     [HttpPost("CheckLogin")]
@@ -75,7 +75,7 @@ public class UserController : ControllerBase
 
         HttpContext.Response.Cookies.Append("token", token);
 
-        return Ok(token);
+        return StatusCode(StatusCodes.Status200OK, token);
     }
 
     [HttpPost("SignUp")]
@@ -98,7 +98,7 @@ public class UserController : ControllerBase
             request.Email,
             request.Phone);
         
-        return Ok(await _usersService.Create(user));
+        return StatusCode(StatusCodes.Status200OK, await _usersService.Create(user));
     }
 
     [HttpPost("Update")]
@@ -123,13 +123,13 @@ public class UserController : ControllerBase
             request.Email,
             request.Phone);
         
-        return Ok(await _usersService.Update(updateUser));
+        return StatusCode(StatusCodes.Status200OK, await _usersService.Update(updateUser));
     }
 
     [HttpPost("Delete")]
     public async Task<ActionResult<int>> Delete([FromBody] Guid userKey)
     {
-        return Ok(await _usersService.Delete(userKey));
+        return StatusCode(StatusCodes.Status200OK, await _usersService.Delete(userKey));
     }
 
     private async Task<bool> CheckUnique(string login)

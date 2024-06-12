@@ -14,17 +14,20 @@ namespace backend.Controllers;
 public class SomethingController : ControllerBase
 {
     private readonly ISomethingsService _somethingsService;
+    private readonly IMinIoFileService _minIoFileService;
     private readonly IHubContext<ToastNotificationHub> _hubContext;
+    
     public SomethingController(
         ISomethingsService somethingsService,
-        IHubContext<ToastNotificationHub> hubContext)
+        IHubContext<ToastNotificationHub> hubContext,
+        IMinIoFileService minIoFileService)
     {
         _somethingsService = somethingsService;
         _hubContext = hubContext;
+        _minIoFileService = minIoFileService;
     }
 
     [Authorize]
-    // [AllowAnonymous]
     [HttpPost("Test")]
     public async Task<ActionResult<string>> Test()
     {
@@ -32,33 +35,63 @@ public class SomethingController : ControllerBase
         var userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type.Equals("userId"))?.Value ?? string.Empty;
         if (HttpContext.User.IsInRole("Admin"))
         {
-            return Ok("Admin");
+            return StatusCode(StatusCodes.Status200OK,"Admin");
         }
-        return Ok("Not admin");
+        return StatusCode(StatusCodes.Status200OK, "Not admin");
     }
     
     [Authorize]
     [HttpGet("Get/{id:guid}")]
-    public async Task<ActionResult<Something>> Get(Guid id)
+    public async Task<ActionResult<GetSomethingResponse>> Get(Guid id)
     {
-        var result = await _somethingsService.Get(id);
-        
-        if (result == null) 
-            return BadRequest("Something not founded");
+        var something = await _somethingsService.Get(id);
 
-        return result;
+        if (something == null)
+            return StatusCode(StatusCodes.Status404NotFound, "Something not founded");
+
+        var somethingResponse = new GetSomethingResponse
+        {
+            Key = something.Key,
+            Name = something.Name,
+            Integer = something.Integer,
+            Number = something.Number,
+            DateTime = something.DateTime,
+            Files = something.FileKeys.Select(x => new UploadFileResponse
+            {
+                FileKey = x,
+                FileName = _minIoFileService.GetOriginalFileName(x).GetAwaiter().GetResult(),
+            }).ToList()
+        };
+
+        return StatusCode(StatusCodes.Status200OK, somethingResponse);
     }
     
     [Authorize]
     [HttpGet("GetAll")]
-    public async Task<ActionResult<List<Something>>> GetAll()
+    public async Task<ActionResult<List<GetSomethingResponse>>> GetAll()
     {
-        return await _somethingsService.GetAll();
+        var somethings = await _somethingsService.GetAll();
+
+        var somethingResponses = somethings.Select(something => new GetSomethingResponse
+        {
+            Key = something.Key,
+            Name = something.Name,
+            Integer = something.Integer,
+            Number = something.Number,
+            DateTime = something.DateTime,
+            Files = something.FileKeys.Select(x => new UploadFileResponse
+            {
+                FileKey = x,
+                FileName = _minIoFileService.GetOriginalFileName(x).GetAwaiter().GetResult(),
+            }).ToList()
+        });
+        
+        return StatusCode(StatusCodes.Status200OK, somethingResponses);
     }
     
     [Authorize]
     [HttpPost("GetSortedData")]
-    public async Task<ActionResult<List<Something>>> GetSortedData(GetSortedDataRequest request)
+    public async Task<ActionResult<List<GetSomethingResponse>>> GetSortedData(GetSortedDataRequest request)
     {
         var data = await _somethingsService.GetAll();
 
@@ -73,8 +106,22 @@ public class SomethingController : ControllerBase
         {
             result = result.Order<Something>(request.OrderBy!, request.Descending);
         }
+        
+        var somethingResponses = result.Select(something => new GetSomethingResponse
+        {
+            Key = something.Key,
+            Name = something.Name,
+            Integer = something.Integer,
+            Number = something.Number,
+            DateTime = something.DateTime,
+            Files = something.FileKeys.Select(x => new UploadFileResponse
+            {
+                FileKey = x,
+                FileName = _minIoFileService.GetOriginalFileName(x).GetAwaiter().GetResult(),
+            }).ToList()
+        });
 
-        return result.ToList();
+        return StatusCode(StatusCodes.Status200OK, somethingResponses.ToList());
     }
     
 
@@ -94,7 +141,7 @@ public class SomethingController : ControllerBase
 
         var successSomething = await _somethingsService.Create(something);
         
-        return Ok(successSomething);
+        return StatusCode(StatusCodes.Status200OK, successSomething);
     }
 
     [Authorize]
@@ -105,7 +152,7 @@ public class SomethingController : ControllerBase
 
         if (something == null)
         {
-            return BadRequest("No something");
+            return StatusCode(StatusCodes.Status404NotFound, "No something");
         }
 
         var successSomething = await _somethingsService.Update(new Something
@@ -118,13 +165,13 @@ public class SomethingController : ControllerBase
             FileKeys = request.FileKeys.ToArray()
         });
 
-        return Ok(successSomething);
+        return StatusCode(StatusCodes.Status200OK, successSomething);
     }
     
     [Authorize]
     [HttpPost("Delete")]
     public async Task<ActionResult<int>> Delete([FromBody] DeleteSomethingRequest request)
     {
-        return Ok(await _somethingsService.Delete(request.Key));
+        return StatusCode(StatusCodes.Status200OK, await _somethingsService.Delete(request.Key));
     }
 }

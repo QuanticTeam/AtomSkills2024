@@ -12,6 +12,7 @@ public class MinIoFileService : IMinIoFileService
 {
     private readonly MinIoOptions _options;
     private const string BucketName = "backet";
+    private const string OriginalFileNameKey = "original-file-name";
 
     public MinIoFileService(
         IOptions<MinIoOptions> options)
@@ -28,8 +29,29 @@ public class MinIoFileService : IMinIoFileService
             minio.MakeBucketAsync(new MakeBucketArgs().WithBucket(BucketName));
         }
     }
+
+    public async Task<string> GetOriginalFileName(string fileName)
+    {
+        try
+        {
+            var minio = new MinioClient()
+                .WithEndpoint(_options.Endpoint)
+                .WithCredentials(_options.AccessKey, _options.SecretKey)
+                .Build();
+            
+            var stat = await minio.StatObjectAsync(new StatObjectArgs().WithObject(fileName).WithBucket(BucketName));
+
+            return stat.MetaData[OriginalFileNameKey];
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return string.Empty;
+        }
+    }
     
-    public async Task<MemoryStream> Download(string fileName)
+    public async Task<(MemoryStream, string)> Download(string fileName)
     {
         try
         {
@@ -53,7 +75,7 @@ public class MinIoFileService : IMinIoFileService
             
             _ = await minio.GetObjectAsync(getObjectArgs);
 
-            return downloadStream;
+            return (downloadStream, stat.MetaData[OriginalFileNameKey]);
         }
         catch (Exception ex)
         {

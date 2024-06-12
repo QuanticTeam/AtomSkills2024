@@ -2,6 +2,7 @@ using System.Net.Mime;
 using backend.Contracts;
 using backend.Core.Abstractions;
 using backend.Core.Models;
+using backend.Extensions;
 using backend.Notifications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +17,9 @@ public class FileController : ControllerBase
     private readonly ISomeFilesService _someFilesService;
     private readonly IHubContext<ToastNotificationHub> _hubContext;
     private readonly IMinIoFileService _minIoFileService;
+
+    private const string OwnerKey = "x-amz-meta-owner";
+    private const string OriginalFileNameKey = "x-amz-meta-original-file-name";
 
     public FileController(
         ISomeFilesService someFilesService,
@@ -32,7 +36,7 @@ public class FileController : ControllerBase
     public async Task<ActionResult<string>> Test()
     {
         await _hubContext.Clients.All.SendAsync("ToastNotification", "success test");
-        return Ok("Test");
+        return StatusCode(StatusCodes.Status200OK,"Test");
     }
     
     [Authorize]
@@ -48,8 +52,8 @@ public class FileController : ControllerBase
     [HttpGet("DownloadFromMinIo/{fileName}")]
     public async Task<FileStreamResult> DownloadFromMinIo(string fileName)
     {
-        Stream stream = await _minIoFileService.Download(fileName);
-        return File(stream, MediaTypeNames.Application.Octet, fileName);
+        (Stream stream, var originalFileName) = await _minIoFileService.Download(fileName);
+        return File(stream, MediaTypeNames.Application.Octet, originalFileName);
     }
     
     [Authorize]
@@ -58,7 +62,7 @@ public class FileController : ControllerBase
     {
         var length = request.Length;
         if (length < 0)
-            return BadRequest("File not founded, try again");
+            return StatusCode(StatusCodes.Status404NotFound,"File not founded, try again");
 
         await using var fileStream = request.OpenReadStream();
         var bytes = new byte[length];
@@ -75,35 +79,35 @@ public class FileController : ControllerBase
         var successFile = await _someFilesService.Create(file);
         
         if (successFile == 0)
-            return BadRequest("Something error, file does not upload");
+            return StatusCode(StatusCodes.Status400BadRequest,"Something error, file does not upload");
             
-        return Ok(new UploadFileResponse{ FileKey = file.Key.ToString(), FileName = file.Name });
+        return StatusCode(StatusCodes.Status200OK, new UploadFileResponse{ FileKey = file.Key.ToString(), FileName = file.Name });
     }
     
     [Authorize]
     [HttpPost("UploadWithMinIo")]
     public async Task<ActionResult<UploadFileResponse>> UploadWithMinIo(IFormFile request)
     {
-        var metaData = new Dictionary<string, string>()
+        var metaData = new Dictionary<string, string>
         {
             {
-                "x-amz-meta-owner", 
+                OwnerKey, 
                 HttpContext.User.Claims.FirstOrDefault(x => x.Type.Equals("userId"))?.Value ?? string.Empty
             },
             {
-                "x-amz-meta-original-file-name", 
+                OriginalFileNameKey, 
                 request.FileName
             },
         }; 
         
-        var file = new MinIoFileModel(Guid.NewGuid().ToString(), request.ContentType, request.OpenReadStream(), metaData);
+        var file = new MinIoFileModel(request.FileName.GetMinIoFileName(), request.ContentType, request.OpenReadStream(), metaData);
         
         var successFile = await _minIoFileService.Upload(file);
 
         if (successFile == 0)
-            return BadRequest("Something error, try again");
+            return StatusCode(StatusCodes.Status400BadRequest,"Something error, try again");
         
-        return Ok(new UploadFileResponse{ FileKey = file.FileName, FileName = file.MetaData["x-amz-meta-original-file-name"]});
+        return StatusCode(StatusCodes.Status200OK, new UploadFileResponse{ FileKey = file.FileName, FileName = file.MetaData[OriginalFileNameKey]});
     }
     
 }
