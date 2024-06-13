@@ -1,3 +1,5 @@
+// TODO handle expired token!
+
 import axios, { AxiosError, AxiosResponse } from 'axios'
 import { authToken } from './auth'
 import { isPlainObject } from 'lodash'

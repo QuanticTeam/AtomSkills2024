@@ -46,7 +46,7 @@ public class FileController : ControllerBase
     
     [Authorize]
     [HttpPost("Upload")]
-    public async Task<ActionResult<UploadFileResponse>> Upload(IFormFile request)
+    public async Task<ActionResult<UploadFileResponse>> Upload([FromForm] UploadFileRequest request)
     {
         var metaData = new Dictionary<string, string>
         {
@@ -56,11 +56,11 @@ public class FileController : ControllerBase
             },
             {
                 OriginalFileNameKey, 
-                request.FileName
+                request.File.FileName
             },
         }; 
         
-        var file = new MinIoFileModel(request.FileName.GetMinIoFileName(), request.ContentType, request.OpenReadStream(), metaData);
+        var file = new MinIoFileModel(request.File.FileName.GetMinIoFileName(), request.File.ContentType, request.File.OpenReadStream(), metaData);
         
         var successFile = await _minIoFileService.Upload(file);
 
