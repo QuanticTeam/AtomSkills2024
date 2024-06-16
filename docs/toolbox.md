@@ -1,16 +1,14 @@
 
 ## Рабочая станция
 
-### Участник 1
- * Windows
- * VS Code
-
-### Участник 2
- * Windows
- * Rider
-
-### Участник 3
- * ?
+*	Rider	IDE для разработки	https://www.jetbrains.com/ru-ru/rider/
+*	VS Code	IDE для разработки	https://code.visualstudio.com/
+*	pgAdmin	СУБД	https://www.pgadmin.org/
+*	WSL	Система виртуализации для ОС Windows	https://learn.microsoft.com/en-us/windows/wsl/about
+*	Docker desktop	UI утилита для системы контейнеризации	https://www.docker.com/products/docker-desktop/
+*	Postman	UI утилита для тестирования http запросов	https://www.postman.com/
+*	GIT	Система управления версиями	https://git-scm.com/
+*	Microsoft Office	ПО для работы с документами	https://www.office.com/
 
 ## Используемые библиотеки
 
@@ -21,6 +19,7 @@
 * [`MinIO`](https://min.io/) - [GNU Affero GPL](https://en.wikipedia.org/wiki/GNU_Affero_General_Public_License) - хранение файлов
 * [`React`](https://react.dev/) - [MIT License](https://en.wikipedia.org/wiki/MIT_License) - фреймворк для интерфейса пользователя
 * [Ant](https://ant.design/) - [MIT License](https://en.wikipedia.org/wiki/MIT_License) - библиотека визуальных компонентов
+* [EF Core](https://learn.microsoft.com/en-us/aspnet/entity-framework) - [(Apache-2.0 License)](https://en.wikipedia.org/wiki/Apache_License#Apache_License_2.0) - ORM
 
 ## Домашние заготовки
 
