@@ -1,10 +1,10 @@
 import { AlignLeftOutlined, TableOutlined } from '@ant-design/icons'
-import { Layout, MenuProps, Typography } from 'antd'
+import { Layout, MenuProps, Space, Typography } from 'antd'
 import { ReactNode, useEffect, useState } from 'react'
 
 import { useLocation, useNavigate } from 'react-router-dom'
 import { GuardAuthorized } from '~/shared/auth'
-import { Breadcrumbs, BreadcrumbsProps, Footer, HeaderAuthorized, Sidebar } from '~/widgets'
+import { Breadcrumbs, Footer, HeaderAuthorized, Sidebar } from '~/widgets'
 
 type MenuItem = Required<MenuProps>['items'][number]
 
@@ -23,13 +23,18 @@ function getItem(
 }
 
 interface PageAuthorizedProps {
-  actions?: ReactNode
-  breadcrumbs: BreadcrumbsProps['breadcrumbs']
+  actions?: { key: string; node: ReactNode }[]
   children: ReactNode
   title: ReactNode
+  contentType?: 'default' | 'form'
 }
 
-export function PageAuthorized({ actions, children, title, breadcrumbs }: PageAuthorizedProps) {
+export function PageAuthorized({
+  actions = [],
+  children,
+  contentType = 'default',
+  title,
+}: PageAuthorizedProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true)
   const navigate = useNavigate()
   const location = useLocation()
@@ -59,7 +64,8 @@ export function PageAuthorized({ actions, children, title, breadcrumbs }: PageAu
       <Layout className="h-screen">
         <HeaderAuthorized />
 
-        <Layout>
+        {/* Keep flex row in advance to prevent ant computed layout flickering */}
+        <Layout className="flex-row">
           <Sidebar
             collapsed={sidebarCollapsed}
             menuItems={sidebarMenuItems}
@@ -70,10 +76,10 @@ export function PageAuthorized({ actions, children, title, breadcrumbs }: PageAu
           <Layout>
             <Layout.Content className="bg-gray-100">
               <div className="flex flex-col h-full">
-                <Breadcrumbs breadcrumbs={breadcrumbs} />
+                <Breadcrumbs />
 
                 <div className="overflow-auto scroll-smooth grow mx-6">
-                  <div className="mr-2 p-8 min-h-full bg-white rounded-md border border-slate-200">
+                  <div className="flex flex-col mr-2 p-8 min-h-full bg-white rounded-md border border-slate-200">
                     <div className="flex items-center justify-between mb-10">
                       <div className="grow">
                         {typeof title === 'string' ? (
@@ -82,9 +88,18 @@ export function PageAuthorized({ actions, children, title, breadcrumbs }: PageAu
                           title
                         )}
                       </div>
-                      <div className="flex items-center">{actions}</div>
+                      {!actions.length ? null : (
+                        <Space
+                          direction="horizontal"
+                          className="TODO"
+                        >
+                          {actions.map(({ key, node }) => (
+                            <div key={key}>{node}</div>
+                          ))}
+                        </Space>
+                      )}
                     </div>
-                    {children}
+                    <div className="grow">{children}</div>
                   </div>
                 </div>
               </div>

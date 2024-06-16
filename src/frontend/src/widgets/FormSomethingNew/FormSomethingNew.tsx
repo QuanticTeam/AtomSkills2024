@@ -64,7 +64,7 @@ export function FormSomethingNew({ children, onSubmit }: FormSomethingNewProps) 
         control={control}
         render={({ field }) => (
           <Form.Item
-            label={t('labelName')}
+            label={t('fieldName')}
             required
             help={errors.name?.message}
             validateStatus={errors.name?.message && 'error'}
@@ -79,7 +79,7 @@ export function FormSomethingNew({ children, onSubmit }: FormSomethingNewProps) 
         control={control}
         render={({ field }) => (
           <Form.Item
-            label={t('labelNumber')}
+            label={t('fieldNumber')}
             required
             help={errors.number?.message}
             validateStatus={errors.number?.message && 'error'}
@@ -94,7 +94,7 @@ export function FormSomethingNew({ children, onSubmit }: FormSomethingNewProps) 
         control={control}
         render={({ field }) => (
           <Form.Item
-            label={t('labelInteger')}
+            label={t('fieldInteger')}
             required
             help={errors.integer?.message}
             validateStatus={errors.integer?.message && 'error'}
@@ -109,13 +109,15 @@ export function FormSomethingNew({ children, onSubmit }: FormSomethingNewProps) 
         control={control}
         render={({ field }) => (
           <Form.Item
-            label={t('labelDateTime')}
+            label={t('fieldDateTime')}
             required
             help={errors.integer?.message}
             validateStatus={errors.integer?.message && 'error'}
           >
             <DatePicker
               className="w-full"
+              showTime
+              format="DD-MM-YYYY HH:mm:ss"
               {...field}
             />
           </Form.Item>
@@ -127,7 +129,7 @@ export function FormSomethingNew({ children, onSubmit }: FormSomethingNewProps) 
         control={control}
         render={({ field }) => (
           <Form.Item
-            label={t('labelFileKeys')}
+            label={t('fieldFileKeys')}
             required
             help={errors.integer?.message}
             validateStatus={errors.integer?.message && 'error'}

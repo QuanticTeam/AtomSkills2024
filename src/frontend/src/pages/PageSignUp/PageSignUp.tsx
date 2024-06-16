@@ -28,7 +28,7 @@ export function PageSignUp() {
         onSubmit={async dto => {
           await UserApi.signUp(dto)
 
-          message.info(t('Successfuly signed up'), 10)
+          message.info(t('signUpSuccess'), 10)
 
           navigate(ROUTE_PATH_SIGN_IN)
         }}

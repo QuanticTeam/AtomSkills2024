@@ -1,0 +1,8 @@
+{
+  "fieldName": "Name",
+  "fieldNumber": "Number",
+  "fieldInteger": "Integer",
+  "fieldDateTime": "Date & Time",
+  "fieldFileKeys": "Files",
+  "submit": "Create"
+}

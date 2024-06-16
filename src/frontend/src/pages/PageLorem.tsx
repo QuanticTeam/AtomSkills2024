@@ -1,22 +1,14 @@
 import { faker } from '@faker-js/faker'
 import { App, Button } from 'antd'
 import { AxiosError } from 'axios'
-import { capitalize } from 'lodash'
 import { PageAuthorized } from '~/layouts/PageAuthorized'
 import { apiClient } from '~/shared/apiClient'
 
-const breadcrumbs = [
-  { title: 'Header left' },
-  ...Array.from({ length: 2 }, () => ({ title: capitalize(faker.hacker.noun()) })),
-]
 export default function PageLorem() {
   const { notification } = App.useApp()
 
   return (
-    <PageAuthorized
-      title="Page title"
-      breadcrumbs={breadcrumbs}
-    >
+    <PageAuthorized title="Page title">
       <div>
         <p>
           <Button

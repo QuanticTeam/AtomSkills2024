@@ -38,8 +38,8 @@ export function FormSignUp({ children, onSubmit, roles }: FormSignUpProps) {
   return (
     <Form
       className="w-4/5 m-auto"
-      labelCol={{ span: 3, offset: 5 }}
-      wrapperCol={{ span: 8 }}
+      labelCol={{ span: 3, offset: 6 }}
+      wrapperCol={{ span: 6 }}
       layout="horizontal"
       onFinish={async (...args) => {
         try {

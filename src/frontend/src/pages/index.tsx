@@ -1,4 +1,5 @@
 import { Spin } from 'antd'
+import { t } from 'i18next'
 import { Suspense, lazy } from 'react'
 import { Outlet, RouteObject } from 'react-router-dom'
 import {
@@ -32,15 +33,35 @@ export const routes: RouteObject[] = [
       },
       {
         path: ROUTE_PATH_SOMETHING,
-        Component: lazy(() => import('./PageSomething')),
-      },
-      {
-        path: ROUTE_PATH_SOMETHING_NEW,
-        Component: lazy(() => import('./PageSomethingNew')),
+        handle: {
+          crumb: () => ({
+            title: t('PageSomething:title'),
+          }),
+        },
+        children: [
+          {
+            index: true,
+            Component: lazy(() => import('./PageSomething')),
+          },
+          {
+            path: ROUTE_PATH_SOMETHING_NEW,
+            Component: lazy(() => import('./PageSomethingNew')),
+            handle: {
+              crumb: () => ({
+                title: t('PageSomethingNew:title'),
+              }),
+            },
+          },
+        ],
       },
       {
         path: ROUTE_PATH_LOREM,
         Component: lazy(() => import('./PageLorem')),
+        handle: {
+          crumb: () => ({
+            title: 'Lorem',
+          }),
+        },
       },
     ],
   },

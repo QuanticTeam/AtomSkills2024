@@ -1,0 +1,8 @@
+{
+  "fieldName": "Имя",
+  "fieldNumber": "Десятичное",
+  "fieldInteger": "Целое",
+  "fieldDateTime": "Дата и время",
+  "fieldFileKeys": "Файлы",
+  "submit": "Создать"
+}

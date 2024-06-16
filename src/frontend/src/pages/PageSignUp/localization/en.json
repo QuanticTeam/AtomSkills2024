@@ -1,4 +1,6 @@
 {
   "or": "or",
-  "signIn": "sign in"
+  "signIn": "sign in",
+  "signUpSuccwss": "Successfuly signed up",
+  "submit": "Sign up"
 }

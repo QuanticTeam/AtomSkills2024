@@ -51,7 +51,8 @@ export function FormSignIn({ children, onSubmit }: FormSignInProps) {
           }
         }
       }}
-      className="w-96 mx-auto"
+      className="w-4/5 m-auto"
+      wrapperCol={{ span: 6, offset: 9 }}
     >
       <Controller
         name="login"
