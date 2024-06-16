@@ -41,6 +41,42 @@ public class UserController : ControllerBase
     {
         return StatusCode(StatusCodes.Status200OK, EnumExtension.GetEnumValues<UserRole>());
     }
+    
+    [HttpGet("GetUser")]
+    public async Task<ActionResult<User>> GetUser()
+    {
+        var userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type.Equals("userId"))?.Value ?? string.Empty;
+        var success = Guid.TryParse((ReadOnlySpan<char>)userId, out var key);
+        
+        if (!success)
+            return StatusCode(StatusCodes.Status403Forbidden, new 
+            {
+                Code = "SIGN_IN_WRONG_CREDENTIALS",
+                Message = "Incorrect login or password",
+            });
+        
+        var user = await _usersService.Get(key);
+        
+        return StatusCode(StatusCodes.Status200OK, user);
+    }
+    
+    [HttpGet("GetUsers")]
+    public async Task<ActionResult<List<User>>> GetUsers()
+    {
+        var users = await _usersService.GetAll();
+        
+        return StatusCode(StatusCodes.Status200OK, users);
+    }
+    
+    [HttpGet("GetUsersByRole")]
+    public async Task<ActionResult<List<User>>> GetUsersByRole()
+    {
+        var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type.Equals("role"))?.Value ?? string.Empty;
+        
+        var users = await _usersService.GetAll();
+        
+        return StatusCode(StatusCodes.Status200OK, users.Where(x => x.Role.Equals(userRole)).ToList());
+    }
 
     [HttpPost("CheckLogin")]
     public async Task<ActionResult<string>> CheckLogin([FromBody] CheckLoginRequest request)
