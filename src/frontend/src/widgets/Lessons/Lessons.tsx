@@ -230,6 +230,7 @@ export function Lessons({ parentRef }: LessonsProps) {
     <Oops />
   ) : (
     <Table
+      rowKey="code"
       bordered
       style={{ height: '100%' }}
       columns={columns}
