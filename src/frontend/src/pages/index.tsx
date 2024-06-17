@@ -9,6 +9,8 @@ import {
   ROUTE_PATH_SOMETHING,
   ROUTE_PATH_LOREM,
   ROUTE_PATH_SOMETHING_NEW,
+  ROUTE_PATH_LESSONS,
+  ROUTE_PATH_LESSON,
 } from '~/shared/routing'
 
 export const routes: RouteObject[] = [
@@ -30,6 +32,19 @@ export const routes: RouteObject[] = [
       {
         path: ROUTE_PATH_SIGN_UP,
         Component: lazy(() => import('./PageSignUp')),
+      },
+      {
+        path: ROUTE_PATH_LESSONS,
+        children: [
+          {
+            index: true,
+            Component: lazy(() => import('./PageLessons')),
+          },
+          {
+            path: ROUTE_PATH_LESSON,
+            Component: lazy(() => import('./PageLesson')),
+          },
+        ],
       },
       {
         path: ROUTE_PATH_SOMETHING,

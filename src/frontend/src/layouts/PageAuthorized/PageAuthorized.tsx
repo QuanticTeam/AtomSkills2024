@@ -1,9 +1,11 @@
 import { AlignLeftOutlined, TableOutlined } from '@ant-design/icons'
 import { Layout, MenuProps, Space, Typography } from 'antd'
 import { ReactNode, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { useLocation, useNavigate } from 'react-router-dom'
 import { GuardAuthorized } from '~/shared/auth'
+import { ROUTE_PATH_LESSONS, ROUTE_PATH_LOREM } from '~/shared/routing'
 import { Breadcrumbs, Footer, HeaderAuthorized, Sidebar } from '~/widgets'
 
 type MenuItem = Required<MenuProps>['items'][number]
@@ -39,6 +41,8 @@ export function PageAuthorized({
   const navigate = useNavigate()
   const location = useLocation()
 
+  const { t } = useTranslation(PageAuthorized.name)
+
   const [selectedSidebarMenuItems, setSelectedSidebarMenuItems] = useState<string[]>([])
 
   useEffect(() => {
@@ -48,13 +52,17 @@ export function PageAuthorized({
 
   const sidebarMenuItems: MenuItem[] = [
     getItem(
-      <Typography.Link onClick={() => navigate('/something')}>Something</Typography.Link>,
-      '/something',
+      <Typography.Link onClick={() => navigate(ROUTE_PATH_LESSONS)}>
+        {t('sideLinkLessons')}
+      </Typography.Link>,
+      ROUTE_PATH_LESSONS,
       <TableOutlined className="!text-lg" />,
     ),
     getItem(
-      <Typography.Link onClick={() => navigate('/lorem')}>Lorem</Typography.Link>,
-      '/lorem',
+      <Typography.Link onClick={() => navigate(ROUTE_PATH_LOREM)}>
+        {t('sideLinkLorem')}
+      </Typography.Link>,
+      ROUTE_PATH_LOREM,
       <AlignLeftOutlined className="!text-lg" />,
     ),
   ]
@@ -80,7 +88,7 @@ export function PageAuthorized({
 
                 <div className="overflow-auto scroll-smooth grow mx-6">
                   <div className="flex flex-col mr-2 p-8 min-h-full bg-white rounded-md border border-slate-200">
-                    <div className="flex items-center justify-between mb-10">
+                    <div className="flex items-center justify-between mb-6">
                       <div className="grow">
                         {typeof title === 'string' ? (
                           <Typography.Title className="!mb-0">{title}</Typography.Title>

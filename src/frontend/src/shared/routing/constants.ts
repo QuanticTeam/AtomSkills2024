@@ -9,3 +9,11 @@ export const ROUTE_PATH_SOMETHING_NEW = '/something/new'
 export const ROUTE_PATH_SOMETHING_EDIT = '/something/:id/edit'
 
 export const ROUTE_PATH_LOREM = '/lorem'
+
+export const ROUTE_PATH_TOPICS = '/topics'
+
+export const ROUTE_PATH_LESSONS = '/lessons'
+export const ROUTE_PATH_LESSON = '/lessons/:code'
+
+export const ROUTE_PATH_TASKS = '/tasks'
+export const ROUTE_PATH_TASK = '/tasks/:code'

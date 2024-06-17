@@ -5,7 +5,7 @@ namespace backend.Extensions;
 
 public static class OrderExtension
 {
-    public static IQueryable<TSource> Order<TSource>(this IQueryable<Something> source,string columnName, bool descending)
+    public static IQueryable<TSource> Order<TSource>(this IQueryable<TSource> source,string columnName, bool descending)
     {
         var command = descending ? "OrderByDescending" : "OrderBy";
         

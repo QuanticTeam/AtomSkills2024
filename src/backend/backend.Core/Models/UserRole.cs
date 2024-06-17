@@ -2,7 +2,7 @@ namespace backend.Core.Models;
 
 public enum UserRole
 {
-    User,
-    Expert,
+    Student,
+    Mentor,
     Admin,
 }

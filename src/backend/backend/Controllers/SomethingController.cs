@@ -16,26 +16,43 @@ public class SomethingController : ControllerBase
     private readonly ISomethingsService _somethingsService;
     private readonly IMinIoFileService _minIoFileService;
     private readonly IHubContext<ToastNotificationHub> _hubContext;
+
+    private readonly IContentLoadService _contentLoadService;
     
     public SomethingController(
         ISomethingsService somethingsService,
         IHubContext<ToastNotificationHub> hubContext,
-        IMinIoFileService minIoFileService)
+        IMinIoFileService minIoFileService,
+        IContentLoadService contentLoadService)
     {
         _somethingsService = somethingsService;
         _hubContext = hubContext;
         _minIoFileService = minIoFileService;
+        _contentLoadService = contentLoadService;
     }
 
     [Authorize]
     [HttpPost("Test")]
     public async Task<ActionResult<string>> Test()
     {
+        var traits = _contentLoadService.LoadTraits();
+        var m1 = traits.Count();
+
+        var topics = _contentLoadService.LoadTopics();
+        var m2 = topics.Count();
+
+        var lessons = _contentLoadService.LoadLessons();
+        var m3 = lessons.Count();
+
+        var tasks = _contentLoadService.LoadTasks();
+        var m4 = tasks.Count();
+
+
         await _hubContext.Clients.All.SendAsync("ToastNotification", "success test");
         var userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type.Equals("userId"))?.Value ?? string.Empty;
         if (HttpContext.User.IsInRole("Admin"))
         {
-            return StatusCode(StatusCodes.Status200OK,"Admin");
+            return StatusCode(StatusCodes.Status200OK, $"Admin: {m1} {m2} {m3} {m4}");
         }
         return StatusCode(StatusCodes.Status200OK, "Not admin");
     }
@@ -91,16 +108,16 @@ public class SomethingController : ControllerBase
     
     [Authorize]
     [HttpPost("GetSortedData")]
-    public async Task<ActionResult<List<GetSomethingResponse>>> GetSortedData(GetSortedDataRequest request)
+    public async Task<ActionResult<List<GetSomethingResponse>>> GetSortedData(GetSortAndFilterRequest request)
     {
         var data = await _somethingsService.GetAll();
 
         var result = data.AsQueryable();
 
-        if (request.Filter != null)
-        {
-            result = result.Where(FilterExtension.Filter<Something>(request.Filter));
-        }
+        // if (request.Filter != null)
+        // {
+        //     result = result.Where(FilterExtension.Filter<Something>(request.Filter));
+        // }
 
         if (!string.IsNullOrEmpty(request.OrderBy))
         {

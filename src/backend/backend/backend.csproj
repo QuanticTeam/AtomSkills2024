@@ -35,4 +35,7 @@
       </Content>
     </ItemGroup>
 
+    <ItemGroup>
+        <None Update="lessons\**" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
 </Project>

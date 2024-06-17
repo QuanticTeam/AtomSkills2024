@@ -41,3 +41,16 @@
 *::-webkit-scrollbar-thumb:active {
   background-color: #878787;
 }
+
+.markdown-renderer {
+  .ant-list-item {
+    list-style: disc !important;
+    margin-left: 18px !important;
+  }
+
+  ol {
+    .ant-list-item {
+      list-style: decimal !important;
+    }
+  }
+}

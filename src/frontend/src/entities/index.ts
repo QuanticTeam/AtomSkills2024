@@ -1,4 +1,7 @@
 export * from './Password'
 export * from './Something'
+export * from './Topic'
 export * from './User'
 export * from './UserRole'
+export * from './Lesson'
+export * from './Task'

@@ -26,6 +26,7 @@ export function FormSignUp({ children, onSubmit, roles }: FormSignUpProps) {
   } = useForm<UserSignUpDto>({
     mode: 'onBlur',
     values: {
+      fullname: '',
       login: '',
       password: '',
       role: 0, // TODO empty by default
@@ -59,6 +60,24 @@ export function FormSignUp({ children, onSubmit, roles }: FormSignUpProps) {
         }
       }}
     >
+      <Controller
+        name="fullname"
+        control={control}
+        render={({ field }) => (
+          <Form.Item
+            label={t('fieldFullnameLabel')}
+            required
+            help={errors.login?.message}
+            validateStatus={errors.login?.message && 'error'}
+          >
+            <Input
+              prefix={<UserOutlined className="text-slate-400" />}
+              placeholder={t('fieldLoginPlaceholder')}
+              {...field}
+            />
+          </Form.Item>
+        )}
+      />
       <Controller
         name="role"
         control={control}

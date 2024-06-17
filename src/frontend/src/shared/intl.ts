@@ -9,8 +9,8 @@ export function setLocale(locale: string) {
   localStorage.setItem('locale', locale)
 }
 
-// setLocale('ru-RU')
-setLocale('en-US')
+setLocale('ru-RU')
+// setLocale('en-US')
 
 i18next.use(initReactI18next).init({
   lng: getLocale(),

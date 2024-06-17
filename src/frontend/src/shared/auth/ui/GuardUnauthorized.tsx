@@ -1,6 +1,6 @@
 import { ReactNode, useContext } from 'react'
 import { Navigate } from 'react-router-dom'
-import { ROUTE_PATH_SOMETHING } from '~/shared/routing'
+import { ROUTE_PATH_LESSONS } from '~/shared/routing'
 import { AuthContext } from './AuthContext'
 
 interface GuardUnauthorizedProps {
@@ -14,7 +14,7 @@ export function GuardUnauthorized({ children }: GuardUnauthorizedProps) {
 
   return (
     <Navigate
-      to={ROUTE_PATH_SOMETHING}
+      to={ROUTE_PATH_LESSONS}
       replace={true}
     />
   )

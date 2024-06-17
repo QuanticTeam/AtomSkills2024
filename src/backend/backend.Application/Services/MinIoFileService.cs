@@ -1,4 +1,5 @@
 using backend.Core.Abstractions;
+using backend.Core.JsonModels;
 using backend.Core.Models;
 using backend.Core.Options;
 using Microsoft.Extensions.Options;
@@ -101,6 +102,53 @@ public class MinIoFileService : IMinIoFileService
             return 0;
         }
     }
+    
+    public async Task<List<Supplement>> Upload(List<JsonSupplement> supplements)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<Supplement> Upload(JsonSupplement supplement)
+    {
+        // TODO: Create once
+        var minio = new MinioClient()
+            .WithEndpoint(_options.Endpoint)
+            .WithCredentials(_options.AccessKey, _options.SecretKey)
+            .Build();
+
+        var OriginalFileNameMinIoKey = "x-amz-meta-original-file-name";
+        var TitleMinIoKey = "x-amz-meta-title";
+
+        var stream = File.OpenRead(supplement.File);
+        var fileInfo = new FileInfo(supplement.File);
+        var fileExtension = fileInfo.Name.Split('.').Last();
+        string mimeType = _mappings[fileExtension];
+        var key = GetMinIoFileName(fileInfo.Name);
+        
+        var metaData = new Dictionary<string, string>
+        {
+            {
+                TitleMinIoKey, 
+                supplement.Title
+            },
+            {
+                OriginalFileNameMinIoKey, 
+                fileInfo.FullName
+            },
+        };
+        
+        var response = await Run(minio, BucketName, key, stream, mimeType, metaData);
+
+        return new Supplement
+        {
+            Key = key,
+            Title = supplement.Title,
+            FilePath = supplement.File,
+            MimeType = mimeType,
+            IsLoaded = response != null,
+        };
+    }
+
 
     private static async Task<PutObjectResponse?> Run(
         IMinioClient minio, 
@@ -119,4 +167,17 @@ public class MinIoFileService : IMinIoFileService
             .WithHeaders(metaData);
         return await minio.PutObjectAsync(putObjectArgs);
     }
+    
+    private string GetMinIoFileName(string originalFileName)
+    {
+        var fileExtension = originalFileName.Split('.').Last();
+        return $"{Guid.NewGuid().ToString()}.{fileExtension}";
+    }
+
+    private static IDictionary<string, string> _mappings = new Dictionary<string, string>()
+    {
+        { "jpg", "image/jpeg" },
+        { "jpeg", "image/jpeg" },
+        {"png", "image/png"},
+    };
 }

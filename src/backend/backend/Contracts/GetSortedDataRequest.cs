@@ -1,27 +1,27 @@
 namespace backend.Contracts;
 
-public class GetSortedDataRequest
+public class GetSortAndFilterRequest
 {
-    public string? OrderBy { get; set; }
-    public bool Descending { get; init; } = false;
-    public List<Filter>? Filter { get; set; }
+    public required string OrderBy { get; set; } = string.Empty;
+    public required bool Descending { get; init; } = false;
+    public required List<Filter> Filters { get; set; } = new List<Filter>{};
 }
 
 public class Filter
 {
-    public string ColumnName { get; set; }
+    public required string ColumnName { get; set; }
 
-    public string Value { get; set; }
+    // всегда один элемент массива для простых фильтров 
+    public required List<string> Values { get; set; } = new List<string> {};
 
-    public FilterType FilterType { get; set; }
+    public required FilterType FilterType { get; set; }
 }
 
 public enum FilterType
 {
-    Contains = 0,
+    Contains = 0, // substring
     Equals = 1,
-    StartsWith = 2,
-    EndsWith = 3,
-    GreaterThan = 4,
-    LessThan = 5,
+    GreaterThan = 2,
+    LessThan = 3,
+    OneOf = 4, // для фильтрации по меткам (теги, темы и т.п.)
 }

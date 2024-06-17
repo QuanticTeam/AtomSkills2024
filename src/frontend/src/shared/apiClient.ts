@@ -13,6 +13,7 @@ export const apiClient = axios.create({
   baseURL: '/api',
   headers: {
     Authorization: `Bearer ${authToken.restore()}`,
+    'Content-Type': 'application/json',
   },
 })
 

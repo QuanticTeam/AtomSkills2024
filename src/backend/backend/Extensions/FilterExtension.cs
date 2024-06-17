@@ -20,10 +20,10 @@ public static class FilterExtension
             
             var typeExpression = type.PropertyType.Name switch
             {
-                "String" => StringFilter<TSource>(columnName, filter.Value, filter.FilterType),
-                "Int" => IntFilter<TSource>(columnName, int.Parse(filter.Value), filter.FilterType),
-                "Double" => DoubleFilter<TSource>(columnName, double.Parse(filter.Value), filter.FilterType),
-                "DateTime" => DateTimeFilter<TSource>(columnName, DateTime.Parse(filter.Value).ToUniversalTime(), filter.FilterType),
+                "String" => StringFilter<TSource>(columnName, filter.Values.Single(), filter.FilterType),
+                "Int" => IntFilter<TSource>(columnName, int.Parse(filter.Values.Single()), filter.FilterType),
+                "Double" => DoubleFilter<TSource>(columnName, double.Parse(filter.Values.Single()), filter.FilterType),
+                "DateTime" => DateTimeFilter<TSource>(columnName, DateTime.Parse(filter.Values.Single()).ToUniversalTime(), filter.FilterType),
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Filter does not exist")
             };
             
@@ -81,8 +81,6 @@ public static class FilterExtension
         {
             FilterType.Equals => typeof(string).GetMethod("Equals", new[] { typeof(string) }),
             FilterType.Contains => typeof(string).GetMethod("Contains", new[] { typeof(string) }),
-            FilterType.StartsWith => typeof(string).GetMethod("StartsWith", new[] { typeof(string) }),
-            FilterType.EndsWith => typeof(string).GetMethod("EndsWith", new[] { typeof(string) }),
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Filter does not exist")
         };
         

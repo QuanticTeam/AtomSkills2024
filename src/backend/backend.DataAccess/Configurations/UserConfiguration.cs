@@ -31,5 +31,9 @@ public class UserConfiguration: IEntityTypeConfiguration<UserRecord>
         builder.Property(x => x.Email);
         
         builder.Property(x => x.Phone);
+
+        builder.HasMany(x => x.TaskStatusRecords)
+            .WithOne(t => t.UserRecord)
+            .HasForeignKey(t => t.UserRecordId);
     }
 }
