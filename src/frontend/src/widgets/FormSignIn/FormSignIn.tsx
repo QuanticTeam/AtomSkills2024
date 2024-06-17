@@ -5,7 +5,7 @@ import { ReactNode, useState } from 'react'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import { UserSignInDto, userSignInSchema } from '~/entities/User'
+import { UserSignInDto, getUserSignInSchema } from '~/entities/User'
 import { getIsDetailedApiError } from '~/shared/apiClient'
 import { ROUTE_PATH_FORGOT_PASSWORD } from '~/shared/routing'
 
@@ -27,7 +27,7 @@ export function FormSignIn({ children, onSubmit }: FormSignInProps) {
       password: '',
       remember: true,
     },
-    resolver: zodResolver(userSignInSchema),
+    resolver: zodResolver(getUserSignInSchema(t)),
   })
 
   const [submissionError, setSubmissionError] = useState('')

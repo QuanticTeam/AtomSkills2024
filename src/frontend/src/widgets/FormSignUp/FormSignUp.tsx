@@ -5,7 +5,7 @@ import { ReactNode, useState } from 'react'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { getIsPasswordStrong } from '~/entities/Password'
-import { UserSignUpDto, userSignUpSchema } from '~/entities/User'
+import { UserSignUpDto, getUserSignUpSchema } from '~/entities/User'
 import { UserRole } from '~/entities/UserRole'
 import { getIsDetailedApiError } from '~/shared/apiClient'
 
@@ -30,7 +30,7 @@ export function FormSignUp({ children, onSubmit, roles }: FormSignUpProps) {
       password: '',
       role: 0, // TODO empty by default
     },
-    resolver: zodResolver(userSignUpSchema, { async: true }),
+    resolver: zodResolver(getUserSignUpSchema(t), { async: true }),
   })
 
   const [submissionError, setSubmissionError] = useState('')
@@ -49,7 +49,7 @@ export function FormSignUp({ children, onSubmit, roles }: FormSignUpProps) {
 
           switch (error.code) {
             case 'SIGN_UP_LOGIN_TAKEN': {
-              setError('login', { message: t('loginTaken') }, { shouldFocus: true })
+              setError('login', { message: t('fieldLoginErrIsTaken') }, { shouldFocus: true })
               return
             }
             default: {
@@ -70,8 +70,11 @@ export function FormSignUp({ children, onSubmit, roles }: FormSignUpProps) {
             validateStatus={errors.role?.message && 'error'}
           >
             <Select
-              options={roles.map(({ id, role }) => ({ value: id, label: t(`role${role}`) }))}
-              placeholder={t('select')}
+              options={roles.map(({ id, role }) => ({
+                value: id,
+                label: t(`fieldRoleVal${role}`),
+              }))}
+              placeholder={t('fieldRolePlaceholder')}
               {...field}
             />
           </Form.Item>
@@ -82,7 +85,7 @@ export function FormSignUp({ children, onSubmit, roles }: FormSignUpProps) {
         control={control}
         render={({ field }) => (
           <Form.Item
-            label={t('login')}
+            label={t('fieldLoginLabel')}
             required
             help={errors.login?.message}
             validateStatus={errors.login?.message && 'error'}
@@ -94,7 +97,7 @@ export function FormSignUp({ children, onSubmit, roles }: FormSignUpProps) {
                   showIcon
                   message={
                     <Typography.Text className="text-xs text-slate-500">
-                      {t('loginFieldTip')}
+                      {t('fieldLoginTip')}
                     </Typography.Text>
                   }
                 />
@@ -105,7 +108,7 @@ export function FormSignUp({ children, onSubmit, roles }: FormSignUpProps) {
               <div>
                 <Input
                   prefix={<UserOutlined className="text-slate-400" />}
-                  placeholder={t('loginFieldPlaceholder')}
+                  placeholder={t('fieldLoginPlaceholder')}
                   {...field}
                 />
               </div>
@@ -118,7 +121,7 @@ export function FormSignUp({ children, onSubmit, roles }: FormSignUpProps) {
         control={control}
         render={({ field }) => (
           <Form.Item
-            label={t('password')}
+            label={t('fieldPasswordLabel')}
             required
             help={errors.password?.message}
             validateStatus={errors.password?.message && 'error'}
@@ -130,14 +133,14 @@ export function FormSignUp({ children, onSubmit, roles }: FormSignUpProps) {
                   showIcon
                   message={
                     <Typography.Text className="text-xs text-slate-500">
-                      {t('passwordFieldTipAplhabet')},{' '}
+                      {t('fieldPasswordTipAlphabet')},{' '}
                       <code
                         className="font-bold text-slate-700"
                         title="- _ + ! ? = # $ % & @ ^ ` ~"
                       >
                         - _ + ! ? = # $ % & @ ^ ` ~
                       </code>{' '}
-                      {t('passwordFieldTipLength')}
+                      {t('fieldPasswordTipLength')}
                     </Typography.Text>
                   }
                 />
@@ -148,10 +151,12 @@ export function FormSignUp({ children, onSubmit, roles }: FormSignUpProps) {
               <div>
                 <Input.Password
                   prefix={<LockOutlined className="text-slate-400" />}
-                  placeholder={t('passwordFieldPlaceholder')}
+                  placeholder={t('fieldPasswordPlaceholder')}
                   suffix={
                     <Typography.Text className="text-xs text-slate-400">
-                      {getIsPasswordStrong(field.value) ? t('Reliable') : t('Weak')}
+                      {getIsPasswordStrong(field.value)
+                        ? t('fieldPasswordTipReliable')
+                        : t('fieldPasswordTipWeak')}
                     </Typography.Text>
                   }
                   {...field}
