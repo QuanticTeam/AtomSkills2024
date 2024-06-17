@@ -116,32 +116,25 @@ public class MinIoFileService : IMinIoFileService
             .WithCredentials(_options.AccessKey, _options.SecretKey)
             .Build();
 
-        var OriginalFileNameMinIoKey = "x-amz-meta-original-file-name";
-        var TitleMinIoKey = "x-amz-meta-title";
-
-        var stream = File.OpenRead(supplement.File);
+        await using Stream stream = File.OpenRead(supplement.File);
         var fileInfo = new FileInfo(supplement.File);
         var fileExtension = fileInfo.Name.Split('.').Last();
-        string mimeType = _mappings[fileExtension];
-        var key = GetMinIoFileName(fileInfo.Name);
+        var mimeType = _mappings[fileExtension];
+        var fileName = GetMinIoFileName(fileInfo.Name);
         
         var metaData = new Dictionary<string, string>
         {
             {
-                TitleMinIoKey, 
-                supplement.Title
-            },
-            {
-                OriginalFileNameMinIoKey, 
-                fileInfo.FullName
+                "x-amz-meta-original-file-name", 
+                fileInfo.Name
             },
         };
-        
-        var response = await Run(minio, BucketName, key, stream, mimeType, metaData);
 
+        var response = await Run(minio, BucketName, fileName, stream, mimeType, metaData);
+            
         return new Supplement
         {
-            Key = key,
+            Key = fileName,
             Title = supplement.Title,
             FilePath = supplement.File,
             MimeType = mimeType,

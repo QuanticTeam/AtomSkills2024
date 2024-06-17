@@ -35,6 +35,7 @@ builder.Services.AddScoped<IRecommendationsRepository, RecommendationsRepository
 builder.Services.AddScoped<ISomethingsService, SomethingsService>();
 builder.Services.AddScoped<IDownloadService, DownloadLessonsService>();
 builder.Services.AddScoped<IUsersService, UsersService>();
+builder.Services.AddScoped<ILessonsService, LessonsService>();
 builder.Services.AddSignalR();
 builder.Services.Configure<JwtTokenOptions>(builder.Configuration.GetSection("JwtOptions"));
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();

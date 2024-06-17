@@ -3,6 +3,7 @@ using backend.Core.Models;
 using backend.DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
 using Task = backend.Core.Models.Task;
+using TaskStatus = backend.Core.Models.TaskStatus;
 
 namespace backend.DataAccess.Repositories;
 
@@ -19,6 +20,7 @@ public class TasksRepository : ITasksRepository
     {
         var taskRecords = await _dbContext.Tasks
             .Include(x => x.LessonRecords)
+            .Include(x => x.TaskStatusRecords).ThenInclude(taskStatusRecord => taskStatusRecord.UserRecord)
             .AsNoTracking()
             .ToListAsync();
 
@@ -39,6 +41,17 @@ public class TasksRepository : ITasksRepository
                     Author = l.Author,
                     Supplements = l.SupplementKeys.ToList(),
                 }).ToList(),
+                TaskStatuses = x.TaskStatusRecords.Select(t => new TaskStatus
+                {
+                    Id = t.Id,
+                    Status = t.Status,
+                    AutomationSystemStatus = t.AutomationSystemStatus,
+                    StartedAt = t.StartedAt,
+                    FinishedAt = t.FinishedAt,
+                    Mark = t.Mark,
+                    FotoKeys = t.FotoKeys,
+                    UserKey = t.UserRecord?.Key.ToString() ?? string.Empty,
+                }).ToList()
             }).ToList();
         
         return tasks;

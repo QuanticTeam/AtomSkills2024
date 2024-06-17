@@ -20,6 +20,7 @@ public class LessonsRepository : ILessonsRepository
         var lessonRecords = await _dbContext.Lessons
             .Include(x => x.TraitRecords)
             .Include(x => x.TaskRecords)
+            .Include(x => x.TopicRecords)
             .AsNoTracking()
             .ToListAsync();
 
@@ -45,6 +46,12 @@ public class LessonsRepository : ILessonsRepository
                     Difficulty = t.Difficult,
                     Time = t.Time,
                     Supplements = t.SupplementKeys.ToList(),
+                }).ToList(),
+                Topics = x.TopicRecords.Select(t => new Topic
+                {
+                    Code = t.Code,
+                    Title = t.Title,
+                    Description = t.Description,
                 }).ToList(),
             }).ToList();
         
