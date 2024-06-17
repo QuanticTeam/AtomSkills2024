@@ -5,6 +5,7 @@ using backend.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Task = backend.Core.Models.Task;
+using TaskStatus = backend.Core.Models.TaskStatus;
 
 namespace backend.Controllers;
 
@@ -263,6 +264,36 @@ public class OMController : ControllerBase
                 Supplements = new List<string> { "123" },
                 Difficulty = 4,
                 Time = 15,
+                TaskStatuses = new List<TaskStatus>()
+                {
+                    new TaskStatus()
+                    {
+                        Status = TaskStatusType.InWork.ToString(),
+                        StartedAt = DateTime.Now.AddMinutes(-1),
+                        FinishedAt = DateTime.Now,
+                        Mark = 5,
+                        FotoKeys = [],
+                        UserKey = Guid.NewGuid().ToString(),
+                    },
+                    new TaskStatus()
+                    {
+                        Status = TaskStatusType.SendToCheck.ToString(),
+                        StartedAt = DateTime.Now.AddMinutes(-3),
+                        FinishedAt = DateTime.Now,
+                        Mark = 4,
+                        FotoKeys = [],
+                        UserKey = Guid.NewGuid().ToString(),
+                    },
+                    new TaskStatus()
+                    {
+                        Status = TaskStatusType.Verified.ToString(),
+                        StartedAt = DateTime.Now.AddMinutes(-5),
+                        FinishedAt = DateTime.Now,
+                        Mark = 5,
+                        FotoKeys = [],
+                        UserKey = Guid.NewGuid().ToString(),
+                    }
+                }
             },
         }; 
 
