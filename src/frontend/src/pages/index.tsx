@@ -11,6 +11,7 @@ import {
   ROUTE_PATH_SOMETHING_NEW,
   ROUTE_PATH_LESSONS,
   ROUTE_PATH_LESSON,
+  ROUTE_PATH_LESSON_TASK,
 } from '~/shared/routing'
 
 export const routes: RouteObject[] = [
@@ -23,7 +24,7 @@ export const routes: RouteObject[] = [
     children: [
       {
         path: ROUTE_PATH_INDEX,
-        Component: lazy(() => import('./PageSomething')),
+        Component: lazy(() => import('./PageLessons')),
       },
       {
         path: ROUTE_PATH_SIGN_IN,
@@ -43,6 +44,10 @@ export const routes: RouteObject[] = [
           {
             path: ROUTE_PATH_LESSON,
             Component: lazy(() => import('./PageLesson')),
+          },
+          {
+            path: ROUTE_PATH_LESSON_TASK,
+            Component: lazy(() => import('./PageTask')),
           },
         ],
       },

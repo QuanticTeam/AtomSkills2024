@@ -14,6 +14,4 @@ export const ROUTE_PATH_TOPICS = '/topics'
 
 export const ROUTE_PATH_LESSONS = '/lessons'
 export const ROUTE_PATH_LESSON = '/lessons/:code'
-
-export const ROUTE_PATH_TASKS = '/tasks'
-export const ROUTE_PATH_TASK = '/tasks/:code'
+export const ROUTE_PATH_LESSON_TASK = '/lessons/:lessonCode/tasks/:taskCode'

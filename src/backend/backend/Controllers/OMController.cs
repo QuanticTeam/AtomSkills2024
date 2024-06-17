@@ -311,9 +311,9 @@ public class OMController : ControllerBase
 
     [Authorize]
     [HttpPost("Task")]
-    public async Task<ActionResult<Task>> GetTask(string taskCode)
+    public async Task<ActionResult<Task>> GetTask(TaskRequest request)
     {
-        var task = _tasks.LastOrDefault(t => t.Code == taskCode);
+        var task = _tasks.LastOrDefault(t => t.Code == request.Code);
 
         if (task == null)
             return NoContent();

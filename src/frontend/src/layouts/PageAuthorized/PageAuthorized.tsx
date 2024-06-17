@@ -88,10 +88,10 @@ export function PageAuthorized({
 
                 <div className="overflow-auto scroll-smooth grow mx-6">
                   <div className="flex flex-col mr-2 p-8 min-h-full bg-white rounded-md border border-slate-200">
-                    <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center justify-between">
                       <div className="grow">
                         {typeof title === 'string' ? (
-                          <Typography.Title className="!mb-0">{title}</Typography.Title>
+                          <Typography.Title className="!mb-6">{title}</Typography.Title>
                         ) : (
                           title
                         )}

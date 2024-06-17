@@ -1,25 +1,29 @@
 import { useQuery } from '@tanstack/react-query'
-import { List, Space, Spin, Tabs, Tag, Typography } from 'antd'
+import { List, Space, Spin, Tabs, Typography } from 'antd'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import Markdown from 'react-markdown'
 import { useParams } from 'react-router-dom'
 import remarkGfm from 'remark-gfm'
-import { Lesson, LessonsApi, Task } from '~/entities'
+import { Lesson, LessonsApi, Task, TasksApi } from '~/entities'
 import { PageAuthorized } from '~/layouts/PageAuthorized'
 import { Oops } from '~/shared/ui'
 import { Tasks } from '~/widgets'
 
-type PageLessonRouteParams = Pick<Lesson, 'code'>
+interface PageTaskRouteParams {
+  lessonCode: Lesson['code']
+  taskCode: Task['code']
+  [x: string]: string | undefined
+}
 
-export function PageLesson() {
-  const { code } = useParams<PageLessonRouteParams>()
-  const { t } = useTranslation(PageLesson.name)
+export function PageTask() {
+  const { lessonCode, taskCode } = useParams<PageTaskRouteParams>()
+  const { t } = useTranslation(PageTask.name)
   const [content, setContent] = useState('')
 
   const { data, error, isPending } = useQuery({
-    queryKey: ['lesson', code],
-    queryFn: () => LessonsApi.getOne(code!),
+    queryKey: ['task', taskCode],
+    queryFn: () => TasksApi.getOne(taskCode!),
   })
 
   if (isPending) return <Spin fullscreen />
@@ -29,27 +33,16 @@ export function PageLesson() {
       title={
         <>
           <div className="flex justify-between items-center mb-6">
-            <Typography.Title className="!mb-0">Учебный материал</Typography.Title>
+            <Typography.Title className="!mb-0">Задание</Typography.Title>
             <div>
-              <Space size="large">
-                <div>
-                  <Typography.Text type="secondary">{t('tags')}: </Typography.Text>
-                  {data?.traits.map(x => (
-                    <Tag
-                      key={(x as any).code}
-                      color="orange-inverse"
-                    >
-                      {(x as any).name}{' '}
-                    </Tag>
-                  ))}
-                </div>
-                <Typography.Text type="secondary">
-                  {t('author')}: {data?.author}
-                </Typography.Text>
-              </Space>
+              <Space size="large"></Space>
             </div>
           </div>
           <Typography.Title level={2}>{data?.title ?? ''}</Typography.Title>
+          <Space size="middle">
+            <Typography.Text type="secondary">Сложность: {data?.difficulty}</Typography.Text>
+            <Typography.Text type="secondary">Время: {data?.time}мин</Typography.Text>
+          </Space>
         </>
       }
     >
@@ -117,16 +110,6 @@ export function PageLesson() {
                       <List.Item key={i}>{JSON.stringify(s)}</List.Item>
                     ))}
                   </List>
-                ),
-              },
-              {
-                key: 'tasks',
-                label: t('tabTasks'),
-                children: (
-                  <Tasks
-                    lessonCode={code as string}
-                    tasks={data.tasks as any as Task[]}
-                  />
                 ),
               },
             ]}

@@ -5,5 +5,7 @@
   "colTraits": "Теги",
   "colSupplement": "Материалы",
   "colTasks": "Задания",
-  "colAuthor": "Автор"
+  "colAuthor": "Автор",
+  "colDifficulty": "Сложность",
+  "colTime": "Время (мин)"
 }

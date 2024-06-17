@@ -1,14 +1,15 @@
-import { Spin, Table, TableProps, Typography } from 'antd'
+import { Table, TableProps, Typography } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { Lesson, Task } from '~/entities'
-import { ROUTE_PATH_TASKS } from '~/shared/routing'
+import { ROUTE_PATH_LESSONS } from '~/shared/routing'
 
 export interface TasksProps {
   tasks: Task[]
+  lessonCode: Lesson['code']
 }
 
-export function Tasks({ tasks }: TasksProps) {
+export function Tasks({ tasks, lessonCode }: TasksProps) {
   const { t } = useTranslation(Tasks.name)
 
   const columns: TableProps<Task>['columns'] = [
@@ -23,7 +24,7 @@ export function Tasks({ tasks }: TasksProps) {
       key: 'title',
       render(value, record) {
         return (
-          <Link to={`${ROUTE_PATH_TASKS}/${record.code}`}>
+          <Link to={`${ROUTE_PATH_LESSONS}/${lessonCode}/tasks/${record.code}`}>
             <Typography.Link>{value}</Typography.Link>
           </Link>
         )
@@ -35,10 +36,6 @@ export function Tasks({ tasks }: TasksProps) {
       key: 'content',
     },
     {
-      title: t('colDifficulty'),
-      dataIndex: 'difficulty',
-    },
-    {
       title: t('colSupplement'),
       dataIndex: 'supplements',
       key: 'supplements',
@@ -47,22 +44,23 @@ export function Tasks({ tasks }: TasksProps) {
       },
     },
     {
-      title: t('colTasks'),
-      dataIndex: 'tasks',
-      key: 'tasks',
+      title: t('colDifficulty'),
+      dataIndex: 'difficulty',
+      key: 'difficulty',
+    },
+    {
+      title: t('colTime'),
+      dataIndex: 'time',
+      key: 'time',
       render(value) {
         return JSON.stringify(value)
       },
-    },
-    {
-      title: t('colAuthor'),
-      dataIndex: 'author',
-      key: 'author',
     },
   ]
 
   return (
     <Table
+      bordered
       columns={columns}
       dataSource={tasks}
       pagination={false}

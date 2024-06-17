@@ -8,6 +8,7 @@ import {
   Table,
   TableColumnType,
   TableProps,
+  Tag,
   Typography,
 } from 'antd'
 import { Ref, useEffect, useRef, useState } from 'react'
@@ -20,6 +21,7 @@ import { Oops } from '~/shared/ui'
 import Highlighter, { HighlighterProps } from 'react-highlight-words'
 import { SearchOutlined } from '@ant-design/icons'
 import { FilterDropdownProps } from 'antd/es/table/interface'
+import { Tasks } from '../Tasks'
 
 interface LessonsProps {
   parentRef?: Ref<HTMLDivElement>
@@ -44,9 +46,11 @@ export function Lessons({ parentRef }: LessonsProps) {
     setSearchedColumn(dataIndex)
   }
 
-  const handleReset = (clearFilters: () => void) => {
+  const handleReset = (clearFilters: () => void, confirm: () => void) => {
     clearFilters()
     setSearchText('')
+    setSearchedColumn('')
+    confirm()
   }
 
   const getColumnSearchProps = (dataIndex: DataIndex): TableColumnType<Lesson> => ({
@@ -74,7 +78,7 @@ export function Lessons({ parentRef }: LessonsProps) {
             Search
           </Button>
           <Button
-            onClick={() => clearFilters && handleReset(clearFilters)}
+            onClick={() => clearFilters && handleReset(clearFilters, confirm)}
             size="small"
             style={{ width: 90 }}
           >
@@ -132,12 +136,20 @@ export function Lessons({ parentRef }: LessonsProps) {
       title: t('colContent'),
       dataIndex: 'content',
       key: 'content',
+      ...getColumnSearchProps('content'),
     },
     {
       title: t('colTraits'),
       dataIndex: 'traits',
       render(value) {
-        return JSON.stringify(value)
+        return value.map((x: any) => (
+          <Tag
+            key={x.code}
+            color="orange-inverse"
+          >
+            {x.name}
+          </Tag>
+        ))
       },
     },
     {
@@ -148,17 +160,18 @@ export function Lessons({ parentRef }: LessonsProps) {
         return JSON.stringify(value)
       },
     },
-    {
-      title: t('colTasks'),
-      dataIndex: 'tasks',
-      key: 'tasks',
-      render(value) {
-        return JSON.stringify(value)
-      },
-    },
+    // {
+    //   title: t('colTasks'),
+    //   dataIndex: 'tasks',
+    //   key: 'tasks',
+    //   render(value) {
+    //     return JSON.stringify(value)
+    //   },
+    // },
     {
       title: t('colAuthor'),
       dataIndex: 'author',
+      sorter: true,
       key: 'author',
       ...getColumnSearchProps('title'),
     },
@@ -217,6 +230,7 @@ export function Lessons({ parentRef }: LessonsProps) {
     <Oops />
   ) : (
     <Table
+      bordered
       style={{ height: '100%' }}
       columns={columns}
       dataSource={data}
@@ -226,6 +240,17 @@ export function Lessons({ parentRef }: LessonsProps) {
         y: 500,
       }}
       onChange={onTableChange}
+      expandable={{
+        expandedRowRender: lesson => (
+          <>
+            <Typography.Text strong>Задания</Typography.Text>
+            <Tasks
+              lessonCode={lesson.code}
+              tasks={lesson.tasks as any}
+            />
+          </>
+        ),
+      }}
     />
   )
 }
