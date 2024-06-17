@@ -69,5 +69,4 @@ public class FileController : ControllerBase
         
         return StatusCode(StatusCodes.Status200OK, new UploadFileResponse{ FileKey = file.FileName, FileName = file.MetaData[OriginalFileNameKey]});
     }
-    
 }

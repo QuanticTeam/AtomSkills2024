@@ -104,7 +104,7 @@ public class OMController : ControllerBase
             {
                 new Task()
                 {
-                    Code = "1",
+                    Code = "12",
                     Title = "Title1",
                     Content = "## MARKDOWN PREVIEW: 01",
                     Difficulty = 10,
@@ -113,7 +113,7 @@ public class OMController : ControllerBase
                 },
                 new Task()
                 {
-                    Code = "2",
+                    Code = "12",
                     Title = "Title2",
                     Content = "## MARKDOWN PREVIEW: 02",
                     Difficulty = 10,
@@ -163,7 +163,7 @@ public class OMController : ControllerBase
             {
                 new Task()
                 {
-                    Code = "3",
+                    Code = "12",
                     Title = "Title3",
                     Content = "## MARKDOWN PREVIEW: 03",
                     Difficulty = 10,
@@ -172,7 +172,7 @@ public class OMController : ControllerBase
                 },
                 new Task()
                 {
-                    Code = "4",
+                    Code = "12",
                     Title = "Title4",
                     Content = "## MARKDOWN PREVIEW: 04",
                     Difficulty = 10,
