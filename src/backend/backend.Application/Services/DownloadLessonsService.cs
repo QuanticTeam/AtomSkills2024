@@ -27,18 +27,28 @@ public class DownloadLessonsService : IDownloadService
             await _repository.UploadTrait(trait);
         }
 
-        foreach (var task in _contentLoadService.LoadTasks())
+        foreach (var jsonTask in _contentLoadService.LoadTasks())
         {
-            foreach (var supplement in task.Supplement)
+            var task = new Task
+            {
+                Code = jsonTask.Code,
+                Title = jsonTask.Title,
+                Content = jsonTask.Content,
+                Supplements = new List<string> {},
+                Difficulty = jsonTask.Difficulty,
+                Time = jsonTask.Time,
+            };
+
+            foreach (var supplement in jsonTask.Supplement)
             {
                 var s = await _minIoFileService.Upload(supplement);
+                if (s != null)
+                {
+                    task.Supplements.Add(s.Key);
+                }
             }
 
-            // var files = _minIoFileService.Upload(task.Supplement);
-            // await _repository.UploadTask(new Task
-            // {
-
-            // });
+            await _repository.UploadTask(task);
         }
 
 

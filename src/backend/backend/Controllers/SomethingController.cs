@@ -18,41 +18,34 @@ public class SomethingController : ControllerBase
     private readonly IHubContext<ToastNotificationHub> _hubContext;
 
     private readonly IContentLoadService _contentLoadService;
+    private readonly IDownloadService _downloadService;
     
     public SomethingController(
         ISomethingsService somethingsService,
         IHubContext<ToastNotificationHub> hubContext,
         IMinIoFileService minIoFileService,
-        IContentLoadService contentLoadService)
+        IContentLoadService contentLoadService,
+        IDownloadService downloadService)
     {
         _somethingsService = somethingsService;
         _hubContext = hubContext;
         _minIoFileService = minIoFileService;
         _contentLoadService = contentLoadService;
+        _downloadService = downloadService;
     }
 
     [Authorize]
     [HttpPost("Test")]
     public async Task<ActionResult<string>> Test()
     {
-        var traits = _contentLoadService.LoadTraits();
-        var m1 = traits.Count();
-
-        var topics = _contentLoadService.LoadTopics();
-        var m2 = topics.Count();
-
-        var lessons = _contentLoadService.LoadLessons();
-        var m3 = lessons.Count();
-
-        var tasks = _contentLoadService.LoadTasks();
-        var m4 = tasks.Count();
+        await _downloadService.Download();
 
 
         await _hubContext.Clients.All.SendAsync("ToastNotification", "success test");
         var userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type.Equals("userId"))?.Value ?? string.Empty;
         if (HttpContext.User.IsInRole("Admin"))
         {
-            return StatusCode(StatusCodes.Status200OK, $"Admin: {m1} {m2} {m3} {m4}");
+            return StatusCode(StatusCodes.Status200OK, $"Admin");
         }
         return StatusCode(StatusCodes.Status200OK, "Not admin");
     }
