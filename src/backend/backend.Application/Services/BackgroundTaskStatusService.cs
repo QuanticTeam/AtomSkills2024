@@ -35,7 +35,7 @@ public class BackgroundTaskStatusService : BackgroundService
 
     private async Task SendExpiredAsync(CancellationToken cancellationToken)
     {
-        var time = DateTime.Now;
+        var time = DateTime.UtcNow;
         using var scope = _serviceProvider.CreateScope();
         var taskStatusesRepository = scope.ServiceProvider.GetService<ITaskStatusesRepository>()!;
         var tasksRepository = scope.ServiceProvider.GetService<ITasksRepository>()!;

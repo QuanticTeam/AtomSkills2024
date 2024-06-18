@@ -136,4 +136,19 @@ public class OMController : ControllerBase
 
         return StatusCode(StatusCodes.Status200OK, task);
     }
+
+    [Authorize]
+    [HttpPost("TaskStatuses")]
+    public async Task<ActionResult<TaskStatusesResponse>> GetTaskStatuses(
+        ITaskStatusesRepository taskStatusesRepository,
+        TaskStatusesRequest request)
+    {
+        var items = await taskStatusesRepository.Get();
+        return Ok(new TaskStatusesResponse
+        {
+            Items = items.ToList(),
+        });
+    }
+
+
 }

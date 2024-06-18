@@ -58,7 +58,7 @@ public class TasksService : ITasksService
     public async Task<int> TakeTaskInWork(string taskCode, string userKey)
     {
         var users = await _usersRepository.Get();
-        var user = users.FirstOrDefault(x => x.Key.Equals(Guid.Parse((ReadOnlySpan<char>)userKey)));
+        var user = users.FirstOrDefault(x => x.Key.ToString().Equals(userKey));
         var tasks = await _tasksRepository.Get();
         var task = tasks.FirstOrDefault(x => x.Code.Equals(taskCode));
 
@@ -69,7 +69,7 @@ public class TasksService : ITasksService
         {
             Status = TaskStatusType.InWork.ToString(),
             AutomationSystemStatus = AutomationSystemStatus.None.ToString(),
-            StartedAt = DateTime.Now,
+            StartedAt = DateTime.UtcNow,
             FinishedAt = null,
             Mark = null,
             Fotos = [],
@@ -78,7 +78,7 @@ public class TasksService : ITasksService
             Recommendations = [],
             Defects = [],
         };
-        
+
         return await _taskStatusesRepository.Create(taskStatus);
     }
     
@@ -99,7 +99,7 @@ public class TasksService : ITasksService
             Status = TaskStatusType.SendToCheck.ToString(),
             AutomationSystemStatus = taskStatus.AutomationSystemStatus,
             StartedAt = taskStatus.StartedAt,
-            FinishedAt = DateTime.Now,
+            FinishedAt = DateTime.UtcNow,
             Mark = taskStatus.Mark,
             Fotos = fotos,
             UserKey = taskStatus.UserKey,

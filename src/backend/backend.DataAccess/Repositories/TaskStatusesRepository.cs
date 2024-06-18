@@ -64,7 +64,7 @@ public class TaskStatusesRepository : ITaskStatusesRepository
 
     public async Task<int> Create(TaskStatus taskStatus)
     {
-        var userRecord = _dbContext.Users.FirstOrDefault(x => x.Key.Equals(taskStatus.UserKey));
+        var userRecord = _dbContext.Users.FirstOrDefault(x => x.Key.ToString().Equals(taskStatus.UserKey));
         var taskRecord = _dbContext.Tasks.FirstOrDefault(x => x.Code.Equals(taskStatus.TaskCode));
 
         if (userRecord == null || taskRecord == null)
