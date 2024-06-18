@@ -1,7 +1,8 @@
-import { SearchOutlined } from '@ant-design/icons'
+import { CloudDownloadOutlined, DownOutlined, SearchOutlined } from '@ant-design/icons'
 import { useQuery } from '@tanstack/react-query'
 import {
   Button,
+  Image,
   Input,
   InputRef,
   Space,
@@ -109,6 +110,13 @@ export function Attachments({ fileKeys }: AttachmentsProps) {
       title: 'Имя',
       dataIndex: 'originalNme',
       key: 'originalNme',
+      render(value, record) {
+        return (
+          <Typography.Link href={`/api/File/Download/${record.code}`}>
+            {value} <CloudDownloadOutlined />
+          </Typography.Link>
+        )
+      },
     },
     {
       title: t('colTitle'),
@@ -120,12 +128,14 @@ export function Attachments({ fileKeys }: AttachmentsProps) {
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
-          <Typography.Link href={`/api/File/Download/${record.code}`}>Скачать</Typography.Link>
+          <Image
+            width={200}
+            src={`/api/File/Download/${record.code}`}
+          />
         </Space>
       ),
     },
   ]
-
   const [sortAndFilterPayload, setSortAndFilterPayload] = useState<SortAndFilterRequest>(
     getSortAndFilterRequestPayload(),
   )

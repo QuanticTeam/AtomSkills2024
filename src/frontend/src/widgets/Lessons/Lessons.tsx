@@ -152,7 +152,7 @@ export function Lessons({ parentRef }: LessonsProps) {
             }}
           >
             <Typography.Link className="border-b  border-dashed border-blue-600">
-              {value.split(' ').slice(0, 20).join(' ') + '...'}
+              {value.split(' ').slice(0, 10).join(' ') + '...'}
             </Typography.Link>
           </Popover>
         )
@@ -172,18 +172,10 @@ export function Lessons({ parentRef }: LessonsProps) {
         ))
       },
     },
-    {
-      title: t('colSupplement'),
-      dataIndex: 'supplements',
-      key: 'supplements',
-      render(value) {
-        return JSON.stringify(value)
-      },
-    },
     // {
-    //   title: t('colTasks'),
-    //   dataIndex: 'tasks',
-    //   key: 'tasks',
+    //   title: t('colSupplement'),
+    //   dataIndex: 'supplements',
+    //   key: 'supplements',
     //   render(value) {
     //     return JSON.stringify(value)
     //   },
