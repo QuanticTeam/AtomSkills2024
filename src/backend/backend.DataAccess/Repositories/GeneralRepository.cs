@@ -16,26 +16,12 @@ public class GeneralRepository : IGeneralRepository
         _dbContext = dbContext;
     }
 
-    public async Task<int> Download(
-        List<Trait> traits, 
-        List<Task> tasks, 
-        List<Lesson> lessons,
-        List<Topic> topics)
-    {
-        // var traitResult = await DownloadTrait(traits);
-        
-        // var taskResult = await DownloadTasks(tasks);
-        
-        var lessonResult = await DownloadLessons(lessons);
-        
-        var topicResult = await DownloadTopics(topics);
-        
-        return 100500; //traitResult + taskResult + lessonResult + topicResult;
-    }
-    
+    public async Task<IEnumerable<Trait>> GetTraits() => await _dbContext.Traits.Select(t => t).ToListAsync();
+    public async Task<IEnumerable<Task>> GetTasks() => await _dbContext.Tasks.ToListAsync();
+
     public async Task<int> UploadTrait(JsonTrait trait)
     {
-        await _dbContext.Traits.AddRangeAsync(new TraitRecord
+        await _dbContext.Traits.AddAsync(new TraitRecord
         {
             Code = trait.Code,
             Name = trait.Name,
@@ -46,7 +32,7 @@ public class GeneralRepository : IGeneralRepository
 
     public async Task<int> UploadTask(Task task)
     {
-        await _dbContext.Tasks.AddRangeAsync(new TaskRecord
+        await _dbContext.Tasks.AddAsync(new TaskRecord
         {
             Code = task.Code,
             Title = task.Title,
@@ -57,29 +43,28 @@ public class GeneralRepository : IGeneralRepository
         });
         return await _dbContext.SaveChangesAsync();
     }
-    
-    private async Task<int> DownloadLessons(List<Lesson> lessons)
+
+    public async Task<int> UploadLesson(Lesson lesson)
     {
         var traitRecords = await _dbContext.Traits.ToListAsync();
-        
         var taskRecords = await _dbContext.Tasks.ToListAsync();
-        
-        var lessonRecords = lessons.Select(x => new LessonRecord
-        {
-            Code = x.Code,
-            Title = x.Title,
-            Content = x.Content,
-            Author = x.Author,
-            SupplementKeys = x.Supplements.ToArray(),
-            TraitRecords = traitRecords
-                .Where(t => x.Traits.Exists(trait => t.Code.Equals(trait.Code)))
-                .ToList(),
-            TaskRecords = taskRecords
-                .Where(t => x.Tasks.Exists(task => t.Code.Equals(task.Code)))
-                .ToList(),
-        });
-        
-        await _dbContext.Lessons.AddRangeAsync(lessonRecords);
+
+        await _dbContext.Lessons.AddAsync(
+            new LessonRecord
+            {
+                Code = lesson.Code,
+                Title = lesson.Title,
+                Content = lesson.Content,
+                Author = lesson.Author,
+                SupplementKeys = lesson.Supplements.ToArray(),
+                TraitRecords = traitRecords
+                    .Where(t => lesson.Traits.Exists(trait => t.Code.Equals(trait.Code)))
+                    .ToList(),
+                TaskRecords = taskRecords
+                    .Where(t => lesson.Tasks.Exists(task => t.Code.Equals(task.Code)))
+                    .ToList(),
+            });
+
         return await _dbContext.SaveChangesAsync();
     }
     

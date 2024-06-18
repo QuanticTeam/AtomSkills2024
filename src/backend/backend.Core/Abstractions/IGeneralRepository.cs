@@ -6,12 +6,12 @@ namespace backend.Core.Abstractions;
 
 public interface IGeneralRepository
 {
-    Task<int> Download(
-        List<Trait> traits, 
-        List<Task> tasks, 
-        List<Lesson> lessons,
-        List<Topic> topics);
+    Task<IEnumerable<Trait>> GetTraits() => await _dbContext.Traits.ToListAsync();
+    Task<IEnumerable<Task>> GetTasks() => await _dbContext.Tasks.ToListAsync();
+
 
     Task<int> UploadTrait(JsonTrait trait);
     Task<int> UploadTask(Task task);
+    Task<int> UploadLesson(Lesson lesson);
+
 }
