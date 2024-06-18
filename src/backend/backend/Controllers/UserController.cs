@@ -6,6 +6,7 @@ using backend.Notifications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using TaskStatus = backend.Core.Models.TaskStatus;
 
 namespace backend.Controllers;
 
@@ -132,7 +133,8 @@ public class UserController : ControllerBase
             request.MiddleName,
             request.LastName,
             request.Email,
-            request.Phone);
+            request.Phone,
+            new List<TaskStatus>());
         
         return StatusCode(StatusCodes.Status200OK, await _usersService.Create(user));
     }
@@ -157,7 +159,8 @@ public class UserController : ControllerBase
             request.MiddleName,
             request.LastName,
             request.Email,
-            request.Phone);
+            request.Phone,
+            user.TaskStatuses);
         
         return StatusCode(StatusCodes.Status200OK, await _usersService.Update(updateUser));
     }

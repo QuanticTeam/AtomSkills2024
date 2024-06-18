@@ -2,6 +2,7 @@ using backend.Core.Abstractions;
 using backend.Core.Models;
 using backend.DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
+using TaskStatus = backend.Core.Models.TaskStatus;
 
 namespace backend.DataAccess.Repositories;
 
@@ -17,11 +18,33 @@ public class UsersRepository : IUsersRepository
     public async Task<List<User>> Get()
     {
         var userRecords = await _dbContext.Users
+            .Include(x => x.TaskStatusRecords)
+            .ThenInclude(taskStatusRecord => taskStatusRecord.TaskRecord)
             .AsNoTracking()
             .ToListAsync();
 
         var users = userRecords
-            .Select(x => new User(x.Key, x.Login, x.Password, x.Role, x.FirstName, x.MiddleName, x.LastName, x.Email, x.Phone))
+            .Select(x => new User(
+                x.Key, 
+                x.Login, 
+                x.Password, 
+                x.Role, 
+                x.FirstName, 
+                x.MiddleName, 
+                x.LastName, 
+                x.Email, 
+                x.Phone,
+                x.TaskStatusRecords.Select(t => new TaskStatus
+                {
+                    Id = t.Id,
+                    Status = t.Status,
+                    AutomationSystemStatus = t.AutomationSystemStatus,
+                    StartedAt = t.StartedAt,
+                    FinishedAt = t.FinishedAt,
+                    Mark = t.Mark,
+                    UserKey = x.Key.ToString(),
+                    TaskCode = t.TaskRecord!.Code,
+                }).ToList()))
             .ToList();
         
         return users;

@@ -2,7 +2,7 @@ namespace backend.Core.Models;
 
 public class User
 {
-    public User(Guid key, string login, string password, string role, string? firstName, string? middleName, string? lastName, string? email, string? phone)
+    public User(Guid key, string login, string password, string role, string? firstName, string? middleName, string? lastName, string? email, string? phone, List<TaskStatus> taskStatuses)
     {
         Key = key;
         Login = login;
@@ -13,6 +13,7 @@ public class User
         LastName = lastName;
         Email = email;
         Phone = phone;
+        TaskStatuses = taskStatuses;
     }
     
     public Guid Key { get; set; }
@@ -32,4 +33,6 @@ public class User
     public string? Email { get; set; }
     
     public string? Phone { get; set; }
+    
+    public List<TaskStatus> TaskStatuses { get; set; }
 }
