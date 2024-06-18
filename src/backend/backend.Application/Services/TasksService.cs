@@ -65,6 +65,13 @@ public class TasksService : ITasksService
         if (user == null || task == null)
             return 0;
 
+        // var taskStatuses = await _taskStatusesRepository.Get();
+        // var lastStatus = taskStatuses
+        //     .Where(x => x.TaskCode.Equals(taskCode))
+        //     .MaxBy(x => x.StartedAt);
+
+
+
         var taskStatus = new TaskStatus
         {
             Status = TaskStatusType.InWork.ToString(),
