@@ -78,7 +78,7 @@ public class FileController : ControllerBase
         {
             Code = x,
             OriginalNme = _minIoFileService.GetOriginalFileNameWithUnescape(x).GetAwaiter().GetResult(),
-            Title = _minIoFileService.GetOriginalFileName(x).GetAwaiter().GetResult(),
+            Title = _minIoFileService.GetTitleWithUnescape(x).GetAwaiter().GetResult(),
         }).ToList();
         
         return StatusCode(StatusCodes.Status200OK, response);

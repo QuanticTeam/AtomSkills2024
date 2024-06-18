@@ -32,7 +32,7 @@ public class RankController : ControllerBase
     public async Task<RankUsersResponse> RankUsers(RankUsersRequest request)
     {
         var users = await _usersService.GetAll();
-        
+
         var filtered = users
             .Where(x => x.TaskStatuses
             .Exists(t => t.TaskCode.Equals(request.Code) && t.Status.Equals(TaskStatusType.Verified.ToString())))
