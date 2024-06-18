@@ -61,31 +61,31 @@ public class BackgroundTaskStatusService : BackgroundService
             await taskStatusesRepository.Update(updateTaskStatus);
         }
     }
-    
+
     private async Task SendToRecommendedAsync(CancellationToken cancellationToken)
     {
         using var scope = _serviceProvider.CreateScope();
         var taskStatusesRepository = scope.ServiceProvider.GetService<ITaskStatusesRepository>()!;
         var taskStatuses = await taskStatusesRepository.Get();
 
-        var status = taskStatuses
-            .FirstOrDefault(x => x.Status.Equals(TaskStatusType.Verified.ToString())
-            && x.Mark < 3);
-
-        if (status == null)
-            return;
-        
-        var updateTaskStatus = new TaskStatus
+        foreach (var taskStatus in taskStatuses)
         {
-            Id = status.Id,
-            Status = TaskStatusType.Recommended.ToString(),
-            AutomationSystemStatus = status.AutomationSystemStatus,
-            StartedAt = status.StartedAt,
-            FinishedAt = status.FinishedAt,
-            Mark = status.Mark,
-        }; 
-        
-        await taskStatusesRepository.Update(updateTaskStatus);
+            if (taskStatus.Status.Equals(TaskStatusType.Verified.ToString())
+                && taskStatus.Mark < 3)
+            {
+                var updateTaskStatus = new TaskStatus
+                {
+                    Id = taskStatus.Id,
+                    Status = TaskStatusType.Recommended.ToString(),
+                    AutomationSystemStatus = taskStatus.AutomationSystemStatus,
+                    StartedAt = taskStatus.StartedAt,
+                    FinishedAt = taskStatus.FinishedAt,
+                    Mark = taskStatus.Mark,
+                };
+
+                await taskStatusesRepository.Update(updateTaskStatus);
+            }
+        }
     }
     
     private async Task SendToAiAsync(CancellationToken cancellationToken)

@@ -92,19 +92,27 @@ public static class FilterExtension
     private static Expression<Func<TSource, bool>> IntFilter<TSource>(string propertyName, int value, FilterType type)
     {
         var parameter = Expression.Parameter(typeof(TSource), "x");
-        
+
         var property = Expression.Property(parameter, propertyName);
-        
+
+        if (type == FilterType.Contains)
+        {
+                var constant2 = Expression.Constant(value.ToString());
+                var method2 = typeof(string).GetMethod("Contains", new[] { typeof(string) });
+                var expression2 = Expression.Call(property, method2!, constant2);
+                return Expression.Lambda<Func<TSource, bool>>(expression2, parameter);
+        }
+
         var constant = Expression.Constant(value);
-        
-        var expression = type switch
+
+        BinaryExpression expression = type switch
         {
             FilterType.Equals => Expression.Equal(property, constant),
             FilterType.GreaterThan => Expression.GreaterThan(property, constant),
             FilterType.LessThan => Expression.LessThan(property, constant),
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Filter does not exist")
         };
-        
+
         return Expression.Lambda<Func<TSource, bool>>(expression, parameter);
     }
     
