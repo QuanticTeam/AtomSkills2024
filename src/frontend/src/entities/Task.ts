@@ -31,7 +31,7 @@ export const TasksApi = {
   },
   async submit(payload: {
     taskStatusId: number
-    fileKeyAndDescriptions: { fileKey: string; description: 'string' }
+    fileKeyAndDescriptions: { fileKey: string; description: 'string' }[]
   }) {
     const { data } = await apiClient.post<TaskProgress>('/Status/SendTaskToCheck', payload)
 
@@ -42,6 +42,7 @@ export const TasksApi = {
     mark: number
     defects: {
       codes: string[]
+      fileKey: string
       comment: string
       x1: number
       y1: number
@@ -54,19 +55,8 @@ export const TasksApi = {
     return data
   },
   // What is the result?
-  async suggestRetry(payload: {
-    taskId: number
-    mark: number
-    defects: {
-      codes: string[]
-      comment: string
-      x1: number
-      y1: number
-      x2: number
-      y2: number
-    }[]
-  }) {
-    const { data } = await apiClient.post<TaskProgress>('/Status/RecommendedRework', payload)
+  async suggestRetry(taskId: number) {
+    const { data } = await apiClient.post<TaskProgress>('/Status/RecommendedRework', { taskId })
 
     return data
   },

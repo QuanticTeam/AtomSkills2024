@@ -8,6 +8,7 @@ import { Lesson, LessonsApi, Task } from '~/entities'
 import { PageAuthorized } from '~/layouts/PageAuthorized'
 import { Markdown, Oops } from '~/shared/ui'
 import { Tasks } from '~/widgets'
+import { Attachments } from '~/widgets/Attachments'
 
 type PageLessonRouteParams = Pick<Lesson, 'code'>
 
@@ -75,13 +76,7 @@ export function PageLesson() {
               {
                 key: 'supplements',
                 label: t('tabSupplements'),
-                children: (
-                  <List>
-                    {data.supplements.map((s, i) => (
-                      <List.Item key={i}>{JSON.stringify(s)}</List.Item>
-                    ))}
-                  </List>
-                ),
+                children: <Attachments fileKeys={data.supplements} />,
               },
               {
                 key: 'tasks',
@@ -100,38 +95,4 @@ export function PageLesson() {
       )}
     </PageAuthorized>
   )
-}
-
-function getMarkdown() {
-  return `
-  # h1 Heading 8-)
-  ## h2 Heading
-  ### h3 Heading
-  #### h4 Heading
-  ##### h5 Heading
-
-  I just love <strong>bold text</strong>
-
-  I just love **bold text**
-
-  I just love <em>italic text</em>
-
-  I just love *italic text*
-
-  Unordered
-
-  + Create a list by starting a line with \`+\`, \`-\`, or \`*\`
-  + Sub-lists are made by indenting 2 spaces:
-    - Marker character change forces new list start:
-      * Ac tristique libero volutpat at
-      + Facilisis in pretium nisl aliquet
-      - Nulla volutpat aliquam velit
-  + Very easy!
-
-  Ordered
-
-  1. Lorem ipsum dolor sit amet
-  2. Consectetur adipiscing elit
-  3. Integer molestie lorem at massa
-  `
 }

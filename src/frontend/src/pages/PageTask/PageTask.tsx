@@ -2,29 +2,31 @@ import {
   ClockCircleFilled,
   ClockCircleOutlined,
   DashboardOutlined,
-  StarFilled,
   StarOutlined,
   StarTwoTone,
 } from '@ant-design/icons'
-import { useQuery } from '@tanstack/react-query'
-import { Badge, Button, Card, FloatButton, List, Space, Spin, Tabs, Tag, Typography } from 'antd'
-import { memo, useContext, useEffect, useState } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  Badge,
+  Button,
+  Card,
+  FloatButton,
+  List,
+  Modal,
+  Space,
+  Spin,
+  Tabs,
+  Tag,
+  Typography,
+} from 'antd'
+import { memo, useContext, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
-import {
-  AutomationSystemStatus,
-  Lesson,
-  Task,
-  TaskProgress,
-  TaskStatusType,
-  TasksApi,
-} from '~/entities'
+import { AutomationSystemStatus, Lesson, Task, TaskStatusType, TasksApi } from '~/entities'
 import { PageAuthorized } from '~/layouts/PageAuthorized'
-import { apiClient } from '~/shared/apiClient'
 import { AuthContext } from '~/shared/auth'
-import { UserRoleEnumStr } from '~/shared/auth/UserRoleEnum'
-import { colors } from '~/shared/styles'
 import { Condition, Markdown, Oops } from '~/shared/ui'
+import { Attachments } from '~/widgets/Attachments'
 
 interface PageTaskRouteParams {
   lessonCode: Lesson['code']
@@ -37,11 +39,15 @@ export function PageTask() {
   const { t } = useTranslation(PageTask.name)
   const [content, setContent] = useState('')
   const { authInfo } = useContext(AuthContext)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isModalOpen2, setIsModalOpen2] = useState(false)
 
   const { data, error, isPending } = useQuery({
     queryKey: ['task', taskCode],
     queryFn: () => TasksApi.getOne(taskCode!),
   })
+
+  const queryClient = useQueryClient()
 
   if (isPending) return <Spin fullscreen />
   if (error) return <Oops />
@@ -74,6 +80,60 @@ export function PageTask() {
     defects: [],
   }
 
+  const willEndAt = Date.parse(currentTaskProgress.startedAt) + data.time * 60 * 1000
+  const willEndIn = willEndAt - Date.now()
+
+  const showModal = () => {
+    setIsModalOpen(true)
+  }
+
+  const handleOk = async () => {
+    setIsModalOpen(false)
+    await TasksApi.submit({
+      taskStatusId: currentTaskProgress.id,
+      fileKeyAndDescriptions: [],
+    })
+
+    await queryClient.fetchQuery({
+      queryKey: ['task', taskCode],
+    })
+  }
+
+  const handleCancel = () => {
+    setIsModalOpen(false)
+  }
+
+  const showModal2 = () => {
+    setIsModalOpen2(true)
+  }
+
+  const handleOk2 = async () => {
+    setIsModalOpen2(false)
+    await TasksApi.review({
+      taskId: currentTaskProgress.id,
+      mark: 4,
+      defects: [
+        {
+          fileKey: 'DEFECTO!',
+          codes: [],
+          comment: 'bla',
+          x1: 0,
+          y1: 0,
+          x2: 10,
+          y2: 10,
+        },
+      ],
+    })
+
+    await queryClient.fetchQuery({
+      queryKey: ['task', taskCode],
+    })
+  }
+
+  const handleCancel2 = () => {
+    setIsModalOpen2(false)
+  }
+
   return (
     <PageAuthorized
       title={
@@ -99,29 +159,43 @@ export function PageTask() {
                     () =>
                       (isAdmin || isStudentOnLookup) &&
                       currentTaskProgress.status === TaskStatusType.None,
+                    () =>
+                      (isStudentOnLookup || isAdmin) &&
+                      [TaskStatusType.Recommended].includes(currentTaskProgress.status),
                   ]}
                 >
                   <Button
-                    size="middle"
                     type="primary"
                     className="my-2"
-                    onClick={async () => TasksApi.begin({ code: taskCode! })}
+                    onClick={async () => {
+                      try {
+                        await TasksApi.begin({ code: taskCode! })
+                        await queryClient.fetchQuery({
+                          queryKey: ['task', taskCode],
+                        })
+                      } catch (e) {
+                        console.error(e)
+                      }
+                    }}
                   >
                     Взять в работу
                   </Button>
                 </Condition>
                 <Condition
+                  every
                   conditions={[
                     () =>
-                      isAdmin &&
-                      isStudentOnLookup &&
+                      (isAdmin || isStudentOnLookup) &&
                       currentTaskProgress.status === TaskStatusType.InWork,
+                    () =>
+                      currentTaskProgress.status !== TaskStatusType.AiVerified &&
+                      currentTaskProgress.status !== TaskStatusType.Verified,
                   ]}
                 >
                   <Button
-                    size="small"
                     type="primary"
-                    className="!bg-primary-2 !border-primary-2"
+                    className="!bg-primary-2 !border-primary-2 my-2"
+                    onClick={showModal}
                   >
                     Отправить на проверку
                   </Button>
@@ -136,11 +210,13 @@ export function PageTask() {
                   ]}
                 >
                   <Button
-                    size="small"
                     type="primary"
-                    className="!bg-primary-2 !border-primary-2"
+                    className="!bg-primary-2 !border-primary-2 my-2"
+                    onClick={showModal2}
                   >
-                    Проверить
+                    {currentTaskProgress.status === TaskStatusType.AiVerified
+                      ? 'Уточнить'
+                      : 'Проверить'}
                   </Button>
                 </Condition>
                 <Condition
@@ -151,9 +227,14 @@ export function PageTask() {
                   ]}
                 >
                   <Button
-                    size="small"
                     type="primary"
-                    className="!bg-primary-2 !border-primary-2"
+                    className="!bg-primary-2 !border-primary-2 my-2"
+                    onClick={async () => {
+                      await TasksApi.suggestRetry(currentTaskProgress.id)
+                      await queryClient.fetchQuery({
+                        queryKey: ['task', taskCode],
+                      })
+                    }}
                   >
                     Предложить перепройти
                   </Button>
@@ -181,6 +262,10 @@ export function PageTask() {
                         () =>
                           (isStudentOnLookup || isAdmin || isMentorOnReview) &&
                           currentTaskProgress.status === TaskStatusType.InWork,
+                        () =>
+                          (isStudentOnLookup || isAdmin || isMentorOnReview) &&
+                          currentTaskProgress.status === TaskStatusType.InWork &&
+                          willEndAt < Date.now(),
                       ]}
                     >
                       <Badge
@@ -193,6 +278,11 @@ export function PageTask() {
                         () =>
                           (isStudentOnLookup || isAdmin || isMentorOnReview) &&
                           currentTaskProgress.status === TaskStatusType.SendToCheck,
+                        () =>
+                          // Если бэк не успел посчитать, нарисуем пока сами
+                          (isStudentOnLookup || isAdmin || isMentorOnReview) &&
+                          currentTaskProgress.status === TaskStatusType.InWork &&
+                          willEndAt >= Date.now(),
                       ]}
                     >
                       <Badge
@@ -217,12 +307,26 @@ export function PageTask() {
                       conditions={[
                         () =>
                           (isStudentOnLookup || isAdmin || isMentorOnReview) &&
-                          currentTaskProgress.status === TaskStatusType.Verified,
+                          [TaskStatusType.Verified, TaskStatusType.AiVerified].includes(
+                            currentTaskProgress.status,
+                          ),
                       ]}
                     >
                       <Badge
                         status="success"
                         text="Проверено"
+                      />
+                    </Condition>
+                    <Condition
+                      conditions={[
+                        () =>
+                          (isStudentOnLookup || isAdmin || isMentorOnReview) &&
+                          [TaskStatusType.Recommended].includes(currentTaskProgress.status),
+                      ]}
+                    >
+                      <Badge
+                        status="warning"
+                        text="Рекомендация перепройти"
                       />
                     </Condition>
                     <Condition
@@ -235,11 +339,15 @@ export function PageTask() {
                       ]}
                     >
                       <Space className="relative top-px">
-                        <StarTwoTone />
-                        <StarTwoTone />
-                        <StarTwoTone />
-                        <StarOutlined className="text-slate-400" />
-                        <StarOutlined className="text-slate-400" />
+                        {Array.from({ length: 5 }).map((_, i) => {
+                          if (!currentTaskProgress.mark)
+                            return <StarOutlined className="text-slate-400" />
+                          return i + 1 <= currentTaskProgress.mark ? (
+                            <StarTwoTone />
+                          ) : (
+                            <StarOutlined className="text-slate-400" />
+                          )
+                        })}
                       </Space>
                     </Condition>
                   </Space>
@@ -260,7 +368,24 @@ export function PageTask() {
         <Oops />
       ) : (
         <>
-          <CountDown />
+          {
+            <Condition
+              conditions={[
+                () =>
+                  (isAdmin || isStudentOnLookup) &&
+                  currentTaskProgress.status === TaskStatusType.InWork,
+              ]}
+            >
+              <Timer
+                value={willEndIn}
+                onFinish={() =>
+                  queryClient.fetchQuery({
+                    queryKey: ['task', taskCode],
+                  })
+                }
+              />
+            </Condition>
+          }
           <Tabs
             size="small"
             defaultActiveKey="1"
@@ -273,65 +398,61 @@ export function PageTask() {
               {
                 key: 'supplements',
                 label: t('tabSupplements'),
-                children: (
-                  <List>
-                    {data.supplements.map((s, i) => (
-                      <List.Item key={i}>{JSON.stringify(s)}</List.Item>
-                    ))}
-                  </List>
-                ),
+                children: <Attachments fileKeys={data.supplements} />,
               },
             ]}
             onChange={console.log.bind(console)}
           />
+
+          <Modal
+            title="Отправить решение"
+            open={isModalOpen}
+            onOk={handleOk}
+            onCancel={handleCancel}
+          >
+            <p>Some contents...</p>
+            <p>Some contents...</p>
+            <p>Some contents...</p>
+          </Modal>
+          <Modal
+            title="Проверка решения"
+            open={isModalOpen2}
+            onOk={handleOk2}
+            onCancel={handleCancel2}
+          >
+            <p>Some contents...</p>
+            <p>Some contents...</p>
+            <p>Some contents...</p>
+          </Modal>
         </>
       )}
     </PageAuthorized>
   )
 }
 
-function getMarkdown() {
-  return `
-  # h1 Heading 8-)
-  ## h2 Heading
-  ### h3 Heading
-  #### h4 Heading
-  ##### h5 Heading
-
-  I just love <strong>bold text</strong>
-
-  I just love **bold text**
-
-  I just love <em>italic text</em>
-
-  I just love *italic text*
-
-  Unordered
-
-  + Create a list by starting a line with \`+\`, \`-\`, or \`*\`
-  + Sub-lists are made by indenting 2 spaces:
-    - Marker character change forces new list start:
-      * Ac tristique libero volutpat at
-      + Facilisis in pretium nisl aliquet
-      - Nulla volutpat aliquam velit
-  + Very easy!
-
-  Ordered
-
-  1. Lorem ipsum dolor sit amet
-  2. Consectetur adipiscing elit
-  3. Integer molestie lorem at massa
-  `
+interface TimerProps {
+  value: number
+  onFinish: () => void
 }
 
-const CountDown = memo(() => {
-  const [timerValue, setTimerValue] = useState(Date.now() + 1000 * 60 * 5)
+const Timer = memo(({ value, onFinish }: TimerProps) => {
+  const [timerValue, setTimerValue] = useState(value)
+  const intervalRef = useRef<NodeJS.Timer | null>(null)
 
   useEffect(() => {
-    setInterval(() => {
+    intervalRef.current = setInterval(() => {
       setTimerValue(prev => prev - 1000)
     }, 1000)
+
+    return () => clearInterval(intervalRef.current as unknown as number)
   }, [])
+
+  if (Date.now() + timerValue <= Date.now()) {
+    clearInterval(intervalRef.current as unknown as number)
+    onFinish()
+  }
+
+  console.log(timerValue)
 
   const d = new Date(timerValue)
   const mins = d.getMinutes()
@@ -348,7 +469,7 @@ const CountDown = memo(() => {
       }}
       description={
         <Tag className="absolute translate-x-1/2 top-11 right-1/2 m-0 text-base">
-          {mins}:{secs < 10 ? '0' + secs : secs}
+          {mins < 10 ? '0' + mins : mins}:{secs < 10 ? '0' + secs : secs}
         </Tag>
       }
     />

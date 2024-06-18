@@ -94,7 +94,7 @@ public class StatusController : ControllerBase
     [HttpPost("RecommendedRework")]
     public async Task<ActionResult<Task>> RecommendedRework(
         [FromServices] ITasksService tasksService,
-        int TaskId)
+        ReworkTaskRequest request)
     {
         if (HttpContext.User.IsInRole("Student"))
         {
@@ -105,7 +105,7 @@ public class StatusController : ControllerBase
             });
         }
 
-        var result = await tasksService.RecommendedRework(TaskId);
+        var result = await tasksService.RecommendedRework(request.TaskId);
 
         return StatusCode(result == 0 ? StatusCodes.Status404NotFound : StatusCodes.Status200OK, result);
     }
