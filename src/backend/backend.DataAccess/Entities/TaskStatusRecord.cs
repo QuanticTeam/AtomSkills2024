@@ -10,11 +10,9 @@ public class TaskStatusRecord
     
     public DateTime StartedAt { get; set; }
     
-    public DateTime FinishedAt { get; set; }
+    public DateTime? FinishedAt { get; set; }
     
     public int? Mark { get; set; }
-    
-    public string[] FotoKeys { get; set; }
     
     public int UserRecordId { get; set; }
     
@@ -25,4 +23,8 @@ public class TaskStatusRecord
     public TaskRecord? TaskRecord { get; set; }
     
     public List<RecommendationRecord> RecommendationRecords { get; set; }
+    
+    public List<DefectRecord> DefectRecords { get; set; }
+    
+    public List<FotoRecord> Fotos { get; set; }
 }

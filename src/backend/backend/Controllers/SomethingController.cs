@@ -34,18 +34,25 @@ public class SomethingController : ControllerBase
         _downloadService = downloadService;
     }
 
+    [AllowAnonymous]
+    [HttpPost("UploadContent")]
+    public async Task<ActionResult<string>> UploadContent([FromServices] IContentLoadService contentLoadService)
+    {
+        var count = await _downloadService.Download();
+        var dictionary = contentLoadService.Dictionary;
+        return StatusCode(StatusCodes.Status200OK, $"Успешно загружено данных: Материалы по обучению {count}, словарь дефектов: {dictionary.Count}");
+    }
+
     [Authorize]
     [HttpPost("Test")]
-    public async Task<ActionResult<string>> Test()
+    public async Task<ActionResult<string>> Test([FromServices] IContentLoadService contentLoadService)
     {
-        await _downloadService.Download();
-
-
         await _hubContext.Clients.All.SendAsync("ToastNotification", "success test");
         var userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type.Equals("userId"))?.Value ?? string.Empty;
         if (HttpContext.User.IsInRole("Admin"))
         {
-            return StatusCode(StatusCodes.Status200OK, $"Admin");
+            var count = contentLoadService.Dictionary.Count;
+            return StatusCode(StatusCodes.Status200OK, $"Успешно загружено данных: {count}");
         }
         return StatusCode(StatusCodes.Status200OK, "Not admin");
     }

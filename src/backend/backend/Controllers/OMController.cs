@@ -1,11 +1,11 @@
 using backend.Contracts;
 using backend.Contracts.OM;
+using backend.Core.Abstractions;
 using backend.Core.Models;
 using backend.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Task = backend.Core.Models.Task;
-using TaskStatus = backend.Core.Models.TaskStatus;
 
 namespace backend.Controllers;
 
@@ -13,201 +13,34 @@ namespace backend.Controllers;
 [Route("[controller]")]
 public class OMController : ControllerBase
 {
-    public OMController()
-    {
-        
-    }
-    
     [Authorize]
     [HttpPost("Tags")]
-    public async Task<ActionResult<TraitsResponse>> GetTags()
+    public async Task<ActionResult<TraitsResponse>> GetTags([FromServices] ITraitRepository traitRepository)
     {
-        return StatusCode(StatusCodes.Status200OK, new List<Trait> {
-            new Trait
-            {
-                Code = "1",
-                Name = "ABC",
-                Description = "ABC is full"
-            },
-            new Trait
-            {
-                Code = "2",
-                Name = "OMG",
-                Description = "Oh My God!"
-            },
-            new Trait
-            {
-                Code = "42",
-                Name = "Pepe",
-                Description = "PEPEPEPEPE"
-            },            
-        });
+        var traits = await traitRepository.Get();
+        return StatusCode(StatusCodes.Status200OK, traits);
     }
 
     [Authorize]
     [HttpPost("Topics")]
-    public async Task<ActionResult<TopicsResponse>> GetTopics()
+    public async Task<ActionResult<TopicsResponse>> GetTopics([FromServices] ITopicsRepository topicsRepository)
     {
-        return StatusCode(StatusCodes.Status200OK, new List<Topic> {
-            new Topic
-            {
-                Code = "1",
-                Title = "Мастер класс по доению коров",
-                Lessons = new List<Lesson> { },
-                Traits = new List<Trait> { },
-                Description = "Это круто"
-            },
-            new Topic
-            {
-                Code = "2",
-                Title = "Питон",
-                Lessons = new List<Lesson> { },
-                Traits = new List<Trait> { },
-                Description = "Змею в каждый дом!"
-            },
-            new Topic
-            {
-                Code = "43",
-                Title = "Просто курс",
-                Lessons = new List<Lesson> {},
-                Traits = new List<Trait> { },
-                Description = "Не подписывайся"
-            },            
-        });
+        var topics = await topicsRepository.Get();
+        return StatusCode(StatusCodes.Status200OK, topics);
     }
-
-    private List<Lesson> _lessons = new List<Lesson> 
-    {
-        new Lesson
-        {
-            Code = "12412441",
-            Title = "Мой первый надой",
-            Content = "## MARKDOWN PREVIEW: 01",
-            Author = "Выдойка М.Ю.",
-            Supplements = new List<string> { "34", "45", "56" },
-            Traits = new List<Trait>
-            {
-                new Trait()
-                {
-                    Code = "1",
-                    Name = "Name1",
-                    Description = "Description1"
-                },
-                new Trait()
-                {
-                    Code = "2",
-                    Name = "Name2",
-                    Description = "Description2"
-                },
-            },
-            Tasks = new List<Task>
-            {
-                new Task()
-                {
-                    Code = "12",
-                    Title = "Title1",
-                    Content = "## MARKDOWN PREVIEW: 01",
-                    Difficulty = 10,
-                    Time = 2,
-                    Supplements = new List<string> { "34", "45", "56" },
-                },
-                new Task()
-                {
-                    Code = "12",
-                    Title = "Title2",
-                    Content = "## MARKDOWN PREVIEW: 02",
-                    Difficulty = 10,
-                    Time = 1,
-                    Supplements = new List<string> { "34", "45", "56" },
-                }
-            },
-            Topics = new List<Topic>()
-            {
-                new Topic()
-                {
-                    Code = "1",
-                    Title = "Title1",
-                    Description = "Description1",
-                },
-                new Topic()
-                {
-                    Code = "2",
-                    Title = "Title2",
-                    Description = "Description2",
-                }
-            }
-        },
-        new Lesson
-        {
-            Code = "123",
-            Title = "Вяжем вместе",
-            Content = "## MARKDOWN PREVIEW: 02",
-            Author = "Выдойка М.В.",
-            Supplements = new List<string> { "34", "45", "56" },
-            Traits = new List<Trait>
-            {
-                new Trait()
-                {
-                    Code = "3",
-                    Name = "Name3",
-                    Description = "Description3"
-                },
-                new Trait()
-                {
-                    Code = "4",
-                    Name = "Name4",
-                    Description = "Description4"
-                },
-            },
-            Tasks = new List<Task>
-            {
-                new Task()
-                {
-                    Code = "12",
-                    Title = "Title3",
-                    Content = "## MARKDOWN PREVIEW: 03",
-                    Difficulty = 10,
-                    Time = 2,
-                    Supplements = new List<string> { "34", "45", "56" },
-                },
-                new Task()
-                {
-                    Code = "12",
-                    Title = "Title4",
-                    Content = "## MARKDOWN PREVIEW: 04",
-                    Difficulty = 10,
-                    Time = 1,
-                    Supplements = new List<string> { "34", "45", "56" },
-                }
-            },
-            Topics = new List<Topic>()
-            {
-                new Topic()
-                {
-                    Code = "3",
-                    Title = "Title3",
-                    Description = "Description3",
-                },
-                new Topic()
-                {
-                    Code = "4",
-                    Title = "Title4",
-                    Description = "Description4",
-                }
-            }
-        },
-    };
 
     [Authorize]
     [HttpPost("Lessons")]
-    public async Task<ActionResult<LessonsResponse>> GetLessons(GetSortAndFilterRequest request)
+    public async Task<ActionResult<LessonsResponse>> GetLessons(
+        [FromServices] ILessonsRepository lessonsRepository,
+        GetSortAndFilterRequest request)
     {
         if (!ValidateFilterType(request))
         {
             return BadRequest();
         }
 
-        var lessons = _lessons.AsQueryable();
+        var lessons = (await lessonsRepository.Get()).AsQueryable();
         
         if (request.Filters.Any())
         {
@@ -245,9 +78,11 @@ public class OMController : ControllerBase
 
     [Authorize]
     [HttpPost("Lesson")]
-    public async Task<ActionResult<Lesson>> GetLesson(LessonRequest request)
+    public async Task<ActionResult<Lesson>> GetLesson(
+        [FromServices] ILessonsRepository lessonsRepository,
+        LessonRequest request)
     {
-        var lesson = _lessons.LastOrDefault(t => t.Code == request.Code);
+        var lesson = (await lessonsRepository.Get()).LastOrDefault(t => t.Code == request.Code);
 
         if (lesson == null)
             return NoContent();
@@ -255,65 +90,46 @@ public class OMController : ControllerBase
         return StatusCode(StatusCodes.Status200OK, lesson);
     }
 
-    private List<Task> _tasks = new List<Task> {
-            new Task
-            {
-                Code = "12",
-                Title = "Подход к корове №2",
-                Content = "Попробуй взять советский мощный ...",
-                Supplements = new List<string> { "123" },
-                Difficulty = 4,
-                Time = 15,
-                TaskStatuses = new List<TaskStatus>()
-                {
-                    new TaskStatus()
-                    {
-                        Status = TaskStatusType.InWork.ToString(),
-                        StartedAt = DateTime.Now.AddMinutes(-1),
-                        FinishedAt = DateTime.Now,
-                        Mark = 5,
-                        FotoKeys = [],
-                        UserKey = Guid.NewGuid().ToString(),
-                    },
-                    new TaskStatus()
-                    {
-                        Status = TaskStatusType.SendToCheck.ToString(),
-                        StartedAt = DateTime.Now.AddMinutes(-3),
-                        FinishedAt = DateTime.Now,
-                        Mark = 4,
-                        FotoKeys = [],
-                        UserKey = Guid.NewGuid().ToString(),
-                    },
-                    new TaskStatus()
-                    {
-                        Status = TaskStatusType.Verified.ToString(),
-                        StartedAt = DateTime.Now.AddMinutes(-5),
-                        FinishedAt = DateTime.Now,
-                        Mark = 5,
-                        FotoKeys = [],
-                        UserKey = Guid.NewGuid().ToString(),
-                    }
-                }
-            },
-        }; 
-
     [Authorize]
     [HttpPost("Tasks")]
-    public async Task<ActionResult<TasksResponse>> GetTasks(GetSortAndFilterRequest request)
+    public async Task<ActionResult<TasksResponse>> GetTasks(
+        [FromServices] ITasksRepository taskRepository,
+        GetSortAndFilterRequest request)
     {
         if (!ValidateFilterType(request))
         {
             return BadRequest();
         }
 
-        return StatusCode(StatusCodes.Status200OK, _tasks);
+        var tasks = (await taskRepository.Get()).AsQueryable();
+        
+        if (request.Filters.Any())
+        {
+            tasks = tasks.Where(FilterExtension.Filter<Task>(request.Filters));
+        }
+
+        
+        if (!string.IsNullOrEmpty(request.OMCode))
+        {
+            tasks = tasks.Where(t => t.Lessons.Any(l => l.Code.Equals(request.OMCode)));
+        }
+
+        if (!string.IsNullOrEmpty(request.OrderBy))
+        {
+            tasks = tasks.Order(request.OrderBy, request.Descending);
+        } 
+
+
+        return StatusCode(StatusCodes.Status200OK, tasks);
     }
 
     [Authorize]
     [HttpPost("Task")]
-    public async Task<ActionResult<Task>> GetTask(TaskRequest request)
+    public async Task<ActionResult<Task>> GetTask(
+        [FromServices] ITasksRepository taskRepository,
+        TaskRequest request)
     {
-        var task = _tasks.LastOrDefault(t => t.Code == request.Code);
+        var task = (await taskRepository.Get()).LastOrDefault(t => t.Code == request.Code);
 
         if (task == null)
             return NoContent();

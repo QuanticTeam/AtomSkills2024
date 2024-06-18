@@ -1,6 +1,12 @@
-import { AlignLeftOutlined, TableOutlined } from '@ant-design/icons'
-import { Layout, MenuProps, Space, Typography } from 'antd'
-import { ReactNode, useEffect, useState } from 'react'
+import {
+  AlignLeftOutlined,
+  ArrowUpOutlined,
+  ClockCircleOutlined,
+  TableOutlined,
+  UserAddOutlined,
+} from '@ant-design/icons'
+import { BackTop, Badge, Tag, FloatButton, Layout, MenuProps, Space, Typography } from 'antd'
+import { ReactNode, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -67,6 +73,8 @@ export function PageAuthorized({
     ),
   ]
 
+  const contentRef = useRef<HTMLDivElement>(null)
+
   return (
     <GuardAuthorized>
       <Layout className="h-screen">
@@ -86,7 +94,19 @@ export function PageAuthorized({
               <div className="flex flex-col h-full">
                 <Breadcrumbs />
 
-                <div className="overflow-auto scroll-smooth grow mx-6">
+                <FloatButton.BackTop
+                  target={() => contentRef.current!}
+                  icon={<ArrowUpOutlined />}
+                  style={{
+                    bottom: '140px',
+                    right: '60px',
+                  }}
+                />
+
+                <div
+                  className="overflow-auto scroll-smooth grow mx-6"
+                  ref={contentRef}
+                >
                   <div className="flex flex-col mr-2 p-8 min-h-full bg-white rounded-md border border-slate-200">
                     <div className="flex items-center justify-between">
                       <div className="grow">

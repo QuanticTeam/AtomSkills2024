@@ -82,6 +82,74 @@ namespace backend.DataAccess.Migrations
                     b.ToTable("TopicRecordTraitRecord");
                 });
 
+            modelBuilder.Entity("backend.DataAccess.Entities.DefectRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string[]>("Codes")
+                        .IsRequired()
+                        .HasColumnType("text[]");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("FileKey")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("TaskStatusRecordId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("X1")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("X2")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("Y1")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("Y2")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TaskStatusRecordId");
+
+                    b.ToTable("Defects");
+                });
+
+            modelBuilder.Entity("backend.DataAccess.Entities.FotoRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("FotoKey")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("TaskStatusRecordId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TaskStatusRecordId");
+
+                    b.ToTable("Fotos");
+                });
+
             modelBuilder.Entity("backend.DataAccess.Entities.LessonRecord", b =>
                 {
                     b.Property<int>("Id")
@@ -221,12 +289,8 @@ namespace backend.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("FinishedAt")
+                    b.Property<DateTime?>("FinishedAt")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string[]>("FotoKeys")
-                        .IsRequired()
-                        .HasColumnType("text[]");
 
                     b.Property<int?>("Mark")
                         .HasColumnType("integer");
@@ -406,6 +470,28 @@ namespace backend.DataAccess.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("backend.DataAccess.Entities.DefectRecord", b =>
+                {
+                    b.HasOne("backend.DataAccess.Entities.TaskStatusRecord", "TaskStatusRecord")
+                        .WithMany("DefectRecords")
+                        .HasForeignKey("TaskStatusRecordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TaskStatusRecord");
+                });
+
+            modelBuilder.Entity("backend.DataAccess.Entities.FotoRecord", b =>
+                {
+                    b.HasOne("backend.DataAccess.Entities.TaskStatusRecord", "TaskStatusRecord")
+                        .WithMany("Fotos")
+                        .HasForeignKey("TaskStatusRecordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TaskStatusRecord");
+                });
+
             modelBuilder.Entity("backend.DataAccess.Entities.RecommendationRecord", b =>
                 {
                     b.HasOne("backend.DataAccess.Entities.TaskStatusRecord", "TaskStatusRecord")
@@ -443,6 +529,10 @@ namespace backend.DataAccess.Migrations
 
             modelBuilder.Entity("backend.DataAccess.Entities.TaskStatusRecord", b =>
                 {
+                    b.Navigation("DefectRecords");
+
+                    b.Navigation("Fotos");
+
                     b.Navigation("RecommendationRecords");
                 });
 

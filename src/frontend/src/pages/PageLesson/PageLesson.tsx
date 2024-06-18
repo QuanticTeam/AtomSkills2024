@@ -1,13 +1,12 @@
+import { TagFilled, UserOutlined } from '@ant-design/icons'
 import { useQuery } from '@tanstack/react-query'
 import { List, Space, Spin, Tabs, Tag, Typography } from 'antd'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import Markdown from 'react-markdown'
 import { useParams } from 'react-router-dom'
-import remarkGfm from 'remark-gfm'
 import { Lesson, LessonsApi, Task } from '~/entities'
 import { PageAuthorized } from '~/layouts/PageAuthorized'
-import { Oops } from '~/shared/ui'
+import { Markdown, Oops } from '~/shared/ui'
 import { Tasks } from '~/widgets'
 
 type PageLessonRouteParams = Pick<Lesson, 'code'>
@@ -31,22 +30,22 @@ export function PageLesson() {
           <div className="flex justify-between items-center mb-6">
             <Typography.Title className="!mb-0">Учебный материал</Typography.Title>
             <div>
-              <Space size="large">
-                <div>
-                  <Typography.Text type="secondary">{t('tags')}: </Typography.Text>
-                  {data?.traits.map(x => (
-                    <Tag
-                      key={(x as any).code}
-                      color="orange-inverse"
-                    >
-                      {(x as any).name}{' '}
-                    </Tag>
-                  ))}
-                </div>
-                <Typography.Text type="secondary">
-                  {t('author')}: {data?.author}
-                </Typography.Text>
+              <Space>
+                {data?.traits.map(x => (
+                  <Tag
+                    key={(x as any).code}
+                    color="orange-inverse"
+                  >
+                    <TagFilled /> {(x as any).name}
+                  </Tag>
+                ))}
               </Space>
+              <Typography.Text
+                type="secondary"
+                className="ml-6"
+              >
+                <UserOutlined /> {data?.author}
+              </Typography.Text>
             </div>
           </div>
           <Typography.Title level={2}>{data?.title ?? ''}</Typography.Title>
@@ -66,45 +65,10 @@ export function PageLesson() {
                 label: t('tabContent'),
                 children: (
                   <>
-                    <Typography.Paragraph>
+                    {/* <Typography.Paragraph>
                       <Typography.Text>{data.content}</Typography.Text>
-                    </Typography.Paragraph>
-                    <Markdown
-                      className="markdown-renderer"
-                      components={{
-                        h1: props => (
-                          <Typography.Title level={1}>{props.children}</Typography.Title>
-                        ),
-                        h2: props => (
-                          <Typography.Title level={2}>{props.children}</Typography.Title>
-                        ),
-                        h3: props => (
-                          <Typography.Title level={3}>{props.children}</Typography.Title>
-                        ),
-                        h4: props => (
-                          <Typography.Title level={4}>{props.children}</Typography.Title>
-                        ),
-                        h5: props => (
-                          <Typography.Title level={5}>{props.children}</Typography.Title>
-                        ),
-                        li: props => <List.Item>{props.children}</List.Item>,
-                        ol: props => (
-                          <ol
-                            {...props}
-                            className="markdown-renderer-ol"
-                          />
-                        ),
-                        p: props => <Typography.Paragraph>{props.children}</Typography.Paragraph>,
-                        em: props => <Typography.Text italic>{props.children}</Typography.Text>,
-                        strong: props => <Typography.Text strong>{props.children}</Typography.Text>,
-                        blockquote: props => (
-                          <Typography.Text type="secondary">{props.children}</Typography.Text>
-                        ),
-                      }}
-                      remarkPlugins={[remarkGfm]}
-                    >
-                      {getMarkdown()}
-                    </Markdown>
+                    </Typography.Paragraph> */}
+                    <Markdown markdown={data.content} />
                   </>
                 ),
               },

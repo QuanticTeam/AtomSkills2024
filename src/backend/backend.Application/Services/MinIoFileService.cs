@@ -15,6 +15,7 @@ public class MinIoFileService : IMinIoFileService
     private readonly MinIoOptions _options;
     private const string BucketName = "backet";
     private const string OriginalFileNameKey = "original-file-name";
+    private const string Title = "title";
 
     public MinIoFileService(
         IOptions<MinIoOptions> options)
@@ -44,6 +45,48 @@ public class MinIoFileService : IMinIoFileService
             var stat = await minio.StatObjectAsync(new StatObjectArgs().WithObject(fileName).WithBucket(BucketName));
 
             return stat.MetaData[OriginalFileNameKey];
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return string.Empty;
+        }
+    }
+    
+    public async Task<string> GetOriginalFileNameWithUnescape(string fileName)
+    {
+        try
+        {
+            var minio = new MinioClient()
+                .WithEndpoint(_options.Endpoint)
+                .WithCredentials(_options.AccessKey, _options.SecretKey)
+                .Build();
+            
+            var stat = await minio.StatObjectAsync(new StatObjectArgs().WithObject(fileName).WithBucket(BucketName));
+
+            return stat.MetaData[OriginalFileNameKey].Unescape();
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return string.Empty;
+        }
+    }
+    
+    public async Task<string> GetTitleWithUnescape(string fileName)
+    {
+        try
+        {
+            var minio = new MinioClient()
+                .WithEndpoint(_options.Endpoint)
+                .WithCredentials(_options.AccessKey, _options.SecretKey)
+                .Build();
+            
+            var stat = await minio.StatObjectAsync(new StatObjectArgs().WithObject(fileName).WithBucket(BucketName));
+
+            return stat.MetaData[Title].Unescape();
 
         }
         catch (Exception ex)

@@ -24,4 +24,8 @@ public class BackendDbContext : DbContext
     public DbSet<TaskStatusRecord> TaskStatuses { get; set; }
     
     public DbSet<RecommendationRecord> Recommendations { get; set; }
+    
+    public DbSet<DefectRecord> Defects { get; set; }
+    
+    public DbSet<FotoRecord> Fotos { get; set; }
 }

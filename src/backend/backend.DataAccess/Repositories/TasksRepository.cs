@@ -15,6 +15,49 @@ public class TasksRepository : ITasksRepository
     {
         _dbContext = dbContext;
     }
+
+    public async Task<Task?> GetByCode(string taskCode)
+    {
+        var taskRecords = await _dbContext.Tasks
+            .Include(x => x.LessonRecords)
+            .Include(x => x.TaskStatusRecords)
+            .ThenInclude(taskStatusRecord => taskStatusRecord.UserRecord)
+            .Where(t => t.Code.Equals(taskCode))
+            .AsNoTracking()
+            .ToListAsync();
+
+        var task = taskRecords.LastOrDefault();
+
+        if (task == null) return null;
+
+        return new Task
+            {
+                Content = task.Content,
+                Code = task.Code,
+                Title = task.Title,
+                Supplements = task.SupplementKeys.ToList(),
+                Difficulty = task.Difficult,
+                Time = task.Time,
+                Lessons = task.LessonRecords.Select(l => new Lesson
+                {
+                    Code = l.Code,
+                    Title = l.Title,
+                    Content = l.Content,
+                    Author = l.Author,
+                    Supplements = l.SupplementKeys.ToList(),
+                }).ToList(),
+                TaskStatuses = task.TaskStatusRecords.Select(t => new TaskStatus
+                {
+                    Id = t.Id,
+                    Status = t.Status,
+                    AutomationSystemStatus = t.AutomationSystemStatus,
+                    StartedAt = t.StartedAt,
+                    FinishedAt = t.FinishedAt,
+                    Mark = t.Mark,
+                    UserKey = t.UserRecord?.Key.ToString() ?? string.Empty,
+                }).ToList()
+            };
+    }
     
     public async Task<List<Task>> Get()
     {
@@ -49,7 +92,6 @@ public class TasksRepository : ITasksRepository
                     StartedAt = t.StartedAt,
                     FinishedAt = t.FinishedAt,
                     Mark = t.Mark,
-                    FotoKeys = t.FotoKeys,
                     UserKey = t.UserRecord?.Key.ToString() ?? string.Empty,
                 }).ToList()
             }).ToList();

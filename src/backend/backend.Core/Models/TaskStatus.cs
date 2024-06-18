@@ -10,15 +10,17 @@ public class TaskStatus
     
     public DateTime StartedAt { get; set; }
     
-    public DateTime FinishedAt { get; set; }
+    public DateTime? FinishedAt { get; set; }
     
     public int? Mark { get; set; }
     
-    public string[] FotoKeys { get; set; }
+    public List<Foto> Fotos { get; set; }
     
     public string UserKey { get; set; }
     
-    public int TaskId { get; set; }
+    public string TaskCode { get; set; }
     
     public List<Recommendation> Recommendations { get; set; }
+    
+    public List<Defect> Defects { get; set; }
 }

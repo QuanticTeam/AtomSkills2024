@@ -1,8 +1,9 @@
 import { apiClient } from '~/shared/apiClient'
+import { UserRoleEnum } from '~/shared/auth'
 
 export interface UserRole {
-  id: number
-  role: string
+  id: UserRoleEnum
+  role: keyof typeof UserRoleEnum
 }
 
 export const UserRoleApi = {

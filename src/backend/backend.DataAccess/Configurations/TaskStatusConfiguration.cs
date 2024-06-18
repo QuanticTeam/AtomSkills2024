@@ -19,16 +19,19 @@ public class TaskStatusConfiguration : IEntityTypeConfiguration<TaskStatusRecord
         builder.Property(x => x.StartedAt)
             .IsRequired();
 
-        builder.Property(x => x.FinishedAt)
-            .IsRequired();
+        builder.Property(x => x.FinishedAt);
 
-        builder.Property(x => x.Mark)
-            .IsRequired();
-
-        builder.Property(x => x.FotoKeys)
-            .IsRequired();
+        builder.Property(x => x.Mark);
 
         builder.HasMany(x => x.RecommendationRecords)
+            .WithOne(r => r.TaskStatusRecord)
+            .HasForeignKey(r => r.TaskStatusRecordId);
+        
+        builder.HasMany(x => x.DefectRecords)
+            .WithOne(r => r.TaskStatusRecord)
+            .HasForeignKey(r => r.TaskStatusRecordId);
+        
+        builder.HasMany(x => x.Fotos)
             .WithOne(r => r.TaskStatusRecord)
             .HasForeignKey(r => r.TaskStatusRecordId);
     }

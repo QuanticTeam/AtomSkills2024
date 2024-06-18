@@ -8,4 +8,5 @@ public interface IContentLoadService
     IEnumerable<JsonTopic> LoadTopics();
     IEnumerable<JsonLesson> LoadLessons();
     IEnumerable<JsonTask> LoadTasks();
+    Dictionary<string, string> Dictionary { get; }
 }

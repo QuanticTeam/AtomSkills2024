@@ -17,7 +17,7 @@
       retries: 3
 
   pgadmin:
-    image: mirror.gcr.io/dpage/pgadmin4
+    image: mirror.gcr.io/dpage/pgadmin4:8.8
     container_name: pgadmin
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@pgadmin.com
@@ -32,7 +32,7 @@
         condition: service_healthy
 
   minio:
-    image: mirror.gcr.io/minio/minio
+    image: mirror.gcr.io/minio/minio:RELEASE.2024-06-13T22-53-53Z
     container_name: minio
     ports:
       - "9000:9000"
@@ -70,19 +70,35 @@
       MinIoOptions__SecretKey: "minioadmin"
       JwtOptions__SecretKey: "secretkeysecretkeysecretkeysecretkeysecretkeysecretkeysecretkey"
       JwtOptions__ExpiresHours: "12"
+      ContentLoadOptions__FolderPath: "lessons"
+      ContentLoadOptions__TraitFileTemplate: "traits*.json"
+      ContentLoadOptions__TopicFileTemplate: "topic*.json"
+      ContentLoadOptions__LessonFileTemplate: "lsn*.json"
+      ContentLoadOptions__TaskFileTemplate: "tsk*.json"
+      ContentLoadOptions__DefectDictionaryFileName: "lessons/features.json"
     volumes:
       - ./https:/https:ro
+      - ./lessons:/App/lessons:ro
+
+  deploy:
+    image: curlimages/curl:8.8.0
+    container_name: deploy
+    depends_on:
+      - backend
+    entrypoint: curl --insecure -X 'POST' 'https://backend/Something/UploadContent' --verbose --fail
+    restart: on-failure
 
   frontend:
     build: ./src/frontend
     container_name: frontend
     depends_on:
-      - backend
+      - deploy
     ports:
       - 5004:443
       - 5005:80
     volumes:
       - ./https:/etc/nginx/certs/
+      - ./lessons:/usr/share/nginx/assets
 
 volumes:
   postgres-data:

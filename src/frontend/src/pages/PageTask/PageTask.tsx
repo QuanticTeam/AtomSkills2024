@@ -1,14 +1,22 @@
+import {
+  ClockCircleFilled,
+  ClockCircleOutlined,
+  DashboardOutlined,
+  StarFilled,
+  StarOutlined,
+  StarTwoTone,
+} from '@ant-design/icons'
 import { useQuery } from '@tanstack/react-query'
-import { List, Space, Spin, Tabs, Typography } from 'antd'
-import { useState } from 'react'
+import { Badge, Button, Card, FloatButton, List, Space, Spin, Tabs, Tag, Typography } from 'antd'
+import { memo, useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import Markdown from 'react-markdown'
 import { useParams } from 'react-router-dom'
-import remarkGfm from 'remark-gfm'
-import { Lesson, LessonsApi, Task, TasksApi } from '~/entities'
+import { Lesson, Task, TasksApi } from '~/entities'
 import { PageAuthorized } from '~/layouts/PageAuthorized'
-import { Oops } from '~/shared/ui'
-import { Tasks } from '~/widgets'
+import { AuthContext } from '~/shared/auth'
+import { UserRoleEnumStr } from '~/shared/auth/UserRoleEnum'
+import { colors } from '~/shared/styles'
+import { Condition, Markdown, Oops } from '~/shared/ui'
 
 interface PageTaskRouteParams {
   lessonCode: Lesson['code']
@@ -17,9 +25,10 @@ interface PageTaskRouteParams {
 }
 
 export function PageTask() {
-  const { lessonCode, taskCode } = useParams<PageTaskRouteParams>()
+  const { lessonCode, taskCode, userId } = useParams<PageTaskRouteParams>()
   const { t } = useTranslation(PageTask.name)
   const [content, setContent] = useState('')
+  const { authInfo } = useContext(AuthContext)
 
   const { data, error, isPending } = useQuery({
     queryKey: ['task', taskCode],
@@ -27,22 +36,133 @@ export function PageTask() {
   })
 
   if (isPending) return <Spin fullscreen />
+  if (error) return <Oops />
+
+  const everyoneProgress = data.taskStatuses
+
+  const progress = everyoneProgress
+    .filter(p => p.userKey === userId || authInfo?.user.userId)
+    .sort((a, b) => Date.parse(b.startedAt) - Date.parse(a.startedAt))
+
+  const isTaskInProgress = progress.length && !progress[0].finishedAt
 
   return (
     <PageAuthorized
       title={
         <>
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex justify-between items-center mb-4">
             <Typography.Title className="!mb-0">Задание</Typography.Title>
-            <div>
-              <Space size="large"></Space>
-            </div>
           </div>
-          <Typography.Title level={2}>{data?.title ?? ''}</Typography.Title>
-          <Space size="middle">
-            <Typography.Text type="secondary">Сложность: {data?.difficulty}</Typography.Text>
-            <Typography.Text type="secondary">Время: {data?.time}мин</Typography.Text>
-          </Space>
+          <Card
+            className="mb-4"
+            title={
+              <Typography.Text
+                strong
+                className="text-lg"
+              >
+                {data?.title ?? ''}
+              </Typography.Text>
+            }
+            size="small"
+            extra={
+              <Space>
+                <Condition
+                  conditions={[
+                    ({ authInfo }) => authInfo?.user.isAdmin && !isTaskInProgress,
+                    ({ authInfo }) => authInfo?.user.isStudent && !isTaskInProgress,
+                  ]}
+                >
+                  <Button
+                    size="small"
+                    type="primary"
+                  >
+                    Взять в работу
+                  </Button>
+                </Condition>
+                <Condition
+                  conditions={[
+                    ({ authInfo }) => authInfo?.user.isAdmin && isTaskInProgress,
+                    ({ authInfo }) => authInfo?.user.isStudent && isTaskInProgress,
+                  ]}
+                >
+                  <Button
+                    size="small"
+                    type="primary"
+                    className="!bg-primary-2 !border-primary-2"
+                  >
+                    Отправить на проверку
+                  </Button>
+                </Condition>
+                <Condition
+                  conditions={[
+                    ({ authInfo }) => authInfo?.user.isAdmin,
+                    ({ authInfo }) => authInfo?.user.isMentor,
+                  ]}
+                >
+                  <Button
+                    size="small"
+                    type="primary"
+                    className="!bg-primary-2 !border-primary-2"
+                  >
+                    Проверить
+                  </Button>
+                </Condition>
+                <Condition
+                  conditions={[
+                    ({ authInfo }) => authInfo?.user.isAdmin,
+                    ({ authInfo }) => authInfo?.user.isMentor,
+                  ]}
+                >
+                  <Button
+                    size="small"
+                    type="primary"
+                    className="!bg-primary-2 !border-primary-2"
+                  >
+                    Предложить перепройти
+                  </Button>
+                </Condition>
+              </Space>
+            }
+          >
+            <div className="flex justify-between">
+              <Space size="middle">
+                <Typography.Text strong>
+                  <DashboardOutlined /> {data?.difficulty}
+                </Typography.Text>
+                <Typography.Text>
+                  <ClockCircleOutlined /> {data?.time}мин
+                </Typography.Text>
+                <Badge
+                  status="default"
+                  text="Новое"
+                />
+                <Badge
+                  status="processing"
+                  text="Выполняется"
+                />
+                <Badge
+                  status="processing"
+                  color="orange"
+                  text="На проверке"
+                />
+                <Badge
+                  status="success"
+                  text="Проверено AI"
+                />
+                <Badge
+                  status="success"
+                  text="Проверено"
+                />
+                <Space className="relative top-px">
+                  <StarTwoTone />
+                  <StarTwoTone />
+                  <StarTwoTone />
+                  <StarOutlined className="text-slate-400" />
+                  <StarOutlined className="text-slate-400" />
+                </Space>
+              </Space>
+            </div>
+          </Card>
         </>
       }
     >
@@ -50,6 +170,7 @@ export function PageTask() {
         <Oops />
       ) : (
         <>
+          <CountDown />
           <Tabs
             size="small"
             defaultActiveKey="1"
@@ -57,49 +178,7 @@ export function PageTask() {
               {
                 key: 'content',
                 label: t('tabContent'),
-                children: (
-                  <>
-                    <Typography.Paragraph>
-                      <Typography.Text>{data.content}</Typography.Text>
-                    </Typography.Paragraph>
-                    <Markdown
-                      className="markdown-renderer"
-                      components={{
-                        h1: props => (
-                          <Typography.Title level={1}>{props.children}</Typography.Title>
-                        ),
-                        h2: props => (
-                          <Typography.Title level={2}>{props.children}</Typography.Title>
-                        ),
-                        h3: props => (
-                          <Typography.Title level={3}>{props.children}</Typography.Title>
-                        ),
-                        h4: props => (
-                          <Typography.Title level={4}>{props.children}</Typography.Title>
-                        ),
-                        h5: props => (
-                          <Typography.Title level={5}>{props.children}</Typography.Title>
-                        ),
-                        li: props => <List.Item>{props.children}</List.Item>,
-                        ol: props => (
-                          <ol
-                            {...props}
-                            className="markdown-renderer-ol"
-                          />
-                        ),
-                        p: props => <Typography.Paragraph>{props.children}</Typography.Paragraph>,
-                        em: props => <Typography.Text italic>{props.children}</Typography.Text>,
-                        strong: props => <Typography.Text strong>{props.children}</Typography.Text>,
-                        blockquote: props => (
-                          <Typography.Text type="secondary">{props.children}</Typography.Text>
-                        ),
-                      }}
-                      remarkPlugins={[remarkGfm]}
-                    >
-                      {getMarkdown()}
-                    </Markdown>
-                  </>
-                ),
+                children: <Markdown markdown={data.content} />,
               },
               {
                 key: 'supplements',
@@ -154,3 +233,36 @@ function getMarkdown() {
   3. Integer molestie lorem at massa
   `
 }
+
+const CountDown = memo(() => {
+  const [timerValue, setTimerValue] = useState(Date.now() + 1000 * 60 * 5)
+
+  useEffect(() => {
+    setInterval(() => {
+      setTimerValue(prev => prev - 1000)
+    }, 1000)
+  }, [])
+
+  const d = new Date(timerValue)
+  const mins = d.getMinutes()
+  const secs = d.getSeconds()
+
+  return (
+    <FloatButton
+      type="primary"
+      icon={<ClockCircleFilled />}
+      style={{
+        right: '60px',
+        bottom: '90px',
+      }}
+      description={
+        <Tag
+          className="absolute translate-x-1/2 top-11 right-1/2 m-0 text-base"
+          color="orange"
+        >
+          {mins}:{secs < 10 ? '0' + secs : secs}
+        </Tag>
+      }
+    />
+  )
+})

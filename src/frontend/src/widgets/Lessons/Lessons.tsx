@@ -3,12 +3,14 @@ import {
   Button,
   Input,
   InputRef,
+  Popover,
   Space,
   Spin,
   Table,
   TableColumnType,
   TableProps,
   Tag,
+  Tooltip,
   Typography,
 } from 'antd'
 import { Ref, useEffect, useRef, useState } from 'react'
@@ -17,7 +19,7 @@ import { Link } from 'react-router-dom'
 import { Lesson, LessonsApi } from '~/entities'
 import { FilterType, SortAndFilterRequest, getSortAndFilterRequestPayload } from '~/shared/api'
 import { ROUTE_PATH_LESSONS } from '~/shared/routing'
-import { Oops } from '~/shared/ui'
+import { Markdown, Oops } from '~/shared/ui'
 import Highlighter, { HighlighterProps } from 'react-highlight-words'
 import { SearchOutlined } from '@ant-design/icons'
 import { FilterDropdownProps } from 'antd/es/table/interface'
@@ -137,6 +139,28 @@ export function Lessons({ parentRef }: LessonsProps) {
       dataIndex: 'content',
       key: 'content',
       ...getColumnSearchProps('content'),
+      render(value) {
+        return (
+          <Popover
+            trigger="click"
+            content={<Markdown markdown={value} />}
+            overlayInnerStyle={{
+              width: '60vw',
+              height: '40vh',
+              overflow: 'auto',
+            }}
+            style={{
+              width: '200px',
+              height: '200px',
+              background: 'red',
+            }}
+          >
+            <Typography.Link className="border-b  border-dashed border-blue-600">
+              {value.split(' ').slice(0, 20).join(' ') + '...'}
+            </Typography.Link>
+          </Popover>
+        )
+      },
     },
     {
       title: t('colTraits'),

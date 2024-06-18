@@ -16,9 +16,6 @@ public class GeneralRepository : IGeneralRepository
         _dbContext = dbContext;
     }
 
-    public async Task<IEnumerable<Trait>> GetTraits() => await _dbContext.Traits.Select(t => t).ToListAsync();
-    public async Task<IEnumerable<Task>> GetTasks() => await _dbContext.Tasks.ToListAsync();
-
     public async Task<int> UploadTrait(JsonTrait trait)
     {
         await _dbContext.Traits.AddAsync(new TraitRecord
@@ -68,26 +65,24 @@ public class GeneralRepository : IGeneralRepository
         return await _dbContext.SaveChangesAsync();
     }
     
-    private async Task<int> DownloadTopics(List<Topic> topics)
+    public async Task<int> UploadTopic(Topic topic)
     {
         var traitRecords = await _dbContext.Traits.ToListAsync();
-        
         var lessonRecords = await _dbContext.Lessons.ToListAsync();
-        
-        var topicRecords = topics.Select(x => new TopicRecord
+
+        await _dbContext.Topics.AddAsync(new TopicRecord
         {
-            Code = x.Code,
-            Title = x.Title,
-            Description = x.Description,
+            Code = topic.Code,
+            Title = topic.Title,
+            Description = topic.Description,
             TraitRecords = traitRecords
-                .Where(t => x.Traits.Exists(trait => t.Code.Equals(trait.Code)))
+                .Where(t => topic.Traits.Exists(trait => t.Code.Equals(trait.Code)))
                 .ToList(),
             LessonRecords = lessonRecords
-                .Where(l => x.Lessons.Exists(task => l.Code.Equals(task.Code)))
+                .Where(l => topic.Lessons.Exists(task => l.Code.Equals(task.Code)))
                 .ToList(),
         });
-        
-        await _dbContext.Topics.AddRangeAsync(topicRecords);
+
         return await _dbContext.SaveChangesAsync();
     }
 }

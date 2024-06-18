@@ -10,4 +10,6 @@ public interface IMinIoFileService
     Task<int> Upload(MinIoFileModel fileModel);
     // Task<List<string>> Upload(List<JsonSupplement> supplements);
     Task<Supplement> Upload(JsonSupplement supplement);
+    Task<string> GetOriginalFileNameWithUnescape(string fileName);
+    Task<string> GetTitleWithUnescape(string fileName);
 }

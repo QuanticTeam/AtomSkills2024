@@ -69,4 +69,18 @@ public class FileController : ControllerBase
         
         return StatusCode(StatusCodes.Status200OK, new UploadFileResponse{ FileKey = file.FileName, FileName = file.MetaData[OriginalFileNameKey]});
     }
+    
+    [Authorize]
+    [HttpPost("GetMinIoData")]
+    public async Task<ActionResult<GetMinIoDataResponse>> GetMinIoData(FileKeysRequest request)
+    {
+        var response = request.FileKeys.Select(x => new MinIoData
+        {
+            Code = x,
+            OriginalNme = _minIoFileService.GetOriginalFileNameWithUnescape(x).GetAwaiter().GetResult(),
+            Title = _minIoFileService.GetOriginalFileName(x).GetAwaiter().GetResult(),
+        }).ToList();
+        
+        return StatusCode(StatusCodes.Status200OK, response);
+    }
 }

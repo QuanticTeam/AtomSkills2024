@@ -9,4 +9,6 @@ public class ContentLoadOptions
     public string LessonFileTemplate { get; set; } = string.Empty;
     public string TaskFileTemplate { get; set; } = string.Empty;
 
+    public string DefectDictionaryFileName { get; set; } = string.Empty;
+
 }

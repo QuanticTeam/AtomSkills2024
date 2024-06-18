@@ -2,7 +2,7 @@ namespace backend.Core.Models;
 
 public enum AutomationSystemStatus
 {
-    InProgress,
+    None,
     Complete,
-    Error
+    Error,
 }

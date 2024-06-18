@@ -30,14 +30,18 @@ builder.Services.AddScoped<ITopicsRepository, TopicsRepository>();
 builder.Services.AddScoped<ITraitRepository, TraitRepository>();
 builder.Services.AddScoped<ITaskStatusesRepository, TaskStatusesRepository>();
 builder.Services.AddScoped<IRecommendationsRepository, RecommendationsRepository>();
+builder.Services.AddScoped<IDefectsRepository, DefectsRepository>();
+builder.Services.AddScoped<IFotosRepository, FotosRepository>();
 
 // services
 builder.Services.AddScoped<ISomethingsService, SomethingsService>();
 builder.Services.AddScoped<IDownloadService, DownloadLessonsService>();
 builder.Services.AddScoped<IUsersService, UsersService>();
 builder.Services.AddScoped<ILessonsService, LessonsService>();
+builder.Services.AddScoped<ITasksService, TasksService>();
 builder.Services.AddSignalR();
 builder.Services.Configure<JwtTokenOptions>(builder.Configuration.GetSection("JwtOptions"));
+builder.Services.Configure<AiOptions>(builder.Configuration.GetSection("AiOptions"));
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.Configure<MinIoOptions>(builder.Configuration.GetSection("MinIoOptions"));
 builder.Services.AddMinio(builder.Configuration["MinIoOptions:AccessKey"], builder.Configuration["MinIoOptions:SecretKey"]);
@@ -46,6 +50,8 @@ builder.Services.AddMinio(configureClient => configureClient
     .WithCredentials(builder.Configuration["MinIoOptions:AccessKey"], builder.Configuration["MinIoOptions:SecretKey"])
     .Build());
 builder.Services.AddScoped<IMinIoFileService, MinIoFileService>();
+builder.Services.AddSingleton<IDefectDictionaryService, DefectDictionaryService>();
+builder.Services.AddHostedService<BackgroundTaskStatusService>();
 
 // Content load
 builder.Services.Configure<ContentLoadOptions>(builder.Configuration.GetSection("ContentLoadOptions"));

@@ -21,6 +21,8 @@ public class TaskStatusesRepository : ITaskStatusesRepository
             .Include(x => x.UserRecord)
             .Include(x => x.RecommendationRecords)
             .Include(x => x.TaskRecord)
+            .Include(taskStatusRecord => taskStatusRecord.Fotos)
+            .Include(taskStatusRecord => taskStatusRecord.DefectRecords)
             .AsNoTracking()
             .ToListAsync();
 
@@ -33,13 +35,27 @@ public class TaskStatusesRepository : ITaskStatusesRepository
                 StartedAt = x.StartedAt,
                 FinishedAt = x.FinishedAt,
                 Mark = x.Mark,
-                FotoKeys = x.FotoKeys,
+                Fotos = x.Fotos.Select(f => new Foto
+                {
+                    Key = f.FotoKey,
+                    Comment = f.Comment,
+                }).ToList(),
                 UserKey = x.UserRecord?.Key.ToString() ?? string.Empty,
-                TaskId = x.TaskRecord!.Id,
+                TaskCode = x.TaskRecord!.Code,
                 Recommendations = x.RecommendationRecords.Select(r => new Recommendation
                 {
                     Text = r.Text,
                     FileKeys = r.FileKeys,
+                }).ToList(),
+                Defects = x.DefectRecords.Select(d => new Defect
+                {
+                    FileKey = d.FileKey,
+                    Codes = d.Codes,
+                    Comment = d.Comment,
+                    X1 = d.X1,
+                    Y1 = d.Y1,
+                    X2 = d.X2,
+                    Y2 = d.Y2,
                 }).ToList(),
             }).ToList();
         
@@ -49,7 +65,7 @@ public class TaskStatusesRepository : ITaskStatusesRepository
     public async Task<int> Create(TaskStatus taskStatus)
     {
         var userRecord = _dbContext.Users.FirstOrDefault(x => x.Key.Equals(taskStatus.UserKey));
-        var taskRecord = await _dbContext.Tasks.FindAsync(taskStatus.TaskId);
+        var taskRecord = _dbContext.Tasks.FirstOrDefault(x => x.Code.Equals(taskStatus.TaskCode));
 
         if (userRecord == null || taskRecord == null)
             return 0;
@@ -61,7 +77,7 @@ public class TaskStatusesRepository : ITaskStatusesRepository
             StartedAt = taskStatus.StartedAt,
             FinishedAt = taskStatus.FinishedAt,
             Mark = taskStatus.Mark,
-            FotoKeys = taskStatus.FotoKeys,
+            Fotos = new List<FotoRecord>(),
             UserRecordId = userRecord.Id,
             UserRecord = userRecord,
             TaskRecordId = taskRecord.Id,
@@ -82,7 +98,6 @@ public class TaskStatusesRepository : ITaskStatusesRepository
                 .SetProperty(b => b.AutomationSystemStatus, b => taskStatus.AutomationSystemStatus)
                 .SetProperty(b => b.StartedAt, b => taskStatus.StartedAt)
                 .SetProperty(b => b.FinishedAt, b => taskStatus.FinishedAt)
-                .SetProperty(b => b.Mark, b => taskStatus.Mark)
-                .SetProperty(b => b.FotoKeys, b => taskStatus.FotoKeys));
+                .SetProperty(b => b.Mark, b => taskStatus.Mark));
     }
 }

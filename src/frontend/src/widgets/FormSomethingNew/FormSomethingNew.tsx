@@ -1,14 +1,12 @@
 import { InboxOutlined } from '@ant-design/icons'
 import { faker } from '@faker-js/faker'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, DatePicker, Form, Input, Space, Typography, Upload } from 'antd'
+import dayjs from 'dayjs'
 import { ReactNode, useState } from 'react'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import { SomethingApi, SomethingNewDto, somethingNewSchema } from '~/entities/Something'
-import { apiClient, getIsDetailedApiError } from '~/shared/apiClient'
-import dayjs from 'dayjs'
-import { useNavigate } from 'react-router-dom'
+import { SomethingApi, SomethingNewDto } from '~/entities/Something'
+import { getIsDetailedApiError } from '~/shared/apiClient'
 
 interface FormSomethingNewProps {
   children: ReactNode

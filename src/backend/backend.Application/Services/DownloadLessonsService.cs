@@ -9,6 +9,8 @@ public class DownloadLessonsService : IDownloadService
     private readonly IGeneralRepository _repository;
     private readonly ITraitRepository _traitRepository;
     private readonly ITasksRepository _tasksRepository;
+    private readonly ILessonsRepository _lessonRepository;
+    private readonly ITopicsRepository _topicRepository;
     private readonly IMinIoFileService _minIoFileService;
     private readonly IContentLoadService _contentLoadService;
 
@@ -16,14 +18,18 @@ public class DownloadLessonsService : IDownloadService
         IGeneralRepository repository,
         ITasksRepository tasksRepository,
         ITraitRepository traitRepository,
+        ILessonsRepository lessonsRepository,
+        ITopicsRepository topicsRepository,
         IMinIoFileService minIoFileService,
         IContentLoadService contentLoadService)
     {
         _repository = repository;
         _tasksRepository = tasksRepository;
         _traitRepository = traitRepository;
+        _lessonRepository = lessonsRepository;
         _minIoFileService = minIoFileService;
         _contentLoadService = contentLoadService;
+        _topicRepository = topicsRepository;
     }
 
     public async Task<int> Download()
@@ -61,7 +67,6 @@ public class DownloadLessonsService : IDownloadService
 
         var tasks = await _tasksRepository.Get();
 
-
         foreach (var jsonLesson in _contentLoadService.LoadLessons())
         {
             var lesson = new Lesson
@@ -73,7 +78,6 @@ public class DownloadLessonsService : IDownloadService
                 Supplements = new List<string> {},
                 Tasks = tasks.Where(t => jsonLesson.Tasks.Contains(t.Code)).ToList(),
                 Traits = traits.Where(t => jsonLesson.Traits.Contains(t.Code)).ToList(),
-                
             };
 
             foreach (var supplement in jsonLesson.Supplement)
@@ -88,16 +92,30 @@ public class DownloadLessonsService : IDownloadService
             await _repository.UploadLesson(lesson);
         }
 
+        var lessons = await _lessonRepository.Get();
 
-        // List<Trait> traits = _contentLoadService.LoadTraits().Select(trait => new Trait
-        // {
-        //     Code = trait.Code,
+        foreach (var jsonTopic in _contentLoadService.LoadTopics())
+        {
+            var topic = new Topic
+            {
+                Code = jsonTopic.Code,
+                Title = jsonTopic.Title,
+                Description = jsonTopic.Description,
+                Lessons = lessons.Where(l => jsonTopic.Lessons.Contains(l.Code)).ToList(),
+                Traits = traits.Where(t => jsonTopic.Traits.Contains(t.Code)).ToList(),
+            };
 
-        // });
-        var tasks = new List<Task>();
-        var lessons = new List<Lesson>();
-        var topics = new List<Topic>();
-        // return await _repository.Download(traits, tasks, lessons, topics);
-        return 100500;
+            await _repository.UploadTopic(topic);
+        }
+
+        var counts = new List<int>
+        {
+            (await _traitRepository.Get()).Count,
+            (await _topicRepository.Get()).Count,
+            (await _lessonRepository.Get()).Count,
+            (await _tasksRepository.Get()).Count,
+        };
+
+        return counts.Sum();
     }
 }

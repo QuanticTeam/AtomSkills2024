@@ -17,6 +17,9 @@ public class ContentLoadService : IContentLoadService
 
     private readonly JsonSerializerOptions _serializeOptions;
 
+    private readonly Lazy<Dictionary<string, string>> _dictionary;
+    public Dictionary<string, string> Dictionary => _dictionary.Value;
+
     public ContentLoadService(IOptions<ContentLoadOptions> options)
     {
         _options = options.Value;
@@ -53,6 +56,29 @@ public class ContentLoadService : IContentLoadService
         {
             throw new InvalidConfigurationException($"Опция '{nameof(_options.TaskFileTemplate)}' должна быть добавлена в конфиг");
         }
+
+        if (_options.DefectDictionaryFileName.IsNullOrEmpty())
+        {
+            throw new InvalidConfigurationException($"Опция '{nameof(_options.DefectDictionaryFileName)}' должна быть добавлена в конфиг");
+        }
+
+        var dictionary = Path.Combine(currentFolder, _options.DefectDictionaryFileName);
+
+        if (!File.Exists(dictionary))
+        {
+            throw new InvalidConfigurationException($"Файл словаря дефектов '{dictionary}' не найден");
+        }
+
+        _dictionary = new Lazy<Dictionary<string, string>>(() =>
+        {
+            try
+            {
+                var json = File.ReadAllText(_options.DefectDictionaryFileName);
+                return JsonSerializer.Deserialize<Dictionary<string, string>>(json, _serializeOptions)
+                    ?? new Dictionary<string, string>();
+            } catch {}
+            return new Dictionary<string, string>();
+        });
 
         _serializeOptions = new JsonSerializerOptions
         {

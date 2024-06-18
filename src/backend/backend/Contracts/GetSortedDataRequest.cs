@@ -5,6 +5,7 @@ public class GetSortAndFilterRequest
     public required string OrderBy { get; set; } = string.Empty;
     public required bool Descending { get; init; } = false;
     public required List<Filter> Filters { get; set; } = new List<Filter>{};
+    public string? OMCode { get; set; }
 }
 
 public class Filter
