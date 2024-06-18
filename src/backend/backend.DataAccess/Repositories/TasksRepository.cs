@@ -26,7 +26,7 @@ public class TasksRepository : ITasksRepository
             .AsNoTracking()
             .ToListAsync();
 
-        var task = taskRecords.LastOrDefault();
+        var task = taskRecords.FirstOrDefault();
 
         if (task == null) return null;
 

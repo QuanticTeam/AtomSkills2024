@@ -82,7 +82,7 @@ public class OMController : ControllerBase
         [FromServices] ILessonsRepository lessonsRepository,
         LessonRequest request)
     {
-        var lesson = (await lessonsRepository.Get()).LastOrDefault(t => t.Code == request.Code);
+        var lesson = (await lessonsRepository.Get()).FirstOrDefault(t => t.Code == request.Code);
 
         if (lesson == null)
             return NoContent();
@@ -129,7 +129,7 @@ public class OMController : ControllerBase
         [FromServices] ITasksRepository taskRepository,
         TaskRequest request)
     {
-        var task = (await taskRepository.Get()).LastOrDefault(t => t.Code == request.Code);
+        var task = (await taskRepository.Get()).FirstOrDefault(t => t.Code == request.Code);
 
         if (task == null)
             return NoContent();
