@@ -20,7 +20,7 @@ public class RankController : ControllerBase
     }
     
     [Authorize]
-    [HttpGet("RankTasks")]
+    [HttpGet("GetTaskCodes")]
     public async Task<List<string>> GetTaskCodes()
     {
         var tasks = await _tasksService.Get();
@@ -56,9 +56,25 @@ public class RankController : ControllerBase
     public async Task<RankTasksResponse> RankTasks()
     {
         var tasks = await _tasksService.Get();
+
+        var filtered = tasks
+            .Where(x => x.TaskStatuses.Exists(t => t.Status.Equals(TaskStatusType.Verified.ToString()) || t.Status.Equals(TaskStatusType.Recommended.ToString())))
+            .OrderByDescending(x => x.TaskStatuses.Count(t => t.Mark == 2))
+            .ThenByDescending(x => x.TaskStatuses.Count(t => t.Mark == 3))
+            .ThenByDescending(x => x.TaskStatuses.Count(t => t.Mark == 4))
+            .ThenByDescending(x => x.TaskStatuses.Count(t => t.Mark == 5));
         
-        
-        
-        return new RankTasksResponse();
+        return new RankTasksResponse
+        {
+            RankTasks = filtered.Select(x => new RankTask
+            {
+                Code = x.Code,
+                Title = x.Title,
+                CountTwo = x.TaskStatuses.Count(t => t.Mark == 2),
+                CountThree = x.TaskStatuses.Count(t => t.Mark == 3),
+                CountFour = x.TaskStatuses.Count(t => t.Mark == 4),
+                CountFive = x.TaskStatuses.Count(t => t.Mark == 5)
+            }).ToList()
+        };
     }
 }
