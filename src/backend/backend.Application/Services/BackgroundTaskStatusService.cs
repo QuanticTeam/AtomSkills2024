@@ -14,14 +14,14 @@ public class BackgroundTaskStatusService : BackgroundService
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly AiOptions _aiOptions;
-    
+
     public BackgroundTaskStatusService(IServiceProvider serviceProvider, IOptions<AiOptions> options)
     {
         _serviceProvider = serviceProvider;
         _aiOptions = options.Value;
         Thread.Sleep(TimeSpan.FromSeconds(5));
     }
-    
+
     protected override async Task ExecuteAsync(CancellationToken cancellationToken) 
     { 
         while (!cancellationToken.IsCancellationRequested) 

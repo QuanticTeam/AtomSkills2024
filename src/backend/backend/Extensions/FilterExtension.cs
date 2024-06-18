@@ -113,7 +113,15 @@ public static class FilterExtension
         var parameter = Expression.Parameter(typeof(TSource), "x");
         
         var property = Expression.Property(parameter, propertyName);
-        
+
+        if (type == FilterType.Contains)
+        {
+                var constant2 = Expression.Constant(value.ToString());
+                var method2 = typeof(string).GetMethod("Contains", new[] { typeof(string) });
+                var expression2 = Expression.Call(property, method2!, constant2);
+                return Expression.Lambda<Func<TSource, bool>>(expression2, parameter);
+        }
+
         var constant = Expression.Constant(value);
         
         var expression = type switch
@@ -131,6 +139,15 @@ public static class FilterExtension
     {
         var parameter = Expression.Parameter(typeof(TSource), "x");
         var property = Expression.Property(parameter, propertyName);
+
+        if (type == FilterType.Contains)
+        {
+                var constant2 = Expression.Constant(value.ToString());
+                var method2 = typeof(string).GetMethod("Contains", new[] { typeof(string) });
+                var expression2 = Expression.Call(property, method2!, constant2);
+                return Expression.Lambda<Func<TSource, bool>>(expression2, parameter);
+        }
+
         var constant = Expression.Constant(value);
         var expression = type switch
         {
