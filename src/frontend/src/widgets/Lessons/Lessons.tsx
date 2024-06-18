@@ -144,15 +144,11 @@ export function Lessons({ parentRef }: LessonsProps) {
           <Popover
             trigger="click"
             content={<Markdown markdown={value} />}
+            placement="right"
             overlayInnerStyle={{
-              width: '60vw',
+              width: '40vw',
               height: '40vh',
               overflow: 'auto',
-            }}
-            style={{
-              width: '200px',
-              height: '200px',
-              background: 'red',
             }}
           >
             <Typography.Link className="border-b  border-dashed border-blue-600">

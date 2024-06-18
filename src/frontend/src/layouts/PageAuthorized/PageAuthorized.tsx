@@ -98,7 +98,7 @@ export function PageAuthorized({
                   target={() => contentRef.current!}
                   icon={<ArrowUpOutlined />}
                   style={{
-                    bottom: '140px',
+                    bottom: '70px',
                     right: '60px',
                   }}
                 />

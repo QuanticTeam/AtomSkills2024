@@ -12,7 +12,9 @@ export interface Task {
 }
 
 export const TasksApi = {
-  async getAll(payload: SortAndFilterRequest = getSortAndFilterRequestPayload()) {
+  async getAll(
+    payload: SortAndFilterRequest & { omCode?: string } = getSortAndFilterRequestPayload(),
+  ) {
     const { data } = await apiClient.post<Task[]>('/OM/Tasks', payload)
 
     return data
@@ -75,7 +77,7 @@ export const TasksApi = {
   },
 }
 
-interface TaskProgress {
+export interface TaskProgress {
   id: number
   status: TaskStatusType
   automationSystemStatus: AutomationSystemStatus
@@ -110,7 +112,7 @@ interface TaskProgress {
   ]
 }
 
-enum TaskStatusType {
+export enum TaskStatusType {
   None = 'None',
   Recommended = 'Recommended',
   InWork = 'InWork',
@@ -119,7 +121,7 @@ enum TaskStatusType {
   Verified = 'Verified',
 }
 
-enum AutomationSystemStatus {
+export enum AutomationSystemStatus {
   None = 'None',
   Complete = 'Complete',
   Error = 'Error',

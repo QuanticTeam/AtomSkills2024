@@ -11,8 +11,16 @@ import { Badge, Button, Card, FloatButton, List, Space, Spin, Tabs, Tag, Typogra
 import { memo, useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
-import { Lesson, Task, TasksApi } from '~/entities'
+import {
+  AutomationSystemStatus,
+  Lesson,
+  Task,
+  TaskProgress,
+  TaskStatusType,
+  TasksApi,
+} from '~/entities'
 import { PageAuthorized } from '~/layouts/PageAuthorized'
+import { apiClient } from '~/shared/apiClient'
 import { AuthContext } from '~/shared/auth'
 import { UserRoleEnumStr } from '~/shared/auth/UserRoleEnum'
 import { colors } from '~/shared/styles'
@@ -25,7 +33,7 @@ interface PageTaskRouteParams {
 }
 
 export function PageTask() {
-  const { lessonCode, taskCode, userId } = useParams<PageTaskRouteParams>()
+  const { lessonCode, taskCode, userId: _userId } = useParams<PageTaskRouteParams>()
   const { t } = useTranslation(PageTask.name)
   const [content, setContent] = useState('')
   const { authInfo } = useContext(AuthContext)
@@ -38,13 +46,33 @@ export function PageTask() {
   if (isPending) return <Spin fullscreen />
   if (error) return <Oops />
 
+  const isMentorOnReview = authInfo?.user.isMentor && _userId
+  const isMentorOnLookup = authInfo?.user.isMentor && !_userId
+
+  const isStudentOnLookup = authInfo?.user.isStudent
+  const isAdmin = authInfo?.user.isAdmin
+
+  const userId = isMentorOnReview ? _userId : authInfo?.user.userId
+
   const everyoneProgress = data.taskStatuses
 
   const progress = everyoneProgress
-    .filter(p => p.userKey === userId || authInfo?.user.userId)
+    .filter(p => p.userKey === userId)
     .sort((a, b) => Date.parse(b.startedAt) - Date.parse(a.startedAt))
 
-  const isTaskInProgress = progress.length && !progress[0].finishedAt
+  const currentTaskProgress = progress[0] ?? {
+    id: 0,
+    status: TaskStatusType.None,
+    automationSystemStatus: AutomationSystemStatus.None,
+    startedAt: '',
+    finishedAt: '',
+    mark: 0,
+    fotos: [],
+    userKey: '',
+    taskCode,
+    recommendations: [],
+    defects: [],
+  }
 
   return (
     <PageAuthorized
@@ -68,21 +96,26 @@ export function PageTask() {
               <Space>
                 <Condition
                   conditions={[
-                    ({ authInfo }) => authInfo?.user.isAdmin && !isTaskInProgress,
-                    ({ authInfo }) => authInfo?.user.isStudent && !isTaskInProgress,
+                    () =>
+                      (isAdmin || isStudentOnLookup) &&
+                      currentTaskProgress.status === TaskStatusType.None,
                   ]}
                 >
                   <Button
-                    size="small"
+                    size="middle"
                     type="primary"
+                    className="my-2"
+                    onClick={async () => TasksApi.begin({ code: taskCode! })}
                   >
                     Взять в работу
                   </Button>
                 </Condition>
                 <Condition
                   conditions={[
-                    ({ authInfo }) => authInfo?.user.isAdmin && isTaskInProgress,
-                    ({ authInfo }) => authInfo?.user.isStudent && isTaskInProgress,
+                    () =>
+                      isAdmin &&
+                      isStudentOnLookup &&
+                      currentTaskProgress.status === TaskStatusType.InWork,
                   ]}
                 >
                   <Button
@@ -95,8 +128,11 @@ export function PageTask() {
                 </Condition>
                 <Condition
                   conditions={[
-                    ({ authInfo }) => authInfo?.user.isAdmin,
-                    ({ authInfo }) => authInfo?.user.isMentor,
+                    () =>
+                      (isAdmin || isMentorOnReview) &&
+                      [TaskStatusType.SendToCheck, TaskStatusType.AiVerified].includes(
+                        currentTaskProgress.status,
+                      ),
                   ]}
                 >
                   <Button
@@ -109,8 +145,9 @@ export function PageTask() {
                 </Condition>
                 <Condition
                   conditions={[
-                    ({ authInfo }) => authInfo?.user.isAdmin,
-                    ({ authInfo }) => authInfo?.user.isMentor,
+                    () =>
+                      (isAdmin || isMentorOnReview) &&
+                      currentTaskProgress.status === TaskStatusType.Verified,
                   ]}
                 >
                   <Button
@@ -126,40 +163,93 @@ export function PageTask() {
           >
             <div className="flex justify-between">
               <Space size="middle">
+                <Condition conditions={[() => isAdmin || isMentorOnReview || isStudentOnLookup]}>
+                  <Space size="middle">
+                    <Condition
+                      conditions={[
+                        () =>
+                          isStudentOnLookup && currentTaskProgress.status === TaskStatusType.None,
+                      ]}
+                    >
+                      <Badge
+                        status="default"
+                        text="Новое"
+                      />
+                    </Condition>
+                    <Condition
+                      conditions={[
+                        () =>
+                          (isStudentOnLookup || isAdmin || isMentorOnReview) &&
+                          currentTaskProgress.status === TaskStatusType.InWork,
+                      ]}
+                    >
+                      <Badge
+                        status="processing"
+                        text="Выполняется"
+                      />
+                    </Condition>
+                    <Condition
+                      conditions={[
+                        () =>
+                          (isStudentOnLookup || isAdmin || isMentorOnReview) &&
+                          currentTaskProgress.status === TaskStatusType.SendToCheck,
+                      ]}
+                    >
+                      <Badge
+                        status="processing"
+                        color="orange"
+                        text="На проверке"
+                      />
+                    </Condition>
+                    <Condition
+                      conditions={[
+                        () =>
+                          (isStudentOnLookup || isAdmin || isMentorOnReview) &&
+                          currentTaskProgress.status === TaskStatusType.AiVerified,
+                      ]}
+                    >
+                      <Badge
+                        status="success"
+                        text="Проверено AI"
+                      />
+                    </Condition>
+                    <Condition
+                      conditions={[
+                        () =>
+                          (isStudentOnLookup || isAdmin || isMentorOnReview) &&
+                          currentTaskProgress.status === TaskStatusType.Verified,
+                      ]}
+                    >
+                      <Badge
+                        status="success"
+                        text="Проверено"
+                      />
+                    </Condition>
+                    <Condition
+                      conditions={[
+                        () =>
+                          (isStudentOnLookup || isAdmin || isMentorOnReview) &&
+                          [TaskStatusType.Verified, TaskStatusType.AiVerified].includes(
+                            currentTaskProgress.status,
+                          ),
+                      ]}
+                    >
+                      <Space className="relative top-px">
+                        <StarTwoTone />
+                        <StarTwoTone />
+                        <StarTwoTone />
+                        <StarOutlined className="text-slate-400" />
+                        <StarOutlined className="text-slate-400" />
+                      </Space>
+                    </Condition>
+                  </Space>
+                </Condition>
                 <Typography.Text strong>
                   <DashboardOutlined /> {data?.difficulty}
                 </Typography.Text>
                 <Typography.Text>
                   <ClockCircleOutlined /> {data?.time}мин
                 </Typography.Text>
-                <Badge
-                  status="default"
-                  text="Новое"
-                />
-                <Badge
-                  status="processing"
-                  text="Выполняется"
-                />
-                <Badge
-                  status="processing"
-                  color="orange"
-                  text="На проверке"
-                />
-                <Badge
-                  status="success"
-                  text="Проверено AI"
-                />
-                <Badge
-                  status="success"
-                  text="Проверено"
-                />
-                <Space className="relative top-px">
-                  <StarTwoTone />
-                  <StarTwoTone />
-                  <StarTwoTone />
-                  <StarOutlined className="text-slate-400" />
-                  <StarOutlined className="text-slate-400" />
-                </Space>
               </Space>
             </div>
           </Card>
@@ -249,17 +339,15 @@ const CountDown = memo(() => {
 
   return (
     <FloatButton
-      type="primary"
+      shape="square"
       icon={<ClockCircleFilled />}
       style={{
         right: '60px',
-        bottom: '90px',
+        top: '150px',
+        bottom: 'unset',
       }}
       description={
-        <Tag
-          className="absolute translate-x-1/2 top-11 right-1/2 m-0 text-base"
-          color="orange"
-        >
+        <Tag className="absolute translate-x-1/2 top-11 right-1/2 m-0 text-base">
           {mins}:{secs < 10 ? '0' + secs : secs}
         </Tag>
       }
