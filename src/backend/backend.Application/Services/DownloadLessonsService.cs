@@ -7,6 +7,7 @@ namespace backend.Application.Services;
 public class DownloadLessonsService : IDownloadService
 {
     private readonly IGeneralRepository _repository;
+    private readonly ITraitRepository _traitRepository;
     private readonly ITasksRepository _tasksRepository;
     private readonly IMinIoFileService _minIoFileService;
     private readonly IContentLoadService _contentLoadService;
@@ -14,11 +15,13 @@ public class DownloadLessonsService : IDownloadService
     public DownloadLessonsService(
         IGeneralRepository repository,
         ITasksRepository tasksRepository,
+        ITraitRepository traitRepository,
         IMinIoFileService minIoFileService,
         IContentLoadService contentLoadService)
     {
         _repository = repository;
         _tasksRepository = tasksRepository;
+        _traitRepository = traitRepository;
         _minIoFileService = minIoFileService;
         _contentLoadService = contentLoadService;
     }
@@ -29,6 +32,8 @@ public class DownloadLessonsService : IDownloadService
         {
             await _repository.UploadTrait(trait);
         }
+
+        var traits = await _traitRepository.Get();
 
         foreach (var jsonTask in _contentLoadService.LoadTasks())
         {
@@ -66,8 +71,9 @@ public class DownloadLessonsService : IDownloadService
                 Content = jsonLesson.Content,
                 Author = jsonLesson.Author,
                 Supplements = new List<string> {},
-                Tasks = jsonLesson.Tasks,
-                Traits = jsonLesson.Traits, 
+                Tasks = tasks.Where(t => jsonLesson.Tasks.Contains(t.Code)).ToList(),
+                Traits = traits.Where(t => jsonLesson.Traits.Contains(t.Code)).ToList(),
+                
             };
 
             foreach (var supplement in jsonLesson.Supplement)
