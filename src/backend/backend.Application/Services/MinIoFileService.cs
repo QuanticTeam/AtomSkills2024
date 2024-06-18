@@ -1,3 +1,4 @@
+using backend.Application.Extensions;
 using backend.Core.Abstractions;
 using backend.Core.JsonModels;
 using backend.Core.Models;
@@ -126,8 +127,12 @@ public class MinIoFileService : IMinIoFileService
         {
             {
                 "x-amz-meta-original-file-name", 
-                fileInfo.Name
+                fileInfo.Name.Escape()
             },
+            {
+                "x-amz-meta-title",
+                supplement.Title.Escape()
+            }
         };
 
         var response = await Run(minio, BucketName, fileName, stream, mimeType, metaData);
@@ -138,7 +143,7 @@ public class MinIoFileService : IMinIoFileService
             Title = supplement.Title,
             FilePath = supplement.File,
             MimeType = mimeType,
-            IsLoaded = response != null,
+            IsLoaded = response != null && response.Etag != null,
         };
     }
 
