@@ -30,7 +30,7 @@ export function HeaderAuthorized() {
 
           <Badge
             color={colors['primary-2']}
-            count={12}
+            count={0}
             offset={[-10, 0]}
             size="small"
           >
