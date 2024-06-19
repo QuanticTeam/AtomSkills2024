@@ -31,7 +31,7 @@ export const TasksApi = {
   },
   async submit(payload: {
     taskStatusId: number
-    fileKeyAndDescriptions: { fileKey: string; description: 'string' }[]
+    fileKeyAndDescriptions: { fileKey: string; description?: string }[]
   }) {
     const { data } = await apiClient.post<TaskProgress>('/Status/SendTaskToCheck', payload)
 

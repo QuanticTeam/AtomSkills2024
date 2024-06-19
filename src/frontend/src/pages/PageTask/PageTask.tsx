@@ -2,6 +2,9 @@ import {
   ClockCircleFilled,
   ClockCircleOutlined,
   DashboardOutlined,
+  DeleteFilled,
+  DeleteOutlined,
+  InboxOutlined,
   StarOutlined,
   StarTwoTone,
 } from '@ant-design/icons'
@@ -11,6 +14,8 @@ import {
   Button,
   Card,
   FloatButton,
+  Form,
+  Input,
   List,
   Modal,
   Space,
@@ -18,12 +23,26 @@ import {
   Tabs,
   Tag,
   Typography,
+  Upload,
 } from 'antd'
-import { memo, useContext, useEffect, useRef, useState } from 'react'
+import TextArea from 'antd/es/input/TextArea'
+import { t } from 'i18next'
+import { memo, useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { Controller, SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
-import { AutomationSystemStatus, Lesson, Task, TaskStatusType, TasksApi } from '~/entities'
+import { string } from 'zod'
+import {
+  Attachment,
+  AutomationSystemStatus,
+  Lesson,
+  SomethingApi,
+  Task,
+  TaskStatusType,
+  TasksApi,
+} from '~/entities'
 import { PageAuthorized } from '~/layouts/PageAuthorized'
+import { getIsDetailedApiError } from '~/shared/apiClient'
 import { AuthContext } from '~/shared/auth'
 import { Condition, Markdown, Oops } from '~/shared/ui'
 import { Attachments } from '~/widgets/Attachments'
@@ -87,11 +106,11 @@ export function PageTask() {
     setIsModalOpen(true)
   }
 
-  const handleOk = async () => {
+  const handleOk = async (fileKeyAndDescriptions: FormSubmitValues['test']) => {
     setIsModalOpen(false)
     await TasksApi.submit({
       taskStatusId: currentTaskProgress.id,
-      fileKeyAndDescriptions: [],
+      fileKeyAndDescriptions,
     })
 
     await queryClient.fetchQuery({
@@ -404,16 +423,12 @@ export function PageTask() {
             onChange={console.log.bind(console)}
           />
 
-          <Modal
-            title="Отправить решение"
-            open={isModalOpen}
-            onOk={handleOk}
-            onCancel={handleCancel}
-          >
-            <p>Some contents...</p>
-            <p>Some contents...</p>
-            <p>Some contents...</p>
-          </Modal>
+          <ModalSubmitTask
+            isModalOpen={isModalOpen}
+            handleOk={handleOk}
+            handleCancel={handleCancel}
+          />
+
           <Modal
             title="Проверка решения"
             open={isModalOpen2}
@@ -475,3 +490,149 @@ const Timer = memo(({ value, onFinish }: TimerProps) => {
     />
   )
 })
+
+interface FormSubmitValues {
+  test: {
+    fileKey: string
+    description?: string
+  }[]
+}
+
+function ModalSubmitTask({ isModalOpen, handleOk, handleCancel }: Record<string, any>) {
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+    setValue,
+    register,
+  } = useForm<FormSubmitValues>({
+    mode: 'onBlur',
+    values: {
+      test: [],
+    },
+  })
+
+  const { fields, append, prepend, remove, swap, move, insert } = useFieldArray({
+    name: 'test',
+    control,
+  })
+
+  const [submissionError, setSubmissionError] = useState('')
+
+  const appendInputGroup = useCallback(
+    () =>
+      append({
+        fileKey: '',
+        description: '',
+      }),
+    [append],
+  )
+
+  return (
+    <Modal
+      title="Отправить решение"
+      open={isModalOpen}
+      footer={
+        <div className="flex justify-between">
+          <Button
+            type="primary"
+            ghost
+            onClick={() => appendInputGroup()}
+          >
+            Добавить файл
+          </Button>
+
+          <Space size="middle">
+            <Button
+              type="primary"
+              ghost
+              onClick={handleCancel}
+            >
+              Отменить
+            </Button>
+            <Button
+              form="myform"
+              type="primary"
+              htmlType="submit"
+            >
+              Отправить
+            </Button>
+          </Space>
+        </div>
+      }
+    >
+      <Form
+        id="myform"
+        onFinish={async values => {
+          try {
+            await handleSubmit(handleOk)(values)
+          } catch (error) {
+            if (!getIsDetailedApiError(error)) throw error
+
+            switch (error.code) {
+              default: {
+                setSubmissionError(error.code)
+              }
+            }
+          }
+        }}
+      >
+        {fields.map((field, index) => (
+          <Card
+            title={
+              <div className="flex justify-between items-center">
+                <Typography.Text strong>Вложение {index + 1}</Typography.Text>
+                <Typography.Link
+                  type="danger"
+                  onClick={() => remove(index)}
+                >
+                  <DeleteOutlined />
+                </Typography.Link>
+              </div>
+            }
+            size="small"
+          >
+            <Form.Item
+              className="!mb-0"
+              key={field.id}
+            >
+              <Upload.Dragger
+                // This handler is invoked per file even in case of batch upload
+                customRequest={async ({ file, onProgress, onSuccess, onError }) => {
+                  try {
+                    const result = await SomethingApi.upload(file, { onProgress })
+                    setValue(`test.${index}.fileKey`, result.fileKey)
+
+                    onSuccess?.(result)
+                  } catch (error: any) {
+                    onError?.(error) // TODO handle properly
+                  }
+                }}
+              >
+                <div className="flex items-center">
+                  <div className="text-4xl text-blue-500 mr-2">
+                    <InboxOutlined />
+                  </div>
+                  <Typography.Text className="text-sm text-blue-500">
+                    Кликните для загрузки либо перетяните файл из проводника
+                  </Typography.Text>
+                </div>
+              </Upload.Dragger>
+              <Controller
+                control={control}
+                name={`test.${index}.description`}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    className="mt-4"
+                    placeholder="Комментарий (необязательно)"
+                  />
+                )}
+              />
+            </Form.Item>
+          </Card>
+        ))}
+      </Form>
+    </Modal>
+  )
+}

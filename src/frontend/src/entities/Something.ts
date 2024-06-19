@@ -30,6 +30,9 @@ export const SomethingApi = {
 
     const { data } = await apiClient.post<UploadResponse>('/File/Upload', payload, {
       onUploadProgress: onProgress,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
     })
 
     return data
