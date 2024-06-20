@@ -1,27 +1,38 @@
 import {
+  ArrowLeftOutlined,
+  ArrowRightOutlined,
   ClockCircleFilled,
   ClockCircleOutlined,
   DashboardOutlined,
   DeleteFilled,
   DeleteOutlined,
   InboxOutlined,
+  QuestionCircleOutlined,
   StarOutlined,
   StarTwoTone,
+  ThunderboltOutlined,
 } from '@ant-design/icons'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   Badge,
   Button,
   Card,
+  Carousel,
+  Divider,
+  Flex,
   FloatButton,
   Form,
+  Image,
   Input,
   List,
   Modal,
+  Popover,
+  Rate,
   Space,
   Spin,
   Tabs,
   Tag,
+  Tooltip,
   Typography,
   Upload,
 } from 'antd'
@@ -46,6 +57,7 @@ import { getIsDetailedApiError } from '~/shared/apiClient'
 import { AuthContext } from '~/shared/auth'
 import { Condition, Markdown, Oops } from '~/shared/ui'
 import { Attachments } from '~/widgets/Attachments'
+import { TaskProgressList } from '~/widgets/TaskProgressList'
 
 interface PageTaskRouteParams {
   lessonCode: Lesson['code']
@@ -106,7 +118,7 @@ export function PageTask() {
     setIsModalOpen(true)
   }
 
-  const handleOk = async (fileKeyAndDescriptions: FormSubmitValues['test']) => {
+  const handleOk = async ({ test: fileKeyAndDescriptions }: { test: FormSubmitValues['test'] }) => {
     setIsModalOpen(false)
     await TasksApi.submit({
       taskStatusId: currentTaskProgress.id,
@@ -126,22 +138,12 @@ export function PageTask() {
     setIsModalOpen2(true)
   }
 
-  const handleOk2 = async () => {
+  const handleOk2 = async ({ taskId, mark }: { taskId: number; mark: number }) => {
     setIsModalOpen2(false)
     await TasksApi.review({
-      taskId: currentTaskProgress.id,
-      mark: 4,
-      defects: [
-        {
-          fileKey: 'DEFECTO!',
-          codes: [],
-          comment: 'bla',
-          x1: 0,
-          y1: 0,
-          x2: 10,
-          y2: 10,
-        },
-      ],
+      taskId,
+      mark,
+      defects: [],
     })
 
     await queryClient.fetchQuery({
@@ -158,7 +160,9 @@ export function PageTask() {
       title={
         <>
           <div className="flex justify-between items-center mb-4">
-            <Typography.Title className="!mb-0">Задание</Typography.Title>
+            <Typography.Title className="!mb-0">
+              {authInfo?.user.isMentor && _userId ? 'Проверка задания' : 'Задание'} (код {taskCode})
+            </Typography.Title>
           </div>
           <Card
             className="mb-4"
@@ -301,7 +305,7 @@ export function PageTask() {
                           // Если бэк не успел посчитать, нарисуем пока сами
                           (isStudentOnLookup || isAdmin || isMentorOnReview) &&
                           currentTaskProgress.status === TaskStatusType.InWork &&
-                          willEndAt >= Date.now(),
+                          willEndAt <= Date.now(),
                       ]}
                     >
                       <Badge
@@ -326,9 +330,7 @@ export function PageTask() {
                       conditions={[
                         () =>
                           (isStudentOnLookup || isAdmin || isMentorOnReview) &&
-                          [TaskStatusType.Verified, TaskStatusType.AiVerified].includes(
-                            currentTaskProgress.status,
-                          ),
+                          TaskStatusType.Verified === currentTaskProgress.status,
                       ]}
                     >
                       <Badge
@@ -371,13 +373,18 @@ export function PageTask() {
                     </Condition>
                   </Space>
                 </Condition>
-                <Typography.Text strong>
-                  <DashboardOutlined /> {data?.difficulty}
+                <Typography.Text
+                  strong
+                  className="text-primary-2"
+                >
+                  <ThunderboltOutlined />{' '}
+                  <span className="relative right-px ">{data?.difficulty}</span>
                 </Typography.Text>
-                <Typography.Text>
-                  <ClockCircleOutlined /> {data?.time}мин
+                <Typography.Text className="text-primary-2">
+                  <ClockCircleOutlined /> <span className="relative left-px">{data?.time}мин</span>
                 </Typography.Text>
               </Space>
+              {isMentorOnReview && _userId ? `Студент: ${userId}` : ''}
             </div>
           </Card>
         </>
@@ -392,7 +399,8 @@ export function PageTask() {
               conditions={[
                 () =>
                   (isAdmin || isStudentOnLookup) &&
-                  currentTaskProgress.status === TaskStatusType.InWork,
+                  currentTaskProgress.status === TaskStatusType.InWork &&
+                  willEndAt >= Date.now(),
               ]}
             >
               <Timer
@@ -419,6 +427,11 @@ export function PageTask() {
                 label: t('tabSupplements'),
                 children: <Attachments fileKeys={data.supplements} />,
               },
+              {
+                key: 'progress',
+                label: 'Прохождение задания',
+                children: <TaskProgressList />,
+              },
             ]}
             onChange={console.log.bind(console)}
           />
@@ -429,16 +442,12 @@ export function PageTask() {
             handleCancel={handleCancel}
           />
 
-          <Modal
-            title="Проверка решения"
-            open={isModalOpen2}
-            onOk={handleOk2}
-            onCancel={handleCancel2}
-          >
-            <p>Some contents...</p>
-            <p>Some contents...</p>
-            <p>Some contents...</p>
-          </Modal>
+          <ModalFinalBoss
+            data={currentTaskProgress}
+            isModalOpen={isModalOpen2}
+            handleOk={handleOk2}
+            handleCancel={handleCancel2}
+          />
         </>
       )}
     </PageAuthorized>
@@ -456,18 +465,17 @@ const Timer = memo(({ value, onFinish }: TimerProps) => {
 
   useEffect(() => {
     intervalRef.current = setInterval(() => {
-      setTimerValue(prev => prev - 1000)
+      console.log([Date.now() + timerValue, Date.now(), timerValue])
+      if (Date.now() + timerValue <= Date.now()) {
+        clearInterval(intervalRef.current as unknown as number)
+        onFinish()
+      } else {
+        setTimerValue(prev => prev - 1000)
+      }
     }, 1000)
 
     return () => clearInterval(intervalRef.current as unknown as number)
-  }, [])
-
-  if (Date.now() + timerValue <= Date.now()) {
-    clearInterval(intervalRef.current as unknown as number)
-    onFinish()
-  }
-
-  console.log(timerValue)
+  }, [timerValue, onFinish])
 
   const d = new Date(timerValue)
   const mins = d.getMinutes()
@@ -505,6 +513,8 @@ function ModalSubmitTask({ isModalOpen, handleOk, handleCancel }: Record<string,
     handleSubmit,
     setValue,
     register,
+    getValues,
+    reset,
   } = useForm<FormSubmitValues>({
     mode: 'onBlur',
     values: {
@@ -518,6 +528,11 @@ function ModalSubmitTask({ isModalOpen, handleOk, handleCancel }: Record<string,
   })
 
   const [submissionError, setSubmissionError] = useState('')
+  const [_, _forceUpdate] = useState(Date.now())
+
+  const forceUpdate = () => _forceUpdate(Date.now())
+
+  const isSubmitted = !!submissionError
 
   const appendInputGroup = useCallback(
     () =>
@@ -528,8 +543,15 @@ function ModalSubmitTask({ isModalOpen, handleOk, handleCancel }: Record<string,
     [append],
   )
 
+  useEffect(() => {
+    appendInputGroup()
+  }, [appendInputGroup])
+
   return (
     <Modal
+      destroyOnClose
+      onCancel={handleCancel}
+      onClose={handleCancel}
       title="Отправить решение"
       open={isModalOpen}
       footer={
@@ -564,6 +586,12 @@ function ModalSubmitTask({ isModalOpen, handleOk, handleCancel }: Record<string,
       <Form
         id="myform"
         onFinish={async values => {
+          if (getValues().test.some(x => !x.fileKey)) {
+            setSubmissionError('gosh')
+            return
+          } else {
+          }
+
           try {
             await handleSubmit(handleOk)(values)
           } catch (error) {
@@ -574,6 +602,8 @@ function ModalSubmitTask({ isModalOpen, handleOk, handleCancel }: Record<string,
                 setSubmissionError(error.code)
               }
             }
+          } finally {
+            reset()
           }
         }}
       >
@@ -582,12 +612,14 @@ function ModalSubmitTask({ isModalOpen, handleOk, handleCancel }: Record<string,
             title={
               <div className="flex justify-between items-center">
                 <Typography.Text strong>Вложение {index + 1}</Typography.Text>
-                <Typography.Link
-                  type="danger"
-                  onClick={() => remove(index)}
-                >
-                  <DeleteOutlined />
-                </Typography.Link>
+                {fields.length < 2 ? null : (
+                  <Typography.Link
+                    type="danger"
+                    onClick={() => remove(index)}
+                  >
+                    <DeleteOutlined />
+                  </Typography.Link>
+                )}
               </div>
             }
             size="small"
@@ -604,6 +636,7 @@ function ModalSubmitTask({ isModalOpen, handleOk, handleCancel }: Record<string,
                     setValue(`test.${index}.fileKey`, result.fileKey)
 
                     onSuccess?.(result)
+                    forceUpdate()
                   } catch (error: any) {
                     onError?.(error) // TODO handle properly
                   }
@@ -618,6 +651,11 @@ function ModalSubmitTask({ isModalOpen, handleOk, handleCancel }: Record<string,
                   </Typography.Text>
                 </div>
               </Upload.Dragger>
+
+              {isSubmitted && !getValues().test[index].fileKey ? (
+                <Typography.Text type="danger">Необходимо загрузить файл</Typography.Text>
+              ) : null}
+
               <Controller
                 control={control}
                 name={`test.${index}.description`}
@@ -633,6 +671,82 @@ function ModalSubmitTask({ isModalOpen, handleOk, handleCancel }: Record<string,
           </Card>
         ))}
       </Form>
+    </Modal>
+  )
+}
+
+function ModalFinalBoss({ isModalOpen, handleOk, handleCancel, data }: Record<string, any>) {
+  const [mark, setMark] = useState(data.mark)
+
+  const contentStyle: React.CSSProperties = {
+    margin: 0,
+    height: '160px',
+    color: '#fff',
+    lineHeight: '160px',
+    textAlign: 'center',
+    background: '#364d79',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  }
+
+  return (
+    <Modal
+      destroyOnClose
+      title="Проверка решения"
+      open={isModalOpen}
+      onOk={() => handleOk({ taskId: data.id, mark })}
+      onCancel={handleCancel}
+      okText="Оценить"
+      cancelText="Закрыть"
+      classNames={{
+        body: 'my-4',
+      }}
+    >
+      <Carousel
+        arrows
+        dotPosition="bottom"
+        infinite={false}
+        className="mb-4"
+        prevArrow={<ArrowLeftOutlined className="text-2xl text-blue-500" />}
+        nextArrow={<ArrowRightOutlined className="text-2xl text-blue-500" />}
+        rootClassName="bg-color-gray"
+      >
+        {(data.fotos ?? []).map((x: any, i: number) => (
+          <div
+            key={i}
+            style={contentStyle}
+          >
+            <Image
+              src={`/api/File/Download/${x.key}`}
+              height={300}
+              className="m-auto"
+            />
+          </div>
+        ))}
+      </Carousel>
+      <div className="flex justify-center">
+        <Space>
+          <Rate
+            onChange={setMark}
+            value={mark}
+          />
+          <Popover
+            placement="right"
+            title="Алгоритм оценки AI"
+            content={
+              <Space direction="vertical">
+                <Typography.Text>5 - нет ошибок</Typography.Text>
+                <Typography.Text>4 - менее 3 ошибок</Typography.Text>
+                <Typography.Text>3 - менее 5 ошибок</Typography.Text>
+                <Typography.Text>2 - более 5 ошибок</Typography.Text>
+              </Space>
+            }
+          >
+            <QuestionCircleOutlined />
+          </Popover>
+        </Space>
+      </div>
     </Modal>
   )
 }

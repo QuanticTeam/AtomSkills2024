@@ -21,6 +21,8 @@
   "fieldRolePlaceholder": "Выберите роль",
   "fieldRoleValAdmin": "Админ",
   "fieldRoleValExpert": "Эксперт",
+  "fieldRoleValStudent": "Студент",
+  "fieldRoleValMentor": "Ментор",
   "fieldRoleValUser": "Пользователь",
   "submit": "Зарегистрироваться"
 }

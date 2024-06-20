@@ -50,8 +50,10 @@ builder.Services.AddMinio(configureClient => configureClient
     .WithCredentials(builder.Configuration["MinIoOptions:AccessKey"], builder.Configuration["MinIoOptions:SecretKey"])
     .Build());
 builder.Services.AddScoped<IMinIoFileService, MinIoFileService>();
-builder.Services.AddSingleton<IDefectDictionaryService, DefectDictionaryService>();
+
+// Hosted services
 builder.Services.AddHostedService<BackgroundTaskStatusService>();
+builder.Services.AddHostedService<BackgroundAiTaskStatusService>();
 
 // Content load
 builder.Services.Configure<ContentLoadOptions>(builder.Configuration.GetSection("ContentLoadOptions"));

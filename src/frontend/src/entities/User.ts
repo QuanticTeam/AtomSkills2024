@@ -26,7 +26,7 @@ export const getUserSignUpSchema = (t: TFunction) =>
       .max(56, t('fieldLoginErrLong'))
       .regex(/^[A-Za-z0-9]+$/, t('fieldLoginErrSym'))
       .refine(checkLogin, t('fieldLoginErrTaken')),
-    fullname: z.string().trim().min(1, t('fieldFullnmeErrRequired')),
+    // fullname: z.string().trim().min(1, t('fieldFullnmeErrRequired')),
     password: z
       .string()
       .trim()

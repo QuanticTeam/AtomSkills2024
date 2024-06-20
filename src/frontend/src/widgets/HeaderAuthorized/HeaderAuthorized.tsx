@@ -11,7 +11,7 @@ import { Logo } from '~/shared/ui'
 
 export function HeaderAuthorized() {
   const { t } = useTranslation(HeaderAuthorized.name)
-  const { logout } = useContext(AuthContext)
+  const { logout, authInfo } = useContext(AuthContext)
 
   return (
     <Layout.Header className="sticky top-0 p-0 h-20">
@@ -24,7 +24,7 @@ export function HeaderAuthorized() {
 
         <div className="flex h-full grow justify-between items-center px-10">
           <Input.Search
-            className="w-96"
+            className="w-96 invisible"
             placeholder={faker.lorem.sentence(5)}
           />
 
@@ -38,6 +38,10 @@ export function HeaderAuthorized() {
               menu={{
                 items: [
                   {
+                    label: authInfo?.tokenPayload.role,
+                    key: '0',
+                  },
+                  {
                     label: (
                       <Button
                         type="link"
@@ -46,7 +50,7 @@ export function HeaderAuthorized() {
                         {t('logout')}
                       </Button>
                     ),
-                    key: '0',
+                    key: '1',
                   },
                 ],
               }}

@@ -22,6 +22,11 @@ public class TasksRepository : ITasksRepository
             .Include(x => x.LessonRecords)
             .Include(x => x.TaskStatusRecords)
             .ThenInclude(taskStatusRecord => taskStatusRecord.UserRecord)
+            .Include(taskRecord => taskRecord.TaskStatusRecords).ThenInclude(taskStatusRecord => taskStatusRecord.Fotos)
+            .Include(taskRecord => taskRecord.TaskStatusRecords)
+            .ThenInclude(taskStatusRecord => taskStatusRecord.RecommendationRecords)
+            .Include(taskRecord => taskRecord.TaskStatusRecords)
+            .ThenInclude(taskStatusRecord => taskStatusRecord.DefectRecords)
             .Where(t => t.Code.Equals(taskCode))
             .AsNoTracking()
             .ToListAsync();
@@ -47,15 +52,36 @@ public class TasksRepository : ITasksRepository
                     Supplements = l.SupplementKeys.ToList(),
                 }).ToList(),
                 TaskStatuses = task.TaskStatusRecords.Select(t => new TaskStatus
-                {
-                    Id = t.Id,
-                    Status = t.Status,
-                    AutomationSystemStatus = t.AutomationSystemStatus,
-                    StartedAt = t.StartedAt,
-                    FinishedAt = t.FinishedAt,
-                    Mark = t.Mark,
-                    UserKey = t.UserRecord?.Key.ToString() ?? string.Empty,
-                }).ToList()
+                    {
+                        Id = t.Id,
+                        Status = t.Status,
+                        AutomationSystemStatus = t.AutomationSystemStatus,
+                        StartedAt = t.StartedAt,
+                        FinishedAt = t.FinishedAt,
+                        Mark = t.Mark,
+                        Fotos = t.Fotos.Select(f => new Foto
+                        {
+                            Key = f.FotoKey,
+                            Comment = f.Comment,
+                        }).ToList(),
+                        UserKey = t.UserRecord?.Key.ToString() ?? string.Empty,
+                        TaskCode = t.TaskRecord!.Code,
+                        Recommendations = t.RecommendationRecords.Select(r => new Recommendation
+                        {
+                            Text = r.Text,
+                            FileKeys = r.FileKeys,
+                        }).ToList(),
+                        Defects = t.DefectRecords.Select(d => new Defect
+                        {
+                            FileKey = d.FileKey,
+                            Codes = d.Codes,
+                            Comment = d.Comment,
+                            X1 = d.X1,
+                            Y1 = d.Y1,
+                            X2 = d.X2,
+                            Y2 = d.Y2,
+                        }).ToList(),
+                    }).ToList()
             };
     }
     
@@ -63,7 +89,13 @@ public class TasksRepository : ITasksRepository
     {
         var taskRecords = await _dbContext.Tasks
             .Include(x => x.LessonRecords)
-            .Include(x => x.TaskStatusRecords).ThenInclude(taskStatusRecord => taskStatusRecord.UserRecord)
+            .Include(x => x.TaskStatusRecords)
+            .ThenInclude(taskStatusRecord => taskStatusRecord.UserRecord)
+            .Include(taskRecord => taskRecord.TaskStatusRecords).ThenInclude(taskStatusRecord => taskStatusRecord.Fotos)
+            .Include(taskRecord => taskRecord.TaskStatusRecords)
+            .ThenInclude(taskStatusRecord => taskStatusRecord.RecommendationRecords)
+            .Include(taskRecord => taskRecord.TaskStatusRecords)
+            .ThenInclude(taskStatusRecord => taskStatusRecord.DefectRecords)
             .AsNoTracking()
             .ToListAsync();
 
@@ -85,15 +117,36 @@ public class TasksRepository : ITasksRepository
                     Supplements = l.SupplementKeys.ToList(),
                 }).ToList(),
                 TaskStatuses = x.TaskStatusRecords.Select(t => new TaskStatus
-                {
-                    Id = t.Id,
-                    Status = t.Status,
-                    AutomationSystemStatus = t.AutomationSystemStatus,
-                    StartedAt = t.StartedAt,
-                    FinishedAt = t.FinishedAt,
-                    Mark = t.Mark,
-                    UserKey = t.UserRecord?.Key.ToString() ?? string.Empty,
-                }).ToList()
+                    {
+                        Id = t.Id,
+                        Status = t.Status,
+                        AutomationSystemStatus = t.AutomationSystemStatus,
+                        StartedAt = t.StartedAt,
+                        FinishedAt = t.FinishedAt,
+                        Mark = t.Mark,
+                        Fotos = t.Fotos.Select(f => new Foto
+                        {
+                            Key = f.FotoKey,
+                            Comment = f.Comment,
+                        }).ToList(),
+                        UserKey = t.UserRecord?.Key.ToString() ?? string.Empty,
+                        TaskCode = t.TaskRecord!.Code,
+                        Recommendations = t.RecommendationRecords.Select(r => new Recommendation
+                        {
+                            Text = r.Text,
+                            FileKeys = r.FileKeys,
+                        }).ToList(),
+                        Defects = t.DefectRecords.Select(d => new Defect
+                        {
+                            FileKey = d.FileKey,
+                            Codes = d.Codes,
+                            Comment = d.Comment,
+                            X1 = d.X1,
+                            Y1 = d.Y1,
+                            X2 = d.X2,
+                            Y2 = d.Y2,
+                        }).ToList(),
+                    }).ToList()
             }).ToList();
         
         return tasks;

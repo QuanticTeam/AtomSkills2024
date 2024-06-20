@@ -59,6 +59,7 @@ public class TasksService : ITasksService
     {
         var users = await _usersRepository.Get();
         var user = users.FirstOrDefault(x => x.Key.ToString().Equals(userKey));
+
         var tasks = await _tasksRepository.Get();
         var task = tasks.FirstOrDefault(x => x.Code.Equals(taskCode));
 
@@ -67,7 +68,7 @@ public class TasksService : ITasksService
 
         var taskStatuses = await _taskStatusesRepository.Get();
         var lastStatus = taskStatuses
-            .Where(x => x.TaskCode.Equals(taskCode))
+            .Where(x => x.TaskCode.Equals(taskCode) && x.UserKey.Equals(userKey))
             .MaxBy(x => x.StartedAt);
 
         if (lastStatus != null && lastStatus.Status != TaskStatusType.Recommended.ToString())

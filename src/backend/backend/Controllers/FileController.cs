@@ -40,7 +40,7 @@ public class FileController : ControllerBase
     [HttpGet("Download/{fileName}")]
     public async Task<FileStreamResult> Download(string fileName)
     {
-        (Stream stream, var originalFileName) = await _minIoFileService.Download(fileName);
+        (Stream stream, var originalFileName, _) = await _minIoFileService.Download(fileName);
         return File(stream, MediaTypeNames.Application.Octet, originalFileName);
     }
     
@@ -56,7 +56,7 @@ public class FileController : ControllerBase
             },
             {
                 OriginalFileNameKey, 
-                request.File.FileName
+                request.File.FileName.Escape()
             },
         }; 
         

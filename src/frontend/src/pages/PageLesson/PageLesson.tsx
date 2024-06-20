@@ -29,7 +29,9 @@ export function PageLesson() {
       title={
         <>
           <div className="flex justify-between items-center mb-6">
-            <Typography.Title className="!mb-0">Учебный материал</Typography.Title>
+            <Typography.Title className="!mb-0">
+              Учебный материал (код {data?.code})
+            </Typography.Title>
             <div>
               <Space>
                 {data?.traits.map(x => (

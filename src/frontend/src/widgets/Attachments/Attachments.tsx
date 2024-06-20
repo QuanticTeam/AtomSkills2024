@@ -69,14 +69,14 @@ export function Attachments({ fileKeys }: AttachmentsProps) {
             size="small"
             style={{ width: 90 }}
           >
-            Search
+            Поиск
           </Button>
           <Button
             onClick={() => clearFilters && handleReset(clearFilters, confirm)}
             size="small"
             style={{ width: 90 }}
           >
-            Reset
+            Сбросить
           </Button>
         </Space>
       </div>
@@ -197,7 +197,7 @@ export function Attachments({ fileKeys }: AttachmentsProps) {
       onChange={onTableChange}
       scroll={{
         x: 0,
-        y: 500,
+        y: 600,
       }}
     />
   )

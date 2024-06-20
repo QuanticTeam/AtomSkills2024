@@ -88,7 +88,7 @@ export function FormSignIn({ children, onSubmit }: FormSignInProps) {
         )}
       />
 
-      <Controller
+      {/* <Controller
         name="remember"
         control={control}
         render={({ field }) => (
@@ -108,7 +108,7 @@ export function FormSignIn({ children, onSubmit }: FormSignInProps) {
             </div>
           </Form.Item>
         )}
-      />
+      /> */}
 
       <Form.Item>
         <Space

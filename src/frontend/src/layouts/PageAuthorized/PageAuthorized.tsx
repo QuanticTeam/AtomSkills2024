@@ -53,21 +53,17 @@ export function PageAuthorized({
 
   useEffect(() => {
     if (location.pathname.startsWith('/something')) setSelectedSidebarMenuItems(['/something'])
-    if (location.pathname.startsWith('/lorem')) setSelectedSidebarMenuItems(['/lorem'])
+    // if (location.pathname.startsWith('/lorem')) setSelectedSidebarMenuItems(['/lorem'])
   }, [location.pathname])
 
   const sidebarMenuItems: MenuItem[] = [
     getItem(
-      <Typography.Link onClick={() => navigate(ROUTE_PATH_LESSONS)}>
-        {t('sideLinkLessons')}
-      </Typography.Link>,
+      <Typography.Link onClick={() => navigate(ROUTE_PATH_LESSONS)}>Обучение</Typography.Link>,
       ROUTE_PATH_LESSONS,
       <TableOutlined className="!text-lg" />,
     ),
     getItem(
-      <Typography.Link onClick={() => navigate(ROUTE_PATH_LOREM)}>
-        {t('sideLinkLorem')}
-      </Typography.Link>,
+      <Typography.Link onClick={() => navigate(ROUTE_PATH_LOREM)}>Рейтинг</Typography.Link>,
       ROUTE_PATH_LOREM,
       <AlignLeftOutlined className="!text-lg" />,
     ),

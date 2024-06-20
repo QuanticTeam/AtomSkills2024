@@ -3,6 +3,7 @@ using backend.Core.Abstractions;
 using backend.Core.JsonModels;
 using backend.Core.Models;
 using backend.Core.Options;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Options;
 using Minio;
 using Minio.DataModel.Args;
@@ -96,7 +97,7 @@ public class MinIoFileService : IMinIoFileService
         }
     }
     
-    public async Task<(MemoryStream, string)> Download(string fileName)
+    public async Task<(MemoryStream, string, string)> Download(string fileName)
     {
         try
         {
@@ -120,7 +121,7 @@ public class MinIoFileService : IMinIoFileService
             
             _ = await minio.GetObjectAsync(getObjectArgs);
 
-            return (downloadStream, stat.MetaData[OriginalFileNameKey]);
+            return (downloadStream, stat.MetaData[OriginalFileNameKey].Unescape(), fileName);
         }
         catch (Exception ex)
         {
@@ -162,8 +163,7 @@ public class MinIoFileService : IMinIoFileService
 
         await using Stream stream = File.OpenRead(supplement.File);
         var fileInfo = new FileInfo(supplement.File);
-        var fileExtension = fileInfo.Name.Split('.').Last();
-        var mimeType = _mappings[fileExtension];
+        new FileExtensionContentTypeProvider().TryGetContentType(fileInfo.Name, out var mimeType);
         var fileName = GetMinIoFileName(fileInfo.Name);
         
         var metaData = new Dictionary<string, string>
@@ -214,11 +214,4 @@ public class MinIoFileService : IMinIoFileService
         var fileExtension = originalFileName.Split('.').Last();
         return $"{Guid.NewGuid().ToString()}.{fileExtension}";
     }
-
-    private static IDictionary<string, string> _mappings = new Dictionary<string, string>()
-    {
-        { "jpg", "image/jpeg" },
-        { "jpeg", "image/jpeg" },
-        {"png", "image/png"},
-    };
 }

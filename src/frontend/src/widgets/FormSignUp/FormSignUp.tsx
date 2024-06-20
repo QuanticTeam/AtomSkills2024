@@ -26,7 +26,7 @@ export function FormSignUp({ children, onSubmit, roles }: FormSignUpProps) {
   } = useForm<UserSignUpDto>({
     mode: 'onBlur',
     values: {
-      fullname: '',
+      // fullname: '',
       login: '',
       password: '',
       role: 0, // TODO empty by default
@@ -60,7 +60,7 @@ export function FormSignUp({ children, onSubmit, roles }: FormSignUpProps) {
         }
       }}
     >
-      <Controller
+      {/* <Controller
         name="fullname"
         control={control}
         render={({ field }) => (
@@ -77,14 +77,14 @@ export function FormSignUp({ children, onSubmit, roles }: FormSignUpProps) {
             />
           </Form.Item>
         )}
-      />
+      /> */}
       <Controller
         name="role"
         control={control}
         render={({ field }) => (
           <Form.Item
             required
-            label={t('role')}
+            label={t('fieldRoleLabel')}
             help={errors.role?.message}
             validateStatus={errors.role?.message && 'error'}
           >

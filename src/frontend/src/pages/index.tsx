@@ -13,6 +13,7 @@ import {
   ROUTE_PATH_LESSON,
   ROUTE_PATH_LESSON_TASK,
   ROUTE_PATH_LESSON_TASK_OF_USER,
+  ROUTE_PATH_LOREM_TASK,
 } from '~/shared/routing'
 
 export const routes: RouteObject[] = [
@@ -81,12 +82,16 @@ export const routes: RouteObject[] = [
       },
       {
         path: ROUTE_PATH_LOREM,
-        Component: lazy(() => import('./PageLorem')),
-        handle: {
-          crumb: () => ({
-            title: 'Lorem',
-          }),
-        },
+        children: [
+          {
+            index: true,
+            Component: lazy(() => import('./PageRanking')),
+          },
+          {
+            path: ROUTE_PATH_LOREM_TASK,
+            Component: lazy(() => import('./PageRankingTask')),
+          },
+        ],
       },
     ],
   },

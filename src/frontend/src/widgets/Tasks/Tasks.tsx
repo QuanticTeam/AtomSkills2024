@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { Lesson, LessonsApi, Task, TasksApi } from '~/entities'
 import { SortAndFilterRequest, getSortAndFilterRequestPayload, FilterType } from '~/shared/api'
-import { ROUTE_PATH_LESSONS } from '~/shared/routing'
+import { ROUTE_PATH_LESSONS, ROUTE_PATH_LOREM } from '~/shared/routing'
 import { Markdown } from '~/shared/ui'
 
 export interface TasksProps {
@@ -73,14 +73,14 @@ export function Tasks({ tasks, lessonCode }: TasksProps) {
             size="small"
             style={{ width: 90 }}
           >
-            Search
+            Поиск
           </Button>
           <Button
             onClick={() => clearFilters && handleReset(clearFilters, confirm)}
             size="small"
             style={{ width: 90 }}
           >
-            Reset
+            Сбросить
           </Button>
         </Space>
       </div>
@@ -176,6 +176,17 @@ export function Tasks({ tasks, lessonCode }: TasksProps) {
         return JSON.stringify(value)
       },
     },
+    {
+      title: 'Рейтинг',
+      key: 'rank',
+      render(_, record) {
+        return (
+          <Typography.Link>
+            <Link to={ROUTE_PATH_LOREM + '/task/' + record.code}>Перейти</Link>
+          </Typography.Link>
+        )
+      },
+    },
   ]
 
   const [sortAndFilterPayload, setSortAndFilterPayload] = useState<SortAndFilterRequest>(
@@ -235,7 +246,7 @@ export function Tasks({ tasks, lessonCode }: TasksProps) {
       onChange={onTableChange}
       scroll={{
         x: 0,
-        y: 500,
+        y: 600,
       }}
     />
   )

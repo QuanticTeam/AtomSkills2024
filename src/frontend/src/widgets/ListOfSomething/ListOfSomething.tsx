@@ -66,7 +66,7 @@ export function ListOfSomething({ parentRef }: ListOfSomethingProps) {
       pagination={false}
       scroll={{
         x: 0,
-        y: 500,
+        y: 600,
       }}
     />
   )

@@ -140,15 +140,39 @@ public class OMController : ControllerBase
     [Authorize]
     [HttpPost("TaskStatuses")]
     public async Task<ActionResult<TaskStatusesResponse>> GetTaskStatuses(
+        [FromServices] IUsersRepository usersRepository,
         ITaskStatusesRepository taskStatusesRepository,
         TaskStatusesRequest request)
     {
+        var userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type.Equals("userId"))?.Value ?? string.Empty;
+        
+        var users = await usersRepository.Get();
+
+        var getUserFullName = (string userKey) => {
+            var user = users.FirstOrDefault(u => u.Key.ToString().Equals(userKey));
+
+            if (user == null)
+                return string.Empty;
+
+            var fullName = $"{user.FirstName} {user.LastName}";
+            return string.IsNullOrEmpty(fullName) ? user!.Login : fullName;
+        };
+
         var items = await taskStatusesRepository.Get();
+
+        if (HttpContext.User.IsInRole("Student"))
+            items = items.Where(x => x.UserKey.Equals(userId)).ToList();
+        
         return Ok(new TaskStatusesResponse
         {
-            Items = items.ToList(),
+            Items = items
+                .Where(x => x.TaskCode.Equals(request.Code))
+                .Select(ts => new ExtendedTaskStatus(ts, getUserFullName(ts.UserKey))
+            ).ToList(),
         });
     }
+
+
 
 
 }

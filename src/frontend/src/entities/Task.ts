@@ -61,9 +61,9 @@ export const TasksApi = {
     return data
   },
   async getTaskProgress(code: Task['code']) {
-    const { data } = await apiClient.post<TaskProgress>('/Status/GetTaskStatuses', { code })
+    const { data } = await apiClient.post<{ items: TaskProgress[] }>('/OM/TaskStatuses', { code })
 
-    return data
+    return data.items
   },
 }
 

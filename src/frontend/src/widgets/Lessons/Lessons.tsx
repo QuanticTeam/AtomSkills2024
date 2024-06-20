@@ -77,14 +77,14 @@ export function Lessons({ parentRef }: LessonsProps) {
             size="small"
             style={{ width: 90 }}
           >
-            Search
+            Поиск
           </Button>
           <Button
             onClick={() => clearFilters && handleReset(clearFilters, confirm)}
             size="small"
             style={{ width: 90 }}
           >
-            Reset
+            Сбросить
           </Button>
         </Space>
       </div>
@@ -250,18 +250,18 @@ export function Lessons({ parentRef }: LessonsProps) {
       pagination={false}
       scroll={{
         x: 0,
-        y: 500,
+        y: 600,
       }}
       onChange={onTableChange}
       expandable={{
         expandedRowRender: lesson => (
-          <>
+          <div className="pl-8">
             <Typography.Text strong>Задания</Typography.Text>
             <Tasks
               lessonCode={lesson.code}
               tasks={lesson.tasks as any}
             />
-          </>
+          </div>
         ),
       }}
     />

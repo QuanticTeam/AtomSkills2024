@@ -13,7 +13,13 @@ Check backend:
 ### PGAdmin
 http://localhost:15432/login
 
-`admin@pgadmin.com`
+`admin@pgadmin.com` / `password`
+
+### Logins:
+
+  mentor | mentor
+  student1 | student1
+  student2 | student2
 
 ### MINIO
 http://localhost:9001/login

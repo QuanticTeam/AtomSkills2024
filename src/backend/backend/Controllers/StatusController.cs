@@ -27,6 +27,11 @@ public class StatusController : ControllerBase
         
         var userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type.Equals("userId"))?.Value ?? string.Empty;
 
+        var check = await tasksService.GetTaskStatuses(request.Code, userId);
+
+        if (check.Any(x => x.Status.Equals(TaskStatusType.InWork.ToString())))
+            return StatusCode(StatusCodes.Status200OK, "Already exist");
+
         var result = await tasksService.TakeTaskInWork(request.Code, userId);
 
         return StatusCode(result == 0 ? StatusCodes.Status404NotFound : StatusCodes.Status200OK, result);
@@ -50,8 +55,13 @@ public class StatusController : ControllerBase
             {
                 Key = x.FileKey,
                 Comment = x.Description,
-            })
-            .ToList();
+                TaskStatusRecordId = request.TaskStatusId,
+            }).ToList();
+        
+        var check = await tasksService.GetTaskStatus(request.TaskStatusId);
+
+        if (check.Status.Equals(TaskStatusType.SendToCheck.ToString()))
+            return StatusCode(StatusCodes.Status200OK, "Already send");
 
         var result = await tasksService.SendTaskToCheck(request.TaskStatusId, fotos);
 
@@ -72,6 +82,11 @@ public class StatusController : ControllerBase
                 Message = "Incorrect user, must be mentor",
             });
         }
+        
+        var check = await tasksService.GetTaskStatus(request.TaskId);
+
+        if (check.Status.Equals(TaskStatusType.Verified.ToString()))
+            return StatusCode(StatusCodes.Status200OK, "Already verified");
 
         var defects = request.Defects.Select(x => new Defect
         {
@@ -104,6 +119,11 @@ public class StatusController : ControllerBase
                 Message = "Incorrect user, must be mentor",
             });
         }
+        
+        var check = await tasksService.GetTaskStatus(request.TaskId);
+
+        if (check.Status.Equals(TaskStatusType.Recommended.ToString()))
+            return StatusCode(StatusCodes.Status200OK, "Already recommended");
 
         var result = await tasksService.RecommendedRework(request.TaskId);
 
@@ -132,5 +152,15 @@ public class StatusController : ControllerBase
         var taskStatuses = await tasksService.GetTaskStatus(request.Id);
 
         return StatusCode(StatusCodes.Status200OK, taskStatuses);
+    }
+    
+    [Authorize]
+    [HttpGet("GetDictionaryDefects")]
+    public async Task<ActionResult<Dictionary<string, string>>> GetDictionaryDefects(
+        [FromServices] IContentLoadService contentLoadService)
+    {
+        var defects = contentLoadService.Dictionary;
+
+        return StatusCode(StatusCodes.Status200OK, defects);
     }
 }
