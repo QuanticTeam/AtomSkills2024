@@ -10,17 +10,21 @@ using Microsoft.IdentityModel.Tokens;
 using Task = System.Threading.Tasks.Task;
 using TaskStatus = backend.Core.Models.TaskStatus;
 using SkiaSharp;
+using Microsoft.AspNetCore.StaticFiles;
+using backend.Application.Extensions;
 
 namespace backend.Application.Services;
 
 public class BackgroundAiTaskStatusService : BackgroundService
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly IDefectsRepository _defectsRepository;
     private readonly AiOptions _aiOptions;
     private readonly IAIClient _aiClient;
 
     public BackgroundAiTaskStatusService(
         IServiceProvider serviceProvider,
+        IDefectsRepository defectsRepository,
         IOptions<AiOptions> options,
         IAIClient aiClient)
     {
@@ -30,6 +34,7 @@ public class BackgroundAiTaskStatusService : BackgroundService
         }
 
         _serviceProvider = serviceProvider;
+        _defectsRepository = defectsRepository;
         _aiOptions = options.Value;
         _aiClient = aiClient;
 
@@ -47,12 +52,23 @@ public class BackgroundAiTaskStatusService : BackgroundService
         while (!cancellationToken.IsCancellationRequested) 
         { 
             await SendToAiAsync(cancellationToken);
-            await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken).ConfigureAwait(false);
+            await Task.Delay(TimeSpan.FromSeconds(15), cancellationToken).ConfigureAwait(false);
         } 
     }
 
     private async Task SendToAiAsync(CancellationToken cancellationToken)
     {
+        Console.WriteLine("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
+        Console.WriteLine("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
+        Console.WriteLine("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
+        Console.WriteLine("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
+        Console.WriteLine("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
+        Console.WriteLine("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
+        Console.WriteLine("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
+        Console.WriteLine("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
+        Console.WriteLine("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
+
+
         using var scope = _serviceProvider.CreateScope();
 
         var taskStatusesRepository = scope.ServiceProvider.GetService<ITaskStatusesRepository>()!;
@@ -68,19 +84,62 @@ public class BackgroundAiTaskStatusService : BackgroundService
 
         var defectCounts = 0;
 
+        Console.WriteLine("PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP");
+        Console.WriteLine("PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP");
+        Console.WriteLine("PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP");
+        Console.WriteLine("PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP");
+        Console.WriteLine($"{status.Id} -------------- {status.Fotos.Count()}");
+
+
         foreach (var foto in status.Fotos)
         {
             try
             {
+                Console.WriteLine("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
+                Console.WriteLine("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
+
                 var (file, fileName, fileKey) = await minIoFileService.Download(foto.Key);
 
-                var jsonDefects = await _aiClient.CheckImage(
-                    file, fileName, cancellationToken
+                // var jsonDefects = await _aiClient.CheckImage(
+                //     file, fileName, cancellationToken
+                // );
+
+                Console.WriteLine("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
+                Console.WriteLine("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
+
+
+                var jsonDefects = new List<JsonDefect> {
+                    new JsonDefect
+                    {
+                        Area = new Area { X1 = 50, X2 = 80, Y1 = 500, Y2 = 800 },
+                        Features = new List<string> { "DT Defect 1", "DT Defect 2" }.ToArray(),
+                    }
+                };
+
+                Console.WriteLine("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
+                Console.WriteLine("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
+
+
+                var adjusted = AdjustImage(file, jsonDefects);
+                new FileExtensionContentTypeProvider().TryGetContentType(
+                    fileName, out var mimeType);
+                var newFileKey = fileName.GetMinIoFileName();
+
+                var fileModel = new MinIoFileModel(
+                    mimeType ?? string.Empty,
+                    newFileKey,
+                    adjusted,
+                    new Dictionary<string, string> {}
                 );
+                await minIoFileService.Upload(fileModel);
+
+                Console.WriteLine("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
+                Console.WriteLine("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
+
 
                 var defects = jsonDefects.Select(x => new Defect
                 {
-                    FileKey = fileKey,
+                    FileKey = newFileKey,
                     Codes = x.Features,
                     Comment = string.Empty,
                     X1 = x.Area.X1,
@@ -92,16 +151,33 @@ public class BackgroundAiTaskStatusService : BackgroundService
 
                 defectCounts += defects.Count;
 
-                // db
+                Console.WriteLine("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
+                Console.WriteLine("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
+
                 foreach (var defect in defects)
                 {
                     await defectsRepository!.Create(defect);
                 }
 
-                AdjustImage(file, jsonDefects);
+                Console.WriteLine("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
+                Console.WriteLine("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
+
             }
             catch (Exception e)
             {
+                Console.WriteLine("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+                Console.WriteLine("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+                Console.WriteLine("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+                Console.WriteLine("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+                Console.WriteLine("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+                Console.WriteLine("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+                Console.WriteLine("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+                Console.WriteLine("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+                Console.WriteLine("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+                Console.WriteLine("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+                Console.WriteLine("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+                Console.WriteLine("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+                Console.WriteLine(e.Message);
                 var errorAiStatus = new TaskStatus
                 {
                     Id = status.Id,
@@ -137,19 +213,26 @@ public class BackgroundAiTaskStatusService : BackgroundService
 
     private MemoryStream AdjustImage(MemoryStream msImage, List<JsonDefect> defects)
     {
+        Console.WriteLine("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
+
         foreach (var defect in defects)
         {
             var ((x1, y1, x2, y2), _) = defect;
 
-            using var original = SKBitmap.Decode(msImage);
-            using var image = SKImage.FromBitmap(original);
+            // using var original = SKBitmap.Decode(msImage);
+            using var image = SKImage.FromEncodedData(msImage);
+        Console.WriteLine("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
+
             using var surface = SKSurface.Create(new SKImageInfo(image.Width, image.Height));
             {
+        Console.WriteLine("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
                 var canvas = surface.Canvas;
 
+        Console.WriteLine("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
                 // Копирование оригинального изображения на холст
                 canvas.DrawImage(image, 0, 0);
 
+        Console.WriteLine("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
                 // Определение параметров кисти
                 var paint = new SKPaint
                 {
@@ -160,6 +243,16 @@ public class BackgroundAiTaskStatusService : BackgroundService
 
                 // Рисование прямоугольника
                 canvas.DrawRect(new SKRect(x1, y1, x2, y2), paint);
+
+                // SkPaint paint;
+                // paint.setStyle(SkPaint::kFill_Style);
+                // paint.setAntiAlias(true);
+                // paint.setStrokeWidth(4);
+                // paint.setColor(0xff4285F4);
+
+                // SkRect rect = SkRect::MakeXYWH(10, 10, 100, 160);
+                // canvas->drawRect(rect, paint);
+
 
                 // Сохранение изображения
                 surface.Snapshot().Encode(SKEncodedImageFormat.Png, 100).SaveTo(msImage);

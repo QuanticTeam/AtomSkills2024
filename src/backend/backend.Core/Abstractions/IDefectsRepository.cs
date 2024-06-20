@@ -6,4 +6,5 @@ public interface IDefectsRepository
 {
     Task<List<Defect>> Get();
     Task<int> Create(Defect defect);
+    Task<int> Update(int id, string fileKey);
 }

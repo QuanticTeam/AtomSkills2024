@@ -1,10 +1,17 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 WORKDIR /App
 
-# Copy everything
-COPY . ./
+COPY backend.sln ./
+COPY backend.Application/backend.Application.csproj ./backend.Application/
+COPY backend.Core/backend.Core.csproj ./backend.Core/
+COPY backend.DataAccess/backend.DataAccess.csproj ./backend.DataAccess/
+COPY backend/backend.csproj ./backend/
+
 # Restore as distinct layers
 RUN dotnet restore
+
+# Copy everything
+COPY . ./
 # Build and publish a release
 RUN dotnet publish -c Release -o out
 

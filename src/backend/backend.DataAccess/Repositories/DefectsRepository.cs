@@ -59,4 +59,12 @@ public class DefectsRepository : IDefectsRepository
         await _dbContext.Defects.AddAsync(defectRecord);
         return await _dbContext.SaveChangesAsync();
     }
+
+    public async Task<int> Update(int id, string fileKey)
+    {
+        return await _dbContext.Defects
+            .Where(x => x.Id.Equals(id))
+            .ExecuteUpdateAsync(x => x
+                .SetProperty(b => b.FileKey, b => fileKey));
+    }
 }

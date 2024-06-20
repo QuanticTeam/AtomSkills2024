@@ -11,4 +11,10 @@ public static class StringExtension
     {
         return Uri.EscapeDataString(input);
     }
+
+    public static string GetMinIoFileName(this string originalFileName)
+    {
+        var fileExtension = originalFileName.Split('.').Last();
+        return $"{Guid.NewGuid().ToString()}.{fileExtension}";
+    }
 }
