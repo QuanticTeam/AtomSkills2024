@@ -18,15 +18,11 @@ namespace backend.Application.Services;
 public class BackgroundAiTaskStatusService : BackgroundService
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly IDefectsRepository _defectsRepository;
     private readonly AiOptions _aiOptions;
-    private readonly IAIClient _aiClient;
 
     public BackgroundAiTaskStatusService(
         IServiceProvider serviceProvider,
-        IDefectsRepository defectsRepository,
-        IOptions<AiOptions> options,
-        IAIClient aiClient)
+        IOptions<AiOptions> options)
     {
         if (options.Value.AS_2024_ENV_AI_OFF)
         {
@@ -34,9 +30,7 @@ public class BackgroundAiTaskStatusService : BackgroundService
         }
 
         _serviceProvider = serviceProvider;
-        _defectsRepository = defectsRepository;
         _aiOptions = options.Value;
-        _aiClient = aiClient;
 
         if (_aiOptions.AS_2024_ENV_HOST.IsNullOrEmpty())
             throw new InvalidConfigurationException($"Опция '{nameof(_aiOptions.AS_2024_ENV_HOST)}' должна быть добавлена в конфиг");
@@ -215,24 +209,26 @@ public class BackgroundAiTaskStatusService : BackgroundService
     {
         Console.WriteLine("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
 
+        var returnMemory = new MemoryStream();
+
         foreach (var defect in defects)
         {
             var ((x1, y1, x2, y2), _) = defect;
 
-            // using var original = SKBitmap.Decode(msImage);
-            using var image = SKImage.FromEncodedData(msImage);
-        Console.WriteLine("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
+            using var original = SKBitmap.Decode(msImage);
+            using var image = SKImage.FromBitmap(original);
+            Console.WriteLine("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
 
             using var surface = SKSurface.Create(new SKImageInfo(image.Width, image.Height));
             {
-        Console.WriteLine("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
+                Console.WriteLine("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
                 var canvas = surface.Canvas;
 
-        Console.WriteLine("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
+                Console.WriteLine("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
                 // Копирование оригинального изображения на холст
                 canvas.DrawImage(image, 0, 0);
 
-        Console.WriteLine("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
+                Console.WriteLine("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
                 // Определение параметров кисти
                 var paint = new SKPaint
                 {
@@ -243,22 +239,12 @@ public class BackgroundAiTaskStatusService : BackgroundService
 
                 // Рисование прямоугольника
                 canvas.DrawRect(new SKRect(x1, y1, x2, y2), paint);
-
-                // SkPaint paint;
-                // paint.setStyle(SkPaint::kFill_Style);
-                // paint.setAntiAlias(true);
-                // paint.setStrokeWidth(4);
-                // paint.setColor(0xff4285F4);
-
-                // SkRect rect = SkRect::MakeXYWH(10, 10, 100, 160);
-                // canvas->drawRect(rect, paint);
-
-
+                
                 // Сохранение изображения
-                surface.Snapshot().Encode(SKEncodedImageFormat.Png, 100).SaveTo(msImage);
+                surface.Snapshot().Encode(SKEncodedImageFormat.Png, 100).SaveTo(returnMemory);
             }
         }
 
-        return msImage;
+        return returnMemory;
     }
 }
