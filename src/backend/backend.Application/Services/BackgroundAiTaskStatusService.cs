@@ -1,6 +1,4 @@
-using System.Net.Http.Headers;
 using backend.Core.Abstractions;
-using backend.Core.JsonModels;
 using backend.Core.Models;
 using backend.Core.Options;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,7 +6,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
 using Task = System.Threading.Tasks.Task;
 using TaskStatus = backend.Core.Models.TaskStatus;
 
@@ -18,8 +15,12 @@ public class BackgroundAiTaskStatusService : BackgroundService
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly AiOptions _aiOptions;
+    private readonly IAIClient _aiClient;
 
-    public BackgroundAiTaskStatusService(IServiceProvider serviceProvider, IOptions<AiOptions> options)
+    public BackgroundAiTaskStatusService(
+        IServiceProvider serviceProvider,
+        IOptions<AiOptions> options,
+        IAIClient aiClient)
     {
         if (options.Value.AS_2024_ENV_AI_OFF)
         {
@@ -28,6 +29,7 @@ public class BackgroundAiTaskStatusService : BackgroundService
 
         _serviceProvider = serviceProvider;
         _aiOptions = options.Value;
+        _aiClient = aiClient;
 
         if (_aiOptions.AS_2024_ENV_HOST.IsNullOrEmpty())
             throw new InvalidConfigurationException($"Опция '{nameof(_aiOptions.AS_2024_ENV_HOST)}' должна быть добавлена в конфиг");
@@ -67,25 +69,15 @@ public class BackgroundAiTaskStatusService : BackgroundService
         {
             try
             {
-                var file = await minIoFileService.Download(foto.Key);
-                
-                using var client = new HttpClient { BaseAddress = new Uri($"{_aiOptions.AS_2024_ENV_HOST}:{_aiOptions.AS_2024_ENV_PORT}") };
-                
-                using var form = new MultipartFormDataContent();
-                var fileContent = new StreamContent(file.Item1);
-                fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse("multipart/form-data");
-                form.Add(fileContent, "file", file.Item2);
-        
-                //response
-                var response = await client.PostAsync("/check", form, cancellationToken);
-                response.EnsureSuccessStatusCode();
-                var result = await response.Content.ReadAsStringAsync(cancellationToken);
-            
-                // parsing
-                var jsonDefects = JsonConvert.DeserializeObject<List<JsonDefect>>(result);
+                var (file, fileName, fileKey) = await minIoFileService.Download(foto.Key);
+
+                var jsonDefects = await _aiClient.CheckImage(
+                    file, fileName, cancellationToken
+                );
+
                 var defects = jsonDefects.Select(x => new Defect
                 {
-                    FileKey = file.Item3,
+                    FileKey = fileKey,
                     Codes = x.Features,
                     Comment = string.Empty,
                     X1 = x.Area.X1,
@@ -96,13 +88,12 @@ public class BackgroundAiTaskStatusService : BackgroundService
                 }).ToList();
 
                 defectCounts += defects.Count;
-                
+
                 // db
                 foreach (var defect in defects)
                 {
                     await defectsRepository!.Create(defect);
                 }
-                
             }
             catch (Exception e)
             {

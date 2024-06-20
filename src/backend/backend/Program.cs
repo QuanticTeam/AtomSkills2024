@@ -6,7 +6,6 @@ using backend.DataAccess.Repositories;
 using backend.Extensions;
 using backend.Notifications;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
 using Minio;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -50,6 +49,7 @@ builder.Services.AddMinio(configureClient => configureClient
     .WithCredentials(builder.Configuration["MinIoOptions:AccessKey"], builder.Configuration["MinIoOptions:SecretKey"])
     .Build());
 builder.Services.AddScoped<IMinIoFileService, MinIoFileService>();
+builder.Services.AddScoped<IAIClient, AIClient>();
 
 // Hosted services
 builder.Services.AddHostedService<BackgroundTaskStatusService>();
