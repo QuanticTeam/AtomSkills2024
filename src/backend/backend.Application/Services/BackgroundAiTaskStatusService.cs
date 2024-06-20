@@ -1,4 +1,5 @@
 using backend.Core.Abstractions;
+using backend.Core.JsonModels;
 using backend.Core.Models;
 using backend.Core.Options;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,6 +9,7 @@ using Microsoft.IdentityModel.Protocols.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Task = System.Threading.Tasks.Task;
 using TaskStatus = backend.Core.Models.TaskStatus;
+using SkiaSharp;
 
 namespace backend.Application.Services;
 
@@ -52,6 +54,7 @@ public class BackgroundAiTaskStatusService : BackgroundService
     private async Task SendToAiAsync(CancellationToken cancellationToken)
     {
         using var scope = _serviceProvider.CreateScope();
+
         var taskStatusesRepository = scope.ServiceProvider.GetService<ITaskStatusesRepository>()!;
         var minIoFileService = scope.ServiceProvider.GetService<IMinIoFileService>()!;
         var defectsRepository = scope.ServiceProvider.GetService<IDefectsRepository>();
@@ -94,6 +97,8 @@ public class BackgroundAiTaskStatusService : BackgroundService
                 {
                     await defectsRepository!.Create(defect);
                 }
+
+                AdjustImage(file, jsonDefects);
             }
             catch (Exception e)
             {
@@ -128,5 +133,39 @@ public class BackgroundAiTaskStatusService : BackgroundService
         }; 
         
         await taskStatusesRepository.Update(updateTaskStatus);
+    }
+
+    private MemoryStream AdjustImage(MemoryStream msImage, List<JsonDefect> defects)
+    {
+        foreach (var defect in defects)
+        {
+            var ((x1, y1, x2, y2), _) = defect;
+
+            using var original = SKBitmap.Decode(msImage);
+            using var image = SKImage.FromBitmap(original);
+            using var surface = SKSurface.Create(new SKImageInfo(image.Width, image.Height));
+            {
+                var canvas = surface.Canvas;
+
+                // Копирование оригинального изображения на холст
+                canvas.DrawImage(image, 0, 0);
+
+                // Определение параметров кисти
+                var paint = new SKPaint
+                {
+                    Color = SKColors.Red,
+                    IsStroke = true,
+                    StrokeWidth = 2
+                };
+
+                // Рисование прямоугольника
+                canvas.DrawRect(new SKRect(x1, y1, x2, y2), paint);
+
+                // Сохранение изображения
+                surface.Snapshot().Encode(SKEncodedImageFormat.Png, 100).SaveTo(msImage);
+            }
+        }
+
+        return msImage;
     }
 }

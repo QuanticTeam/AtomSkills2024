@@ -40,7 +40,6 @@ builder.Services.AddScoped<ILessonsService, LessonsService>();
 builder.Services.AddScoped<ITasksService, TasksService>();
 builder.Services.AddSignalR();
 builder.Services.Configure<JwtTokenOptions>(builder.Configuration.GetSection("JwtOptions"));
-builder.Services.Configure<AiOptions>(builder.Configuration.GetSection("AiOptions"));
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.Configure<MinIoOptions>(builder.Configuration.GetSection("MinIoOptions"));
 builder.Services.AddMinio(builder.Configuration["MinIoOptions:AccessKey"], builder.Configuration["MinIoOptions:SecretKey"]);
@@ -49,7 +48,14 @@ builder.Services.AddMinio(configureClient => configureClient
     .WithCredentials(builder.Configuration["MinIoOptions:AccessKey"], builder.Configuration["MinIoOptions:SecretKey"])
     .Build());
 builder.Services.AddScoped<IMinIoFileService, MinIoFileService>();
-builder.Services.AddScoped<IAIClient, AIClient>();
+
+# region (Configure ML)
+builder.Services.Configure<AiOptions>(builder.Configuration.GetSection("AiOptions"));
+builder.Services.Configure<MLOptions>(builder.Configuration.GetSection("MLOptions"));
+
+
+builder.Services.AddSingleton<IAIClient, AIClient>();
+#endregion
 
 // Hosted services
 builder.Services.AddHostedService<BackgroundTaskStatusService>();

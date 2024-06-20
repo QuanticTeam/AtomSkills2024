@@ -85,6 +85,8 @@
       AiOptions__AS_2024_ENV_MAX_R: "100"
       AiOptions__AS_2024_ENV_MAX_FEATURES: "10"
       AiOptions__AS_2024_ENV_MAX_CODES: "10"
+      MLOptions__AS_2024_ENV_ML_OFF: "true"
+      MLOptions__AS_2024_ENV_URI: http://localhost/9999
     volumes:
       - ./https:/https:ro
       - ./lessons:/App/lessons:ro
@@ -108,6 +110,12 @@
     volumes:
       - ./https:/etc/nginx/certs/
       - ./lessons:/usr/share/nginx/assets
+
+  ml:
+    build: ./src/ml
+    container_name: ml
+    ports:
+      - 5006:8000
 
 volumes:
   postgres-data:
