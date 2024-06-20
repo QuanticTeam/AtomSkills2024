@@ -111,11 +111,17 @@
       - ./https:/etc/nginx/certs/
       - ./lessons:/usr/share/nginx/assets
 
-  ml:
-    build: ./src/ml
-    container_name: ml
+  # ml:
+  #   build: ./src/ml
+  #   container_name: ml
+  #   ports:
+  #     - 5006:8000
+
+  api:
+    build: ./API
+    container_name: api
     ports:
-      - 5006:8000
+      - 5007:8000
 
 volumes:
   postgres-data:
