@@ -52,22 +52,12 @@ public class BackgroundAiTaskStatusService : BackgroundService
 
     private async Task SendToAiAsync(CancellationToken cancellationToken)
     {
-        Console.WriteLine("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
-        Console.WriteLine("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
-        Console.WriteLine("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
-        Console.WriteLine("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
-        Console.WriteLine("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
-        Console.WriteLine("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
-        Console.WriteLine("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
-        Console.WriteLine("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
-        Console.WriteLine("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
-
-
         using var scope = _serviceProvider.CreateScope();
 
         var taskStatusesRepository = scope.ServiceProvider.GetService<ITaskStatusesRepository>()!;
         var minIoFileService = scope.ServiceProvider.GetService<IMinIoFileService>()!;
         var defectsRepository = scope.ServiceProvider.GetService<IDefectsRepository>();
+        var fotoRepository = scope.ServiceProvider.GetService<IFotosRepository>();
         var taskStatuses = await taskStatusesRepository.Get();
 
         var status = taskStatuses
@@ -78,29 +68,15 @@ public class BackgroundAiTaskStatusService : BackgroundService
 
         var defectCounts = 0;
 
-        Console.WriteLine("PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP");
-        Console.WriteLine("PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP");
-        Console.WriteLine("PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP");
-        Console.WriteLine("PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP");
-        Console.WriteLine($"{status.Id} -------------- {status.Fotos.Count()}");
-
-
         foreach (var foto in status.Fotos)
         {
             try
             {
-                Console.WriteLine("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
-                Console.WriteLine("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
-
                 var (file, fileName, fileKey) = await minIoFileService.Download(foto.Key);
 
                 // var jsonDefects = await _aiClient.CheckImage(
                 //     file, fileName, cancellationToken
                 // );
-
-                Console.WriteLine("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
-                Console.WriteLine("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
-
 
                 var jsonDefects = new List<JsonDefect> {
                     new JsonDefect
@@ -110,26 +86,22 @@ public class BackgroundAiTaskStatusService : BackgroundService
                     }
                 };
 
-                Console.WriteLine("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
-                Console.WriteLine("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
-
-
                 var adjusted = AdjustImage(file, jsonDefects);
                 new FileExtensionContentTypeProvider().TryGetContentType(
                     fileName, out var mimeType);
                 var newFileKey = fileName.GetMinIoFileName();
 
                 var fileModel = new MinIoFileModel(
-                    mimeType ?? string.Empty,
                     newFileKey,
+                    mimeType ?? string.Empty,
                     adjusted,
-                    new Dictionary<string, string> {}
+                    new Dictionary<string, string> {
+                        { "x-amz-meta-original-file-name", fileName }
+                    }
                 );
                 await minIoFileService.Upload(fileModel);
 
-                Console.WriteLine("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
-                Console.WriteLine("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
-
+                Console.WriteLine($"newFileKey: {newFileKey}");
 
                 var defects = jsonDefects.Select(x => new Defect
                 {
@@ -145,33 +117,19 @@ public class BackgroundAiTaskStatusService : BackgroundService
 
                 defectCounts += defects.Count;
 
-                Console.WriteLine("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
-                Console.WriteLine("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
-
                 foreach (var defect in defects)
                 {
+                    defect.FileKey = newFileKey;
                     await defectsRepository!.Create(defect);
                 }
 
-                Console.WriteLine("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
-                Console.WriteLine("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
-
+                foto.Key = newFileKey;
+                var response = await fotoRepository!.Create(new List<Foto> {foto}, status.Id);
             }
             catch (Exception e)
             {
-                Console.WriteLine("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
-                Console.WriteLine("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
-                Console.WriteLine("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
-                Console.WriteLine("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
-                Console.WriteLine("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
-                Console.WriteLine("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
-                Console.WriteLine("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
-                Console.WriteLine("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
-                Console.WriteLine("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
-                Console.WriteLine("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
-                Console.WriteLine("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
-                Console.WriteLine("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
-                Console.WriteLine(e.Message);
+                Console.WriteLine(e);
+
                 var errorAiStatus = new TaskStatus
                 {
                     Id = status.Id,
@@ -183,9 +141,6 @@ public class BackgroundAiTaskStatusService : BackgroundService
                 }; 
                 
                 await taskStatusesRepository.Update(errorAiStatus);
-                
-                Console.WriteLine(e.Message);
-                return;
             }
         }
 
@@ -207,8 +162,6 @@ public class BackgroundAiTaskStatusService : BackgroundService
 
     private MemoryStream AdjustImage(MemoryStream msImage, List<JsonDefect> defects)
     {
-        Console.WriteLine("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
-
         var returnMemory = new MemoryStream();
 
         foreach (var defect in defects)
@@ -217,33 +170,34 @@ public class BackgroundAiTaskStatusService : BackgroundService
 
             using var original = SKBitmap.Decode(msImage);
             using var image = SKImage.FromBitmap(original);
-            Console.WriteLine("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
 
             using var surface = SKSurface.Create(new SKImageInfo(image.Width, image.Height));
             {
-                Console.WriteLine("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
                 var canvas = surface.Canvas;
 
-                Console.WriteLine("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
                 // Копирование оригинального изображения на холст
                 canvas.DrawImage(image, 0, 0);
 
-                Console.WriteLine("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
                 // Определение параметров кисти
                 var paint = new SKPaint
                 {
                     Color = SKColors.Red,
                     IsStroke = true,
-                    StrokeWidth = 2
+                    StrokeWidth = 3,
                 };
 
                 // Рисование прямоугольника
                 canvas.DrawRect(new SKRect(x1, y1, x2, y2), paint);
                 
                 // Сохранение изображения
-                surface.Snapshot().Encode(SKEncodedImageFormat.Png, 100).SaveTo(returnMemory);
+                surface
+                    .Snapshot()
+                    .Encode(SKEncodedImageFormat.Png, 100)
+                    .SaveTo(returnMemory);
             }
         }
+
+        returnMemory.Seek(0, SeekOrigin.Begin);
 
         return returnMemory;
     }
