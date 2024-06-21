@@ -200,7 +200,7 @@ def upload_images(files: List[UploadFile] = File(...)):
     for file in files:
         try:
             contents = file.file.read()
-            with open(f'.\\load_from_api\\{file.filename}', 'wb') as f:
+            with open(f'./load_from_api/{file.filename}', 'wb') as f:
                 f.write(contents)
         except Exception:
             print(traceback.format_exc())
@@ -216,7 +216,7 @@ def upload_audio(files: List[UploadFile] = File(...)):
     for file in files:
         try:
             contents = file.file.read()
-            with open(f'.\\audio_from_api\\{file.filename}', 'wb') as f:
+            with open(f'./audio_from_api/{file.filename}', 'wb') as f:
                 f.write(contents)
         except Exception:
             print(traceback.format_exc())
@@ -233,9 +233,9 @@ def check_qual_images(files: List[UploadFile] = File(...)):
     for file in files:
         try:
             contents = file.file.read()
-            with open(f'.\\temp_from_api\\{file.filename}', 'wb') as f:
+            with open(f'./temp_from_api/{file.filename}', 'wb') as f:
                 f.write(contents)
-            img = plt.imread(f'.\\temp_from_api\\{file.filename}')
+            img = plt.imread(f'./temp_from_api/{file.filename}')
             check = check_qual(img)
             if check:
                 result[file.filename] = 'Некачественная фотография'
@@ -256,12 +256,12 @@ def process_images(files: List[UploadFile] = File(...)):
     for file in files:
         try:
             contents = file.file.read()
-            with open(f'.\\temp_from_api\\{file.filename}', 'wb') as f:
+            with open(f'./temp_from_api/{file.filename}', 'wb') as f:
                 f.write(contents)
             equalized_img = equalization_and_denoise(
-                f'.\\temp_from_api\\{file.filename}')
-            plt.imsave(f'.\\temp_from_api\\{file.filename}', equalized_img)
-            return FileResponse(path=f'.\\temp_from_api\\{file.filename}',
+                f'./temp_from_api/{file.filename}')
+            plt.imsave(f'./temp_from_api/{file.filename}', equalized_img)
+            return FileResponse(path=f'./temp_from_api/{file.filename}',
                                 filename=file.filename, media_type='multipart/form-data')
         except Exception:
             print(traceback.format_exc())
@@ -274,7 +274,7 @@ def process_images(files: List[UploadFile] = File(...)):
 
 @app.post("/binary_classification")
 def binary_classification(files: List[UploadFile] = File(...)):
-    with open('.\\final_mlp.pkl', 'rb') as f:
+    with open('./final_mlp.pkl', 'rb') as f:
         model = pickle.load(f)
 
     result = {}
@@ -282,10 +282,10 @@ def binary_classification(files: List[UploadFile] = File(...)):
 
         try:
             contents = file.file.read()
-            with open(f'.\\temp_from_api\\{file.filename}', 'wb') as f:
+            with open(f'./temp_from_api/{file.filename}', 'wb') as f:
                 f.write(contents)
 
-            equalized_img = equalization_and_denoise(f'.\\temp_from_api\\{file.filename}')
+            equalized_img = equalization_and_denoise(f'./temp_from_api/{file.filename}')
             hist = extract_color_histogram(equalized_img)
 
             pred = label_dict[model.predict(hist.reshape(1, -1))[0]]
@@ -308,17 +308,17 @@ def binary_classification(files: List[UploadFile] = File(...)):
 
 @app.post("/detect_defect")
 def detect_defect(files: List[UploadFile] = File(...)):
-    with open('.\\final_mlp.pkl', 'rb') as f:
+    with open('./final_mlp.pkl', 'rb') as f:
         model = pickle.load(f)
 
     result = {}
     for file in files:
         try:
             contents = file.file.read()
-            with open(f'.\\temp_from_api\\{file.filename}', 'wb') as f:
+            with open(f'./temp_from_api/{file.filename}', 'wb') as f:
                 f.write(contents)
 
-            equalized_img = equalization_and_denoise(f'.\\temp_from_api\\{file.filename}')
+            equalized_img = equalization_and_denoise(f'./temp_from_api/{file.filename}')
             hist = extract_color_histogram(equalized_img)
 
             pred = label_dict[model.predict(hist.reshape(1, -1))[0]]
@@ -340,7 +340,7 @@ def detect_defect(files: List[UploadFile] = File(...)):
 
 @app.post("/classification_defects")
 def classification_defects(files: List[UploadFile] = File(...)):
-    with open('.\\final_mlp.pkl', 'rb') as f:
+    with open('./final_mlp.pkl', 'rb') as f:
         model = pickle.load(f)
 
     result = {}
@@ -348,11 +348,11 @@ def classification_defects(files: List[UploadFile] = File(...)):
 
         try:
             contents = file.file.read()
-            with open(f'.\\temp_from_api\\{file.filename}', 'wb') as f:
+            with open(f'./temp_from_api/{file.filename}', 'wb') as f:
                 f.write(contents)
 
             equalized_img = equalization_and_denoise(
-                f'.\\temp_from_api\\{file.filename}')
+                f'./temp_from_api/{file.filename}')
             hist = extract_color_histogram(equalized_img)
 
             pred = label_dict[model.predict(hist.reshape(1, -1))[0]]
@@ -372,21 +372,21 @@ def classification_defects(files: List[UploadFile] = File(...)):
 
 @app.post("/classification_defects_with_proba")
 def classification_defects_with_proba(files: List[UploadFile] = File(...)):
-    with open('.\\final_mlp.pkl', 'rb') as f:
+    with open('./final_mlp.pkl', 'rb') as f:
         model = pickle.load(f)
 
-    with open('.\\bound_model.pkl', 'rb') as f:
+    with open('./bound_model.pkl', 'rb') as f:
         bbox_model = pickle.load(f)
 
 
     for file in files:
         try:
             contents = file.file.read()
-            with open(f'.\\temp_from_api\\{file.filename}', 'wb') as f:
+            with open(f'./temp_from_api/{file.filename}', 'wb') as f:
                 f.write(contents)
 
             equalized_img = equalization_and_denoise(
-                f'.\\temp_from_api\\{file.filename}')
+                f'./temp_from_api/{file.filename}')
             hist = extract_color_histogram(equalized_img)
 
             pred = label_dict[model.predict(hist.reshape(1, -1))[0]]
@@ -427,7 +427,7 @@ def classification_defects_with_proba(files: List[UploadFile] = File(...)):
 @app.post("/audio_defects")
 def audio_defects(files: List[UploadFile] = File(...)):
 
-    with open('.\\final_knn.pkl', 'rb') as f:
+    with open('./final_knn.pkl', 'rb') as f:
         model = pickle.load(f)
 
     result = {}
@@ -435,10 +435,10 @@ def audio_defects(files: List[UploadFile] = File(...)):
 
         try:
             contents = file.file.read()
-            with open(f'.\\temp_from_api\\{file.filename}', 'wb') as f:
+            with open(f'./temp_from_api/{file.filename}', 'wb') as f:
                 f.write(contents)
 
-            audio_features = preprocess_audio(f'.\\temp_from_api\\{file.filename}')
+            audio_features = preprocess_audio(f'./temp_from_api/{file.filename}')
             print(audio_features)
             pred = label_dict_audio[model.predict(np.array(audio_features).reshape(1, -1))[0]]
 
@@ -456,7 +456,7 @@ def audio_defects(files: List[UploadFile] = File(...)):
 @app.post("/audio_defects_with_proba")
 def audio_defects(files: List[UploadFile] = File(...)):
 
-    with open('.\\final_knn.pkl', 'rb') as f:
+    with open('./final_knn.pkl', 'rb') as f:
         model = pickle.load(f)
 
     result = {}
@@ -464,10 +464,10 @@ def audio_defects(files: List[UploadFile] = File(...)):
 
         try:
             contents = file.file.read()
-            with open(f'.\\temp_from_api\\{file.filename}', 'wb') as f:
+            with open(f'./temp_from_api/{file.filename}', 'wb') as f:
                 f.write(contents)
 
-            audio_features = preprocess_audio(f'.\\temp_from_api\\{file.filename}')
+            audio_features = preprocess_audio(f'./temp_from_api/{file.filename}')
             print(audio_features)
             pred = label_dict_audio[model.predict(np.array(audio_features).reshape(1, -1))[0]]
             proba = model.predict_proba(np.array(audio_features).reshape(1, -1))[0]

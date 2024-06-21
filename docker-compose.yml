@@ -118,7 +118,7 @@
   #     - 5006:8000
 
   api:
-    build: ./API
+    build: ./src/api
     container_name: api
     ports:
       - 5007:8000
