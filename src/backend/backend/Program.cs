@@ -1,3 +1,4 @@
+using backend.Application.AIClient;
 using backend.Application.Services;
 using backend.Core.Abstractions;
 using backend.Core.Options;
@@ -54,7 +55,7 @@ builder.Services.Configure<AiOptions>(builder.Configuration.GetSection("AiOption
 builder.Services.Configure<MLOptions>(builder.Configuration.GetSection("MLOptions"));
 
 
-builder.Services.AddSingleton<IAIClient, AIClient>();
+builder.Services.AddSingleton<IAIClient, MLClient>();
 #endregion
 
 // Hosted services

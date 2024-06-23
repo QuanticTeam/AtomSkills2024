@@ -86,45 +86,51 @@ public class BackgroundAiTaskStatusService : BackgroundService
                     }
                 };
 
-                var adjusted = AdjustImage(file, jsonDefects);
-                new FileExtensionContentTypeProvider().TryGetContentType(
-                    fileName, out var mimeType);
-                var newFileKey = fileName.GetMinIoFileName();
-
-                var fileModel = new MinIoFileModel(
-                    newFileKey,
-                    mimeType ?? string.Empty,
-                    adjusted,
-                    new Dictionary<string, string> {
-                        { "x-amz-meta-original-file-name", fileName }
+                foreach (var jsonDefect in jsonDefects)
+                {
+                    MemoryStream adjusted;
+                    try {
+                        adjusted = AdjustImage(file, jsonDefect);
                     }
-                );
-                await minIoFileService.Upload(fileModel);
+                    catch {
+                        adjusted = file;
+                        adjusted.Seek(0, SeekOrigin.Begin);
+                    }
 
-                Console.WriteLine($"newFileKey: {newFileKey}");
+                    new FileExtensionContentTypeProvider().TryGetContentType(
+                        fileName, out var mimeType);
+                    var newFileKey = fileName.GetMinIoFileName();
 
-                var defects = jsonDefects.Select(x => new Defect
-                {
-                    FileKey = newFileKey,
-                    Codes = x.Features,
-                    Comment = string.Empty,
-                    X1 = x.Area.X1,
-                    Y1 = x.Area.Y1,
-                    X2 = x.Area.X2,
-                    Y2 = x.Area.Y2,
-                    TaskStatusRecordId = status.Id,
-                }).ToList();
+                    var fileModel = new MinIoFileModel(
+                        newFileKey,
+                        mimeType ?? string.Empty,
+                        adjusted,
+                        new Dictionary<string, string> {
+                            { "x-amz-meta-original-file-name", fileName }
+                        }
+                    );
+                    await minIoFileService.Upload(fileModel);
 
-                defectCounts += defects.Count;
+                    Console.WriteLine($"newFileKey: {newFileKey}");
 
-                foreach (var defect in defects)
-                {
-                    defect.FileKey = newFileKey;
+                    var defect = new Defect
+                    {
+                        FileKey = newFileKey,
+                        Codes = jsonDefect.Features,
+                        Comment = string.Empty,
+                        X1 = jsonDefect.Area.X1,
+                        Y1 = jsonDefect.Area.Y1,
+                        X2 = jsonDefect.Area.X2,
+                        Y2 = jsonDefect.Area.Y2,
+                        TaskStatusRecordId = status.Id,
+                    };
+
                     await defectsRepository!.Create(defect);
-                }
 
-                foto.Key = newFileKey;
-                var response = await fotoRepository!.Create(new List<Foto> {foto}, status.Id);
+                    foto.Key = newFileKey;
+                    var response = await fotoRepository!.Create(new List<Foto> {foto}, status.Id);
+                }
+                defectCounts += jsonDefects.Count();
             }
             catch (Exception e)
             {
@@ -160,41 +166,37 @@ public class BackgroundAiTaskStatusService : BackgroundService
         await taskStatusesRepository.Update(updateTaskStatus);
     }
 
-    private MemoryStream AdjustImage(MemoryStream msImage, List<JsonDefect> defects)
+    private MemoryStream AdjustImage(MemoryStream msImage, JsonDefect defect)
     {
         var returnMemory = new MemoryStream();
+        var ((x1, y1, x2, y2), _) = defect;
 
-        foreach (var defect in defects)
+        using var original = SKBitmap.Decode(msImage);
+        using var image = SKImage.FromBitmap(original);
+
+        using var surface = SKSurface.Create(new SKImageInfo(image.Width, image.Height));
         {
-            var ((x1, y1, x2, y2), _) = defect;
+            var canvas = surface.Canvas;
 
-            using var original = SKBitmap.Decode(msImage);
-            using var image = SKImage.FromBitmap(original);
+            // Копирование оригинального изображения на холст
+            canvas.DrawImage(image, 0, 0);
 
-            using var surface = SKSurface.Create(new SKImageInfo(image.Width, image.Height));
+            // Определение параметров кисти
+            var paint = new SKPaint
             {
-                var canvas = surface.Canvas;
+                Color = SKColors.Red,
+                IsStroke = true,
+                StrokeWidth = 3,
+            };
 
-                // Копирование оригинального изображения на холст
-                canvas.DrawImage(image, 0, 0);
-
-                // Определение параметров кисти
-                var paint = new SKPaint
-                {
-                    Color = SKColors.Red,
-                    IsStroke = true,
-                    StrokeWidth = 3,
-                };
-
-                // Рисование прямоугольника
-                canvas.DrawRect(new SKRect(x1, y1, x2, y2), paint);
-                
-                // Сохранение изображения
-                surface
-                    .Snapshot()
-                    .Encode(SKEncodedImageFormat.Png, 100)
-                    .SaveTo(returnMemory);
-            }
+            // Рисование прямоугольника
+            canvas.DrawRect(new SKRect(x1, y1, x2, y2), paint);
+            
+            // Сохранение изображения
+            surface
+                .Snapshot()
+                .Encode(SKEncodedImageFormat.Png, 100)
+                .SaveTo(returnMemory);
         }
 
         returnMemory.Seek(0, SeekOrigin.Begin);

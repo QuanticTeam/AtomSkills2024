@@ -1,11 +1,13 @@
 using backend.Contracts;
 using backend.Core.Abstractions;
 using backend.Core.Models;
+using backend.Core.Options;
 using backend.Extensions;
 using backend.Notifications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Options;
 
 namespace backend.Controllers;
 
@@ -45,7 +47,9 @@ public class SomethingController : ControllerBase
 
     [Authorize]
     [HttpPost("Test")]
-    public async Task<ActionResult<string>> Test([FromServices] IContentLoadService contentLoadService)
+    public async Task<ActionResult<string>> Test(
+        [FromServices] IContentLoadService contentLoadService,
+        [FromServices] IOptions<MLOptions> mlOptions)
     {
         await _hubContext.Clients.All.SendAsync("ToastNotification", "success test");
         var userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type.Equals("userId"))?.Value ?? string.Empty;

@@ -1,12 +1,16 @@
+using System.Net.Http.Headers;
 using System.Net.Mime;
 using backend.Contracts;
 using backend.Core.Abstractions;
 using backend.Core.Models;
+using backend.Core.Options;
 using backend.Extensions;
 using backend.Notifications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
 namespace backend.Controllers;
 
@@ -46,8 +50,32 @@ public class FileController : ControllerBase
     
     [Authorize]
     [HttpPost("Upload")]
-    public async Task<ActionResult<UploadFileResponse>> Upload([FromForm] UploadFileRequest request)
+    public async Task<ActionResult<UploadFileResponse>> Upload(
+        [FromForm] UploadFileRequest request,
+        [FromServices] IOptions<MLOptions> mlOptions)
     {
+            var mlOption = mlOptions.Value;
+            using var client = new HttpClient { BaseAddress = new Uri($"{mlOption.AS_2024_ENV_URI}") };
+
+            using var form = new MultipartFormDataContent();
+            var fileContent = new StreamContent(request.File.OpenReadStream());
+            fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse("image/jpeg");
+            form.Add(fileContent, "files", request.File.FileName.Escape());
+
+            //response
+            var response = await client.PostAsync("/detect_defect", fileContent, default);
+            // response.EnsureSuccessStatusCode();
+            var result = await response.Content.ReadAsStringAsync(default);
+
+            var xxx = JsonConvert.DeserializeXmlNode(result);
+
+            //var res = JsonConvert.DeserializeAnonymousType(result, new JsonDefect());
+
+            //return Enumerable.Empty<JsonDefect>().ToList();
+
+
+
+
         var metaData = new Dictionary<string, string>
         {
             {
