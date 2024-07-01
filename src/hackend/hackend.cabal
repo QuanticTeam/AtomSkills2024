@@ -11,7 +11,7 @@ maintainer:         DimsFromDergachy@outlook.com
 category:           Web
 build-type:         Simple
 extra-doc-files:    CHANGELOG.md
--- extra-source-files:
+extra-source-files:
 
 common warnings
     ghc-options: -Wall
@@ -19,7 +19,7 @@ common warnings
 executable hackend
     import:           warnings
     main-is:          Main.hs
-    -- other-modules:
+    other-modules:    Core.Types
     -- other-extensions:
     build-depends:    base ^>=4.19.0.0,
                       scotty ^>=0.22
