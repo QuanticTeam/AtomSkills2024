@@ -1,0 +1,26 @@
+cabal-version:      3.4
+name:               hackend
+version:            0.1.0.0
+-- synopsis:
+-- description:
+license:            MIT
+license-file:       LICENSE
+author:             Dmitry Tyurnikov
+maintainer:         DimsFromDergachy@outlook.com
+-- copyright:
+category:           Web
+build-type:         Simple
+extra-doc-files:    CHANGELOG.md
+-- extra-source-files:
+
+common warnings
+    ghc-options: -Wall
+
+executable hackend
+    import:           warnings
+    main-is:          Main.hs
+    -- other-modules:
+    -- other-extensions:
+    build-depends:    base ^>=4.19.0.0
+    hs-source-dirs:   app
+    default-language: Haskell2010
