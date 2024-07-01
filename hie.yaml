@@ -1,0 +1,5 @@
+cradle:
+  cabal:
+    # hackend
+    - path: "./src/hackend/app/Main.hs"
+      component: "hackend:exe:hackend"

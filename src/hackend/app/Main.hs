@@ -1,4 +1,8 @@
-module Main where
+{-# LANGUAGE OverloadedStrings #-}
+import Web.Scotty
 
 main :: IO ()
-main = putStrLn "Hello, Haskell!"
+main = scotty 3000 $
+    get "/:word" $ do
+        beam <- pathParam "word"
+        html $ mconcat ["<h1>Scotty, ", beam, " me up!</h1>"]
