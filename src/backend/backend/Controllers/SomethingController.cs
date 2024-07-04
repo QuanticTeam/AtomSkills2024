@@ -1,3 +1,5 @@
+using System.Text;
+using backend.Application.Services;
 using backend.Contracts;
 using backend.Core.Abstractions;
 using backend.Core.Models;
@@ -194,5 +196,19 @@ public class SomethingController : ControllerBase
     public async Task<ActionResult<int>> Delete([FromBody] DeleteSomethingRequest request)
     {
         return StatusCode(StatusCodes.Status200OK, await _somethingsService.Delete(request.Key));
+    }
+
+    [AllowAnonymous]
+    [HttpPost("FooBar")]
+    public async Task<ActionResult<string>> FooBar([FromServices] FooBarService fooBarService)
+    {
+        var res = new StringBuilder();
+        foreach (var item in fooBarService.FooBar())
+        {
+            res.Append($"\n{item.ToString()}");
+            if (item.Contains("30"))
+                break;
+        }
+        return StatusCode(StatusCodes.Status200OK, res.ToString());
     }
 }

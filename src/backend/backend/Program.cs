@@ -68,6 +68,8 @@ builder.Services.AddScoped<IContentLoadService, ContentLoadService>();
 
 builder.Services.AddAuth(builder.Configuration);
 
+builder.Services.AddScoped<FooBarService>();
+
 
 var app = builder.Build();
 
