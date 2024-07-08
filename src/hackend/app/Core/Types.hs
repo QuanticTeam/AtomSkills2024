@@ -7,7 +7,6 @@ module Core.Types
 
 import Control.Monad (mzero)
 import Data.Aeson
-import Data.Monoid (Monoid)
 import GHC.Generics
 
 data State = State {
@@ -17,20 +16,6 @@ data State = State {
   tasks :: [Task],
   supplements :: [Supplement]
 } deriving (Generic, ToJSON)
-
-instance Semigroup State
-  where
-    -- (<>) :: State -> State -> State
-    (<>) a b = State
-      (topics a ++ topics b)
-      (traits a ++ traits b)
-      (lessons a ++ lessons b)
-      (tasks a ++ tasks b)
-      (supplements a ++ supplements b)
-
-instance Monoid State
-  where
-    mempty = State [] [] [] [] []
 
 type Code = String
 type Title = String
