@@ -3,42 +3,43 @@
 module Load (loadState)
   where
 
-import Core.Types (State (State), Trait)
+import Core.Types (State (State), Topic, Trait, Lesson, Task, Supplement)
 
-import Control.Monad (guard, filterM)
+import Control.Monad (filterM)
 import Data.Aeson
 import Data.List (isPrefixOf)
-import Data.Maybe (fromMaybe)
+import Data.Maybe (fromMaybe, maybeToList)
 import qualified Data.ByteString.Lazy as LB
-import System.Directory as SD
+import qualified System.Directory as SD
 
-loadState :: String -> IO State
+loadState :: FilePath -> IO State
 loadState d = do
-    fs <- listDirectory d
-    -- xxx <- listDirectory "."
-    -- meow <- getBinDir
-    -- print "DT!"
-    -- print $ show xxx
-    -- _ <- error $ show xxx
-    traits <- loadTraits "./lessons/traits.json"
-    return $ State undefined traits undefined undefined undefined
+    topics      <- (findFilesWith (return . isPrefixOf "topic")      d >>= loads) :: IO [Topic]
+    traits      <- (findFilesWith (return . isPrefixOf "trait")      d >>= loads) :: IO [Trait]
+    lessons     <- (findFilesWith (return . isPrefixOf "lesson")     d >>= loads) :: IO [Lesson]
+    tasks       <- (findFilesWith (return . isPrefixOf "task")       d >>= loads) :: IO [Task]
+    supplements <- (findFilesWith (return . isPrefixOf "supplement") d >>= loads) :: IO [Supplement]
+    return $ State topics traits lessons tasks supplements
 
-loadTraits :: String -> IO [Trait]
-loadTraits f = do
-    _ <- guardFileName "trait" f
-    content <- LB.readFile f
-    let traits = (decode content) :: Maybe [Trait]
-    return $ fromMaybe [] traits
+loads :: (FromJSON a) => [FilePath] -> IO [a]
+loads fs = mapM load fs >>= return . concat
 
-guardFileName :: String -> FilePath -> IO ()
-guardFileName fileName = guard . isPrefixOf fileName
+load :: (FromJSON a) => FilePath -> IO [a]
+load file = do
+    content <- LB.readFile file
+    let x = decode content -- :: Maybe a
+    let xs = decode content -- :: Maybe [a]
+    return $ fromMaybes x xs
+  where
+    fromMaybes :: Maybe a -> Maybe [a] -> [a]
+    fromMaybes x = fromMaybe (maybeToList x)
 
-findFilesWith :: (FilePath -> IO Bool) -> [FilePath] -> IO [FilePath]
-findFilesWith p dirs = undefined
-
-listDirectoryR :: FilePath -> IO [FilePath]
-listDirectoryR dir = do
-    files <- SD.listDirectory dir >>= filterM SD.doesFileExist
-    dirs <- SD.listDirectory dir >>= filterM SD.doesDirectoryExist
-    files' <- mapM listDirectoryR dirs >>= return . concat
-    return $ files ++ files'
+findFilesWith :: (FilePath -> IO Bool) -> FilePath -> IO [FilePath]
+findFilesWith p dir = findFilesWith' dir >>= filterM p
+  where
+    findFilesWith' :: FilePath -> IO [FilePath]
+    findFilesWith' dir' = do
+        files <- SD.listDirectory dir' >>= filterM SD.doesFileExist
+        dirs <- SD.listDirectory dir' >>= filterM SD.doesDirectoryExist
+        files' <- mapM findFilesWith' dirs >>= return . concat
+        return $ files ++ files'
