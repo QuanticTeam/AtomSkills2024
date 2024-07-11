@@ -5,13 +5,13 @@ import Load (loadState)
 
 main :: IO ()
 main = do
-    state <- initState "."
+    state <- initState "./lessons/"
     scotty 3000 $
         -- get "/:word" $ do
         --     beam <- pathParam "word"
         --     html $ mconcat ["<h1>Scotty, ", beam, " me up!</h1>"]
         get "/test" $ do
-            json $ traits $ state
+            json $ state
 
 initState :: String -> IO State
 initState = loadState

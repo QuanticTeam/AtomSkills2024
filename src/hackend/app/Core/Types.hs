@@ -27,7 +27,7 @@ type File = String
 type Difficulty = Int
 type Time = Int
 
-data Topic = Topic Code Title [Lesson] [Trait] Description
+data Topic = Topic Code Title [Code] [Code] Description
   deriving (Show, Generic, ToJSON)
 
 instance FromJSON Topic
