@@ -15,9 +15,9 @@ loadState :: FilePath -> IO State
 loadState d = do
     topics      <- (findFilesWith (return . isPrefixOf "topic" . takeFileName)      d >>= loads) :: IO [Topic]
     traits      <- (findFilesWith (return . isPrefixOf "trait" . takeFileName)      d >>= loads) :: IO [Trait]
-    lessons     <- (findFilesWith (return . isPrefixOf "lesson" . takeFileName)     d >>= loads) :: IO [Lesson]
-    tasks       <- (findFilesWith (return . isPrefixOf "task" . takeFileName)       d >>= loads) :: IO [Task]
-    supplements <- (findFilesWith (return . isPrefixOf "supplement" . takeFileName) d >>= loads) :: IO [Supplement]
+    lessons     <- (findFilesWith (return . isPrefixOf "lsn" . takeFileName)     d >>= loads) :: IO [Lesson]
+    tasks       <- (findFilesWith (return . isPrefixOf "tsk" . takeFileName)       d >>= loads) :: IO [Task]
+    supplements <- return [] --(findFilesWith (return . isPrefixOf "supplement" . takeFileName) d >>= loads) :: IO [Supplement]
     return $ State topics traits lessons tasks supplements
 
 loads :: (FromJSON a) => [FilePath] -> IO [a]

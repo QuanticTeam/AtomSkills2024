@@ -18,6 +18,11 @@ data State = State {
 } deriving (Generic, ToJSON)
 
 type Code = String
+type TopicCode = Code
+type TraitCode = Code
+type LessonCode = Code
+-- type SupplementCode = File
+type TaskCode = Code
 type Title = String
 type Description = String
 type Name = String
@@ -27,8 +32,8 @@ type File = String
 type Difficulty = Int
 type Time = Int
 
-data Topic = Topic Code Title [Code] [Code] Description
-  deriving (Show, Generic, ToJSON)
+data Topic = Topic TopicCode Title [LessonCode] [TraitCode] Description
+  deriving (Show, Generic)
 
 instance FromJSON Topic
   where
@@ -40,8 +45,19 @@ instance FromJSON Topic
                            v .: "description"
     parseJSON _ = mzero
 
-data Trait = Trait Code Name Description
-  deriving (Show, Generic, ToJSON)
+instance ToJSON Topic
+  where
+    toJSON (Topic code title lessons traits description) = object
+      [
+        "code" .= code,
+        "title" .= title,
+        "lessons" .= lessons,
+        "traits" .= traits,
+        "description" .= description
+      ]
+
+data Trait = Trait TraitCode Name Description
+  deriving (Show, Generic)
 
 instance FromJSON Trait
   where
@@ -51,8 +67,17 @@ instance FromJSON Trait
                            v .: "description"
     parseJSON _ = mzero
 
-data Lesson = Lesson Code Title Content [Trait] [Supplement] [Task] Author
-  deriving (Show, Generic, ToJSON)
+instance ToJSON Trait
+  where
+    toJSON (Trait code name description) = object
+      [
+        "code" .= code,
+        "name" .= name,
+        "description" .= description
+      ]
+
+data Lesson = Lesson LessonCode Title Content [TraitCode] [Supplement] [TaskCode] Author
+  deriving (Show, Generic)
 
 instance FromJSON Lesson
   where
@@ -61,10 +86,23 @@ instance FromJSON Lesson
                            v .: "title" <*>
                            v .: "content" <*>
                            v .: "traits" <*>
-                           v .: "supplements" <*>
+                           v .: "supplement" <*>
                            v .: "tasks" <*>
                            v .: "author"
     parseJSON _ = mzero
+
+instance ToJSON Lesson
+  where
+    toJSON (Lesson code title content traits supplements tasks author) = object
+      [
+        "code" .= code,
+        "title" .= title,
+        "content" .= content,
+        "traits" .= traits,
+        "supplement" .= supplements,
+        "tasks" .= tasks,
+        "author" .= author
+      ]
 
 data Supplement = Supplement Title File
   deriving (Show, Generic, ToJSON)
@@ -76,7 +114,7 @@ instance FromJSON Supplement
                            v .: "file"
     parseJSON _ = mzero
 
-data Task = Task Code Title Content [Supplement] Difficulty Time
+data Task = Task TaskCode Title Content [Supplement] Difficulty Time
   deriving (Show, Generic, ToJSON)
 
 instance FromJSON Task
@@ -85,7 +123,7 @@ instance FromJSON Task
                            v .: "title" <*>
                            v .: "code" <*>
                            v .: "content" <*>
-                           v .: "supplements" <*>
+                           v .: "supplement" <*>
                            v .: "difficulty" <*>
                            v .: "time"
     parseJSON _ = mzero
