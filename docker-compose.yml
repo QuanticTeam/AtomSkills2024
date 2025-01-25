@@ -91,6 +91,14 @@
       - ./https:/https:ro
       - ./lessons:/App/lessons:ro
 
+  hackend:
+    build: ./src/hackend
+    container_name: hackend
+    ports:
+      - 5008 : 3000
+    volumes:
+      - ./lessons:...
+
   deploy:
     image: curlimages/curl:8.8.0
     container_name: deploy
